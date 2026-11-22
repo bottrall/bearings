@@ -1,0 +1,45 @@
+# Psych's stdlib signatures leave out the node tree and the visitor that `Psych.safe_load` converts it with.
+module Psych
+  def self.parse: (String yaml, ?filename: String?) -> (Psych::Nodes::Document | false)
+
+  module Nodes
+    class Node
+      def children: () -> Array[Psych::Nodes::Node]?
+
+      attr_reader start_line: Integer
+    end
+
+    class Document < Node
+      def root: () -> Psych::Nodes::Node
+    end
+
+    class Mapping < Node
+      def children: () -> Array[Psych::Nodes::Node]
+    end
+
+    class Sequence < Node
+      def children: () -> Array[Psych::Nodes::Node]
+    end
+
+    class Scalar < Node
+    end
+  end
+
+  class ClassLoader
+    class Restricted < ClassLoader
+      def initialize: (Array[String] classes, Array[String] symbols) -> void
+    end
+  end
+
+  class ScalarScanner
+    def initialize: (Psych::ClassLoader class_loader) -> void
+  end
+
+  module Visitors
+    class NoAliasRuby
+      def initialize: (Psych::ScalarScanner ss, Psych::ClassLoader class_loader) -> void
+
+      def accept: (Psych::Nodes::Node target) -> untyped
+    end
+  end
+end

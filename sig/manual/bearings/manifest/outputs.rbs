@@ -1,0 +1,11 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Manifest::Outputs`.
+class Bearings::Manifest::Outputs < Data
+  attr_reader llms_full: bool
+
+  def self.new: (bool llms_full) -> instance
+              | (llms_full: bool) -> instance
+
+  def self.members: () -> [ :llms_full ]
+
+  def members: () -> [ :llms_full ]
+end
