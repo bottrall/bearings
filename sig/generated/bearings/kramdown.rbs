@@ -1,0 +1,63 @@
+# Generated from lib/bearings/kramdown.rb with RBS::Inline
+
+module Bearings::Kramdown
+  type located = [ ::Kramdown::Element, Integer ]
+
+  OPTIONS: Hash[Symbol, untyped]
+
+  TITLE: Regexp
+
+  ITEM_TYPES: Array[Symbol]
+
+  # @rbs source: String
+  # @rbs return: Bearings::Document?
+  def document: (String source) -> Bearings::Document?
+
+  private
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs return: Array[located]
+  def located: (::Kramdown::Element element) -> Array[located]
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs seen: Array[::Kramdown::Element]
+  # @rbs return: Array[::Kramdown::Element]
+  def footnotes: (::Kramdown::Element element, ?Array[::Kramdown::Element] seen) -> Array[::Kramdown::Element]
+
+  # @rbs table: ::Kramdown::Element
+  # @rbs return: Array[located]
+  def table_rows: (::Kramdown::Element table) -> Array[located]
+
+  # @rbs elements: Array[located]
+  # @rbs title_line: Integer
+  # @rbs return: Array[located]
+  def in_source: (Array[located] elements, Integer title_line) -> Array[located]
+
+  # @rbs elements: Array[located]
+  # @rbs return: Array[Bearings::Document::Heading]
+  def headings: (Array[located] elements) -> Array[Bearings::Document::Heading]
+
+  # @rbs elements: Array[located]
+  # @rbs return: Array[Bearings::Document::Link]
+  def links: (Array[located] elements) -> Array[Bearings::Document::Link]
+
+  # @rbs elements: Array[located]
+  # @rbs return: Array[Bearings::Document::CodeBlock]
+  def code_blocks: (Array[located] elements) -> Array[Bearings::Document::CodeBlock]
+
+  # @rbs elements: Array[located]
+  # @rbs return: Array[Bearings::Document::Image]
+  def images: (Array[located] elements) -> Array[Bearings::Document::Image]
+
+  # @rbs elements: Array[located]
+  # @rbs return: Array[Bearings::Document::Diagram]
+  def diagrams: (Array[located] elements) -> Array[Bearings::Document::Diagram]
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs return: bool
+  def fence?: (::Kramdown::Element element) -> bool
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs return: bool
+  def diagram?: (::Kramdown::Element element) -> bool
+end

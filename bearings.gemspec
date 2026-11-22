@@ -25,5 +25,8 @@ Gem::Specification.new do |spec|
   spec.files = Dir['lib/**/*.rb', 'sig/**/*.rbs', 'README.md', 'CHANGELOG.md', 'LICENSE']
   spec.require_paths = ['lib']
 
+  spec.add_dependency 'kramdown', '~> 2.6'
+  spec.add_dependency 'kramdown-parser-gfm', '~> 1.1'
+  spec.add_dependency 'rouge', '~> 5.1'
   spec.add_dependency 'zeitwerk', '~> 2.8'
 end

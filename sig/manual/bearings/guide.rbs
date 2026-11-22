@@ -1,0 +1,8 @@
+# rbs-inline drops `extend self`, so the module's methods are declared on it here.
+module Bearings::Guide
+  extend Bearings::Guide
+end
+
+interface Bearings::_Markdown
+  def document: (String source) -> Bearings::Document?
+end

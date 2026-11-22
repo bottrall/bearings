@@ -1,0 +1,22 @@
+module Kramdown
+  class Document
+    def initialize: (String source, ?Hash[Symbol, untyped] options) -> void
+
+    def root: () -> Kramdown::Element
+
+    # kramdown answers `to_<format>` through method_missing.
+    def to_html: () -> String
+  end
+
+  class Element
+    def type: () -> Symbol
+
+    def value: () -> untyped
+
+    def children: () -> Array[Kramdown::Element]
+
+    def attr: () -> Hash[String, String]
+
+    def options: () -> Hash[Symbol, untyped]
+  end
+end

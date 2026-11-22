@@ -1,0 +1,15 @@
+# Generated from lib/bearings/guide.rb with RBS::Inline
+
+module Bearings::Guide
+  # @rbs file: String
+  # @rbs source: String
+  # @rbs markdown: Bearings::_Markdown
+  # @rbs return: Bearings::Document | Bearings::Problem
+  def parse: (String file, String source, Bearings::_Markdown markdown) -> (Bearings::Document | Bearings::Problem)
+
+  private
+
+  # @rbs file: String
+  # @rbs return: Bearings::Problem
+  def untitled: (String file) -> Bearings::Problem
+end
