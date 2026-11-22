@@ -11,6 +11,7 @@ module Bearings::Kramdown
   OPTIONS = { input: 'GFM', syntax_highlighter: :rouge, hard_wrap: false }.freeze #: Hash[Symbol, untyped]
   TITLE = /^# .+\n?/ #: Regexp
   ITEM_TYPES = %i[header a img codeblock].freeze #: Array[Symbol]
+  ALERT = /\A\[!(note|tip|important|warning|caution)\][ \t]*\z/i #: Regexp
 
   # @rbs source: String
   # @rbs return: Bearings::Document?
@@ -30,11 +31,55 @@ module Bearings::Kramdown
       code_blocks: code_blocks(elements),
       images: images(elements),
       diagrams: diagrams(elements),
-      body: parsed.to_html
+      body: html(parsed)
     )
   end
 
   private
+
+  # @rbs parsed: ::Kramdown::Document
+  # @rbs return: String
+  def html(parsed)
+    # GitHub renders an alert only at the top level, never nested in another block.
+    root = with_children(parsed.root, parsed.root.children.map { |child| alert(child) })
+    ::Kramdown::Converter::Html.convert(root, parsed.options).first
+  end
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs return: ::Kramdown::Element
+  def alert(element)
+    paragraph, *rest = element.children
+    return element unless element.type == :blockquote && paragraph && paragraph.type == :p
+
+    text, *spans = paragraph.children
+    return element unless text && text.type == :text
+
+    first_line, newline, remainder = text.value.partition("\n")
+    kind = first_line[ALERT, 1]
+    whole_line = newline == "\n" || spans.empty?
+    return element unless kind && whole_line
+
+    lead = [::Kramdown::Element.new(:text, remainder, nil, text.options), *spans]
+    body = remainder.empty? && spans.empty? ? rest : [with_children(paragraph, lead), *rest]
+    div = ::Kramdown::Element.new(
+      :html_element, 'div', { 'class' => "alert alert-#{kind.downcase}" }, { category: :block, content_model: :block }
+    )
+    with_children(div, [title(kind.capitalize), *body])
+  end
+
+  # @rbs label: String
+  # @rbs return: ::Kramdown::Element
+  def title(label)
+    paragraph = ::Kramdown::Element.new(:p, nil, { 'class' => 'alert-title' })
+    with_children(paragraph, [::Kramdown::Element.new(:text, label)])
+  end
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs children: Array[::Kramdown::Element]
+  # @rbs return: ::Kramdown::Element
+  def with_children(element, children)
+    element.dup.tap { |copy| copy.children = children }
+  end
 
   # @rbs element: ::Kramdown::Element
   # @rbs return: Array[located]
