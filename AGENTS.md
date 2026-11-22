@@ -19,9 +19,9 @@ Everything runs through its `bin/` script, never a tool directly (`rake`, `ruboc
 
 ## Layout
 
-- `lib/bearings.rb` is the entry point: it sets up Zeitwerk, which loads everything under `lib/bearings/`, so a file's path must match its constant's name (`lib/bearings/greeting.rb` is `Bearings::Greeting`). Never `require` a file in `lib/`.
-- Namespaces are compact (`module Bearings::Greeting`), except `lib/bearings/version.rb`, which the gemspec loads before anything else and the entry point `require_relative`s.
-- `test/` mirrors `lib/`: `test/bearings/greeting_test.rb` tests `lib/bearings/greeting.rb`. Fixtures go in `test/fixtures/<topic>/`.
+- `lib/bearings.rb` is the entry point: it sets up Zeitwerk, which loads everything under `lib/bearings/`, so a file's path must match its constant's name (`lib/bearings/report.rb` is `Bearings::Report`). Never `require` a file in `lib/`.
+- Namespaces are compact (`module Bearings::Report`), except `lib/bearings/version.rb`, which the gemspec loads before anything else and the entry point `require_relative`s.
+- `test/` mirrors `lib/`: `test/bearings/report_test.rb` tests `lib/bearings/report.rb`. Fixtures go in `test/fixtures/<topic>/`.
 - `sig/generated/` holds the signatures `bin/generate` writes from `lib/`'s inline annotations, `sig/manual/` the hand-written ones, mirroring `lib/`, and `sig/_private/` stubs for gaps in other gems' signatures.
 - The gemspec ships `lib/`, `sig/`, `README.md`, `CHANGELOG.md` and `LICENSE`. `bin/build` fails when the gem leaves out a file in `lib/` or `sig/`, then installs the built gem into an empty `GEM_HOME` and loads every file.
 

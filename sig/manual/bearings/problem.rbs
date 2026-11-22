@@ -1,0 +1,21 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Problem`.
+class Bearings::Problem < Data
+  attr_reader check: String
+
+  attr_reader level: :error | :warning
+
+  attr_reader file: String
+
+  attr_reader line: Integer
+
+  attr_reader message: String
+
+  attr_reader hint: String?
+
+  def self.new: (String check, :error | :warning level, String file, Integer line, String message, String? hint) -> instance
+              | (check: String, level: :error | :warning, file: String, line: Integer, message: String, hint: String?) -> instance
+
+  def self.members: () -> [ :check, :level, :file, :line, :message, :hint ]
+
+  def members: () -> [ :check, :level, :file, :line, :message, :hint ]
+end
