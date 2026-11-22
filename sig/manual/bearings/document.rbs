@@ -1,0 +1,94 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Document`.
+class Bearings::Document < Data
+  attr_reader title: String
+
+  attr_reader headings: Array[Bearings::Document::Heading]
+
+  attr_reader links: Array[Bearings::Document::Link]
+
+  attr_reader code_blocks: Array[Bearings::Document::CodeBlock]
+
+  attr_reader images: Array[Bearings::Document::Image]
+
+  attr_reader diagrams: Array[Bearings::Document::Diagram]
+
+  attr_reader body: String
+
+  def self.new: (String title, Array[Bearings::Document::Heading] headings, Array[Bearings::Document::Link] links, Array[Bearings::Document::CodeBlock] code_blocks, Array[Bearings::Document::Image] images, Array[Bearings::Document::Diagram] diagrams, String body) -> instance
+              | (title: String, headings: Array[Bearings::Document::Heading], links: Array[Bearings::Document::Link], code_blocks: Array[Bearings::Document::CodeBlock], images: Array[Bearings::Document::Image], diagrams: Array[Bearings::Document::Diagram], body: String) -> instance
+
+  def self.members: () -> [ :title, :headings, :links, :code_blocks, :images, :diagrams, :body ]
+
+  def members: () -> [ :title, :headings, :links, :code_blocks, :images, :diagrams, :body ]
+end
+
+class Bearings::Document::Heading < Data
+  attr_reader level: Integer
+
+  attr_reader id: String
+
+  attr_reader line: Integer
+
+  def self.new: (Integer level, String id, Integer line) -> instance
+              | (level: Integer, id: String, line: Integer) -> instance
+
+  def self.members: () -> [ :level, :id, :line ]
+
+  def members: () -> [ :level, :id, :line ]
+end
+
+class Bearings::Document::Link < Data
+  attr_reader href: String
+
+  attr_reader line: Integer
+
+  def self.new: (String href, Integer line) -> instance
+              | (href: String, line: Integer) -> instance
+
+  def self.members: () -> [ :href, :line ]
+
+  def members: () -> [ :href, :line ]
+end
+
+class Bearings::Document::CodeBlock < Data
+  attr_reader language: String?
+
+  attr_reader code: String
+
+  attr_reader line: Integer
+
+  def self.new: (String? language, String code, Integer line) -> instance
+              | (language: String?, code: String, line: Integer) -> instance
+
+  def self.members: () -> [ :language, :code, :line ]
+
+  def members: () -> [ :language, :code, :line ]
+end
+
+class Bearings::Document::Image < Data
+  attr_reader src: String
+
+  attr_reader alt: String
+
+  attr_reader line: Integer
+
+  def self.new: (String src, String alt, Integer line) -> instance
+              | (src: String, alt: String, line: Integer) -> instance
+
+  def self.members: () -> [ :src, :alt, :line ]
+
+  def members: () -> [ :src, :alt, :line ]
+end
+
+class Bearings::Document::Diagram < Data
+  attr_reader code: String
+
+  attr_reader line: Integer
+
+  def self.new: (String code, Integer line) -> instance
+              | (code: String, line: Integer) -> instance
+
+  def self.members: () -> [ :code, :line ]
+
+  def members: () -> [ :code, :line ]
+end
