@@ -13,6 +13,14 @@ describe Bearings::Kramdown do
 
   def sample = document(fixture('sample.md'))
 
+  def body(markdown) = document("# Title\n\n#{markdown}").body
+
+  def alert(kind, label, inner)
+    %(\n<div class="alert alert-#{kind}">\n  <p class="alert-title">#{label}</p>\n#{inner}</div>\n)
+  end
+
+  def blockquote(inner) = "\n<blockquote>\n#{inner}</blockquote>\n"
+
   describe '.document' do
     it 'gives nil for a guide with no "# " title line' do
       assert_nil document("## Install\n\nText\n")
@@ -66,6 +74,10 @@ describe Bearings::Kramdown do
 
     it 'counts the title line in the line of an item below it' do
       assert_equal [3], document("# Title\n\n[Home](README.md)\n").links.map(&:line)
+    end
+
+    it 'gives an item in an alert the line it has in the source' do
+      assert_equal [4], document("# Title\n\n> [!NOTE]\n> See [x](x.md)\n").links.map(&:line)
     end
 
     it 'takes the title from the "# " line' do
@@ -125,8 +137,60 @@ describe Bearings::Kramdown do
       assert_equal [Bearings::Document::Diagram.new(code: "graph LR\n  guides --> site\n", line: 25)], sample.diagrams
     end
 
-    it "renders the body without the title line, byte for byte as riffer-rig's render_body did" do
+    it 'renders the body without the title line' do
       assert_equal fixture('sample.html'), sample.body
+    end
+
+    it 'leaves a marked blockquote nested in another block as a blockquote' do
+      assert_includes body("- > [!NOTE]\n  > Read this.\n"), '<blockquote>'
+    end
+
+    it 'leaves a blockquote that starts with a block other than a paragraph alone' do
+      assert_equal blockquote("  <h2 id=\"note\">Note</h2>\n"), body("> ## Note\n")
+    end
+
+    it 'leaves a blockquote whose marker is inside a span alone' do
+      assert_equal blockquote("  <p><strong>[!NOTE]</strong></p>\n"), body("> **[!NOTE]**\n")
+    end
+
+    it 'leaves a plain blockquote alone' do
+      assert_equal blockquote("  <p>Read this.</p>\n"), body("> Read this.\n")
+    end
+
+    it 'leaves a blockquote with an unknown marker alone' do
+      assert_equal blockquote("  <p>[!DANGER]\nRead this.</p>\n"), body("> [!DANGER]\n> Read this.\n")
+    end
+
+    it 'leaves a blockquote whose marker has text after it on the same line alone' do
+      assert_equal blockquote("  <p>[!NOTE] Read this.</p>\n"), body("> [!NOTE] Read this.\n")
+    end
+
+    it 'leaves a blockquote whose marker has a span after it on the same line alone' do
+      assert_equal blockquote("  <p>[!NOTE]<strong>Read</strong> this.</p>\n"), body("> [!NOTE]**Read** this.\n")
+    end
+
+    %w[Note Tip Important Warning Caution].each do |label|
+      it "renders a [!#{label.upcase}] blockquote as a #{label} alert" do
+        assert_equal alert(label.downcase, label, "  <p>Read this.</p>\n"), body("> [!#{label.upcase}]\n> Read this.\n")
+      end
+    end
+
+    it 'reads the marker case-insensitively' do
+      assert_equal alert('tip', 'Tip', "  <p>Read this.</p>\n"), body("> [!tip]\n> Read this.\n")
+    end
+
+    it 'reads a marker with trailing whitespace' do
+      assert_equal alert('note', 'Note', "  <p>Read this.</p>\n"), body("> [!NOTE] \t\n> Read this.\n")
+    end
+
+    it 'leaves out the paragraph the marker stood alone in' do
+      assert_equal alert('note', 'Note', "  <ul>\n    <li>Read this.</li>\n  </ul>\n"),
+                   body("> [!NOTE]\n> - Read this.\n")
+    end
+
+    it 'keeps the spans that start the line after the marker' do
+      assert_equal alert('note', 'Note', "  <p><strong>Read</strong> this.</p>\n"),
+                   body("> [!NOTE]\n> **Read** this.\n")
     end
   end
 end

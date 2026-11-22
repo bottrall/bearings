@@ -9,11 +9,30 @@ module Bearings::Kramdown
 
   ITEM_TYPES: Array[Symbol]
 
+  ALERT: Regexp
+
   # @rbs source: String
   # @rbs return: Bearings::Document?
   def document: (String source) -> Bearings::Document?
 
   private
+
+  # @rbs parsed: ::Kramdown::Document
+  # @rbs return: String
+  def html: (::Kramdown::Document parsed) -> String
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs return: ::Kramdown::Element
+  def alert: (::Kramdown::Element element) -> ::Kramdown::Element
+
+  # @rbs label: String
+  # @rbs return: ::Kramdown::Element
+  def title: (String label) -> ::Kramdown::Element
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs children: Array[::Kramdown::Element]
+  # @rbs return: ::Kramdown::Element
+  def with_children: (::Kramdown::Element element, Array[::Kramdown::Element] children) -> ::Kramdown::Element
 
   # @rbs element: ::Kramdown::Element
   # @rbs return: Array[located]
