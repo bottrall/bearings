@@ -13,6 +13,7 @@ target :lib do
   collection_config 'rbs_collection.yaml'
 
   library 'json'
+  library 'fileutils'
 
   configure_code_diagnostics(D::Ruby.all_error)
 end
