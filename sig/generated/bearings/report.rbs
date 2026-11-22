@@ -1,0 +1,25 @@
+# Generated from lib/bearings/report.rb with RBS::Inline
+
+module Bearings::Report
+  # @rbs problems: Array[Bearings::Problem]
+  # @rbs return: String
+  def text: (Array[Bearings::Problem] problems) -> String
+
+  # @rbs problems: Array[Bearings::Problem]
+  # @rbs return: String
+  def json: (Array[Bearings::Problem] problems) -> String
+
+  # @rbs problems: Array[Bearings::Problem]
+  # @rbs return: bool
+  def failed?: (Array[Bearings::Problem] problems) -> bool
+
+  private
+
+  # @rbs problems: Array[Bearings::Problem]
+  # @rbs return: Array[Bearings::Problem]
+  def sorted: (Array[Bearings::Problem] problems) -> Array[Bearings::Problem]
+
+  # @rbs problem: Bearings::Problem
+  # @rbs return: String
+  def text_entry: (Bearings::Problem problem) -> String
+end

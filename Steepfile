@@ -12,5 +12,7 @@ target :lib do
   # The gems' signatures, which bin/setup installs.
   collection_config 'rbs_collection.yaml'
 
+  library 'json'
+
   configure_code_diagnostics(D::Ruby.all_error)
 end
