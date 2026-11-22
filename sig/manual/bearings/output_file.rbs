@@ -1,0 +1,13 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::OutputFile`.
+class Bearings::OutputFile < Data
+  attr_reader path: String
+
+  attr_reader content: String | Pathname
+
+  def self.new: (String path, String | Pathname content) -> instance
+              | (path: String, content: String | Pathname) -> instance
+
+  def self.members: () -> [ :path, :content ]
+
+  def members: () -> [ :path, :content ]
+end

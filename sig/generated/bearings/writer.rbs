@@ -1,0 +1,29 @@
+# Generated from lib/bearings/writer.rb with RBS::Inline
+
+module Bearings::Writer
+  # @rbs files: Array[Bearings::OutputFile]
+  # @rbs dir: String
+  # @rbs return: Array[Bearings::Problem]
+  def call: (Array[Bearings::OutputFile] files, String dir) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs files: Array[Bearings::OutputFile]
+  # @rbs return: Array[Bearings::Problem]
+  def duplicates: (Array[Bearings::OutputFile] files) -> Array[Bearings::Problem]
+
+  # @rbs files: Array[Bearings::OutputFile]
+  # @rbs dir: String
+  # @rbs return: void
+  def write_all: (Array[Bearings::OutputFile] files, String dir) -> void
+
+  # @rbs targets: Array[String]
+  # @rbs dir: String
+  # @rbs return: void
+  def remove_stale: (Array[String] targets, String dir) -> void
+
+  # @rbs file: Bearings::OutputFile
+  # @rbs target: String
+  # @rbs return: void
+  def write: (Bearings::OutputFile file, String target) -> void
+end
