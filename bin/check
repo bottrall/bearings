@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Fixes what it can, then type-checks and tests: bin/lint --fix, bin/typecheck, bin/test.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+# shellcheck source=lib/stack.sh
+source bin/lib/stack.sh
+
+only=()
+for arg in "$@"; do
+  case $arg in
+    --only=*) only=("$arg") ;;
+    *) fail "unknown argument $arg; takes only --only=ruby or --only=ts" ;;
+  esac
+done
+
+# Each step runs even when one before it failed, so one run reports them all.
+# A repo that has no use for a step (no types to check, say) can delete it.
+status=0
+if [[ -x bin/lint ]]; then bin/lint --fix ${only[@]+"${only[@]}"} || status=$?; fi
+if [[ -x bin/typecheck ]]; then bin/typecheck ${only[@]+"${only[@]}"} || status=$?; fi
+if [[ -x bin/test ]]; then bin/test ${only[@]+"${only[@]}"} || status=$?; fi
+exit "$status"
