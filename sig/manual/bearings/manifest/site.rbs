@@ -1,0 +1,21 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Manifest::Site`.
+class Bearings::Manifest::Site < Data
+  attr_reader name: String
+
+  attr_reader summary: String?
+
+  attr_reader url: String?
+
+  attr_reader repo: String?
+
+  attr_reader version: String?
+
+  attr_reader namespaces: Array[String]
+
+  def self.new: (String name, String? summary, String? url, String? repo, String? version, Array[String] namespaces) -> instance
+              | (name: String, summary: String?, url: String?, repo: String?, version: String?, namespaces: Array[String]) -> instance
+
+  def self.members: () -> [ :name, :summary, :url, :repo, :version, :namespaces ]
+
+  def members: () -> [ :name, :summary, :url, :repo, :version, :namespaces ]
+end

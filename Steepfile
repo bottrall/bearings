@@ -14,6 +14,7 @@ target :lib do
 
   library 'json'
   library 'fileutils'
+  library 'psych'
 
   configure_code_diagnostics(D::Ruby.all_error)
 end

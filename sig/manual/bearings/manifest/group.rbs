@@ -1,0 +1,15 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Manifest::Group`.
+class Bearings::Manifest::Group < Data
+  attr_reader label: String
+
+  attr_reader pages: Array[Bearings::Manifest::Page]
+
+  attr_reader extras: Hash[String, untyped]
+
+  def self.new: (String label, Array[Bearings::Manifest::Page] pages, Hash[String, untyped] extras) -> instance
+              | (label: String, pages: Array[Bearings::Manifest::Page], extras: Hash[String, untyped]) -> instance
+
+  def self.members: () -> [ :label, :pages, :extras ]
+
+  def members: () -> [ :label, :pages, :extras ]
+end

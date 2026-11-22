@@ -1,0 +1,123 @@
+# Generated from lib/bearings/manifest/parser.rb with RBS::Inline
+
+module Bearings::Manifest::Parser
+  type issue = [ Integer, String, String? ]
+
+  type kind = [ String, ^(untyped) -> bool ]
+
+  type schema = Hash[String, kind?]
+
+  type fields = Hash[String, Psych::Nodes::Node]
+
+  LIST: kind
+
+  TEXT: kind
+
+  TEXTS: kind
+
+  FLAG: kind
+
+  NUMBER: kind
+
+  PATHS: kind
+
+  MANIFEST: schema
+
+  SITE: schema
+
+  OUTPUTS: schema
+
+  CHECKS: schema
+
+  GROUP: schema
+
+  PAGE: schema
+
+  SLUG: ::Regexp
+
+  IMAGE_LIMIT_KB: ::Integer
+
+  # @rbs yaml: String
+  # @rbs file: String
+  # @rbs return: Bearings::Manifest | Array[Bearings::Problem]
+  def parse: (String yaml, file: String) -> (Bearings::Manifest | Array[Bearings::Problem])
+
+  private
+
+  # @rbs issues: Array[issue]
+  # @rbs file: String
+  # @rbs return: Array[Bearings::Problem]
+  def problems: (Array[issue] issues, String file) -> Array[Bearings::Problem]
+
+  # @rbs node: Psych::Nodes::Node
+  # @rbs return: Array[issue]
+  def unreadable: (Psych::Nodes::Node node) -> Array[issue]
+
+  # @rbs root: Psych::Nodes::Node
+  # @rbs return: Array[issue]
+  def check: (Psych::Nodes::Node root) -> Array[issue]
+
+  # @rbs node: Psych::Nodes::Node?
+  # @rbs name: String
+  # @rbs schema: schema
+  # @rbs required: Array[String]
+  # @rbs open: bool
+  # @rbs return: Array[issue]
+  def check_mapping: (Psych::Nodes::Node? node, String name, schema schema, ?required: Array[String], ?open: bool) -> Array[issue]
+
+  # @rbs pages: Array[fields]
+  # @rbs return: Array[issue]
+  def unsafe_slugs: (Array[fields] pages) -> Array[issue]
+
+  # @rbs pages: Array[fields]
+  # @rbs key: String
+  # @rbs return: Array[issue]
+  def duplicates: (Array[fields] pages, String key) -> Array[issue]
+
+  # @rbs root: Psych::Nodes::Node
+  # @rbs return: Bearings::Manifest
+  def build: (Psych::Nodes::Node root) -> Bearings::Manifest
+
+  # @rbs node: Psych::Nodes::Node
+  # @rbs return: Bearings::Manifest::Group
+  def build_group: (Psych::Nodes::Node node) -> Bearings::Manifest::Group
+
+  # @rbs node: Psych::Nodes::Node
+  # @rbs return: Bearings::Manifest::Page
+  def build_page: (Psych::Nodes::Node node) -> Bearings::Manifest::Page
+
+  # @rbs node: Psych::Nodes::Node
+  # @rbs schema: schema
+  # @rbs return: Hash[String, untyped]
+  def extras: (Psych::Nodes::Node node, schema schema) -> Hash[String, untyped]
+
+  # @rbs node: Psych::Nodes::Node?
+  # @rbs return: fields
+  def fields: (Psych::Nodes::Node? node) -> fields
+
+  # @rbs node: Psych::Nodes::Node?
+  # @rbs return: fields
+  def entries: (Psych::Nodes::Node? node) -> fields
+
+  # @rbs mapping: Psych::Nodes::Mapping
+  # @rbs return: Array[[Psych::Nodes::Node, Psych::Nodes::Node]]
+  def pairs: (Psych::Nodes::Mapping mapping) -> Array[[ Psych::Nodes::Node, Psych::Nodes::Node ]]
+
+  # @rbs node: Psych::Nodes::Node?
+  # @rbs return: Array[Psych::Nodes::Node]
+  def items: (Psych::Nodes::Node? node) -> Array[Psych::Nodes::Node]
+
+  # @rbs node: Psych::Nodes::Node?
+  # @rbs return: untyped
+  def value: (Psych::Nodes::Node? node) -> untyped
+
+  # @rbs node: Psych::Nodes::Node
+  # @rbs message: String
+  # @rbs hint: String?
+  # @rbs return: issue
+  def issue: (Psych::Nodes::Node node, String message, ?String? hint) -> issue
+
+  # @rbs node: Psych::Nodes::Node
+  # @rbs return: Integer
+  def line: (Psych::Nodes::Node node) -> Integer
+end
