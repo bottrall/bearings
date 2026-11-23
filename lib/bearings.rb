@@ -11,8 +11,9 @@ require_relative 'bearings/version'
 # version.rb then nests `module Riffer` and `module Rig`, because the gemspec
 # loads it before Riffer exists.
 loader = Zeitwerk::Loader.for_gem
-# bearings/rbs needs the rbs gem, which bearings doesn't depend on, so it loads only when required.
-loader.ignore("#{__dir__}/bearings/rbs.rb")
+# bearings/rbs and bearings/rake need the rbs and rake gems, which bearings
+# doesn't depend on, so each loads only when required.
+loader.ignore("#{__dir__}/bearings/rbs.rb", "#{__dir__}/bearings/rake.rb")
 loader.setup
 
 module Bearings
