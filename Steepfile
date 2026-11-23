@@ -12,6 +12,7 @@ target :lib do
   # The gems' signatures, which bin/setup installs.
   collection_config 'rbs_collection.yaml'
 
+  library 'erb'
   library 'json'
   library 'cgi-escape'
   library 'fileutils'
