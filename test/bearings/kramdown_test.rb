@@ -146,6 +146,10 @@ describe Bearings::Kramdown do
                    sample.images
     end
 
+    it 'leaves out the src of raw HTML that is not an image' do
+      assert_empty document(%(# Title\n\n<iframe src="demo.html"></iframe>\n)).images
+    end
+
     it 'lists a raw <img> with its src, alt text and line' do
       assert_equal [Bearings::Document::Image.new(src: 'logo.png', alt: 'Logo', line: 3)],
                    document(%(# Title\n\n<p align="center"><img src="logo.png" alt="Logo"></p>\n)).images
@@ -186,10 +190,6 @@ describe Bearings::Kramdown do
          Bearings::Document::Image.new(src: 'light.svg', alt: 'Light', line: 5)],
         document(source).images
       )
-    end
-
-    it 'leaves out the src of raw HTML that is not an image' do
-      assert_empty document(%(# Title\n\n<iframe src="demo.html"></iframe>\n)).images
     end
 
     it 'lists the mermaid fences as diagrams with their code and line' do

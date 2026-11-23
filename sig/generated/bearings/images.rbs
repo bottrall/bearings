@@ -5,6 +5,8 @@ module Bearings::Images
   # nor ends it, as a data: URI or a `w_100,h_100` path does.
   SOURCE_URLS: Hash[String, Regexp]
 
+  TAGS: Array[String]
+
   TAG: Regexp
 
   ATTRIBUTE: Regexp
@@ -19,10 +21,9 @@ module Bearings::Images
   # @rbs return: Array[String]
   def paths: (Bearings::Site site) -> Array[String]
 
-  # @rbs site: Bearings::Site
   # @rbs images: Hash[String, String]
   # @rbs return: Array[Bearings::OutputFile]
-  def call: (Bearings::Site site, Hash[String, String] images) -> Array[Bearings::OutputFile]
+  def call: (Hash[String, String] images) -> Array[Bearings::OutputFile]
 
   # @rbs body: String
   # @rbs from: String

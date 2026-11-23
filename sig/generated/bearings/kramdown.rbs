@@ -9,8 +9,6 @@ module Bearings::Kramdown
 
   ITEM_TYPES: Array[Symbol]
 
-  HTML_IMAGES: Array[String]
-
   ALERT: Regexp
 
   # @rbs source: String

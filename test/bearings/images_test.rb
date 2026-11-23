@@ -69,20 +69,13 @@ describe Bearings::Images do
   end
 
   describe '.call' do
-    it 'copies each image a guide uses under assets/, keeping its repo path' do
-      files = Bearings::Images.call(
-        site(page('start', 'docs/START.md', [image('images/flow.svg')])),
-        { 'docs/images/flow.svg' => '<svg/>' }
-      )
+    it 'copies each image it is given under assets/, keeping its repo path' do
+      files = Bearings::Images.call({ 'docs/images/flow.svg' => '<svg/>' })
 
       assert_equal(
         [Bearings::OutputFile.new(path: 'assets/docs/images/flow.svg', content: Pathname('docs/images/flow.svg'))],
         files
       )
-    end
-
-    it 'leaves out an image whose file is missing' do
-      assert_empty Bearings::Images.call(site(page('start', 'docs/START.md', [image('images/flow.svg')])), {})
     end
   end
 

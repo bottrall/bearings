@@ -8,7 +8,8 @@ module Bearings::Images
   # A src is one URL. A srcset has a URL per candidate, and HTML lets that URL hold a comma that neither starts
   # nor ends it, as a data: URI or a `w_100,h_100` path does.
   SOURCE_URLS = { 'src' => /\A.+\z/, 'srcset' => /(?:\A|,)\s*\K[^\s,]\S*?(?=,*(?:\s|\z))/ }.freeze #: Hash[String, Regexp]
-  TAG = /<(?<name>img|source)\s[^>]*>/ #: Regexp
+  TAGS = %w[img source].freeze #: Array[String]
+  TAG = /<(?<name>#{TAGS.join('|')})\s[^>]*>/ #: Regexp
   ATTRIBUTE = /(?<=\s)(?<name>[^\s=]+)="(?<value>[^"]*)"/ #: Regexp
   TAG_END = %r{\s*/?>\z} #: Regexp
 
@@ -26,13 +27,10 @@ module Bearings::Images
     end.uniq
   end
 
-  # @rbs site: Bearings::Site
   # @rbs images: Hash[String, String]
   # @rbs return: Array[Bearings::OutputFile]
-  def call(site, images)
-    paths(site).filter_map do |path|
-      Bearings::OutputFile.new(path: url(path).delete_prefix('/'), content: Pathname(path)) if images.key?(path)
-    end
+  def call(images)
+    images.keys.map { |path| Bearings::OutputFile.new(path: url(path).delete_prefix('/'), content: Pathname(path)) }
   end
 
   # @rbs body: String

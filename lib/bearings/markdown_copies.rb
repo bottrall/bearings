@@ -7,7 +7,7 @@ module Bearings::MarkdownCopies
   #   type rewrite = [String, Integer, String]
 
   # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
-  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)|(?<attribute>\s(?<source>src|srcset)=["'])(?<value>[^"'\n]*)/ #: Regexp
+  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)|(?<attribute>\s(?<source>#{Bearings::Images::SOURCE_URLS.keys.join('|')})=["'])(?<value>[^"'\n]*)/ #: Regexp
   DEFINITION = /\A(?<lead> {0,3}\[(?!\^)[^\]\n]+\]:[ \t]*<?)(?<destination>[^\s<>]+)/ #: Regexp
 
   # @rbs site: Bearings::Site

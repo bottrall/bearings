@@ -12,7 +12,6 @@ module Bearings::Kramdown
   OPTIONS = { input: 'GFM', syntax_highlighter: :rouge, hard_wrap: false }.freeze #: Hash[Symbol, untyped]
   TITLE = /^# .+\n?/ #: Regexp
   ITEM_TYPES = %i[header a img codeblock codespan].freeze #: Array[Symbol]
-  HTML_IMAGES = %w[img source].freeze #: Array[String]
   ALERT = /\A\[!(note|tip|important|warning|caution)\][ \t]*\z/i #: Regexp
 
   # @rbs source: String
@@ -125,7 +124,7 @@ module Bearings::Kramdown
   # @rbs element: ::Kramdown::Element
   # @rbs return: bool
   def item?(element)
-    ITEM_TYPES.include?(element.type) || (element.type == :html_element && HTML_IMAGES.include?(element.value))
+    ITEM_TYPES.include?(element.type) || (element.type == :html_element && Bearings::Images::TAGS.include?(element.value))
   end
 
   # @rbs element: ::Kramdown::Element

@@ -29,7 +29,7 @@ module Bearings::Pipeline
 
       Bearings::HtmlPages.call(input.site, layout:, landing:, assets: input.assets, images: input.images)
     end,
-    ->(input) { files_only(Bearings::Images.call(input.site, input.images)) },
+    ->(input) { files_only(Bearings::Images.call(input.images)) },
     ->(input) { files_only(Bearings::MarkdownCopies.call(input.site, input.sources)) },
     lambda do |input|
       copies = Bearings::MarkdownCopies.call(input.site, input.sources)
