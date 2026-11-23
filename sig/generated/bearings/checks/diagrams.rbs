@@ -1,0 +1,39 @@
+# Generated from lib/bearings/checks/diagrams.rb with RBS::Inline
+
+module Bearings::Checks::Diagrams
+  type finding = [ :error | :warning, String, String ]
+
+  TYPES: Set[String]
+
+  FRONTMATTER: Regexp
+
+  # Mermaid skips `%%` lines, comments and `%%{init: ...}%%` directives alike, so they may come before the type.
+  TYPE: Regexp
+
+  ACC_TITLE: Regexp
+
+  EMPTY: finding
+
+  UNTYPED: finding
+
+  UNTITLED: finding
+
+  # @rbs site: Bearings::Site
+  # @rbs return: Array[Bearings::Problem]
+  def call: (Bearings::Site site) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs file: String
+  # @rbs diagram: Bearings::Document::Diagram
+  # @rbs return: Array[Bearings::Problem]
+  def problems: (String file, Bearings::Document::Diagram diagram) -> Array[Bearings::Problem]
+
+  # @rbs code: String
+  # @rbs return: Array[finding]
+  def findings: (String code) -> Array[finding]
+
+  # @rbs code: String
+  # @rbs return: bool
+  def typed?: (String code) -> bool
+end

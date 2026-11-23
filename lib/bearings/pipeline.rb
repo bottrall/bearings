@@ -44,6 +44,7 @@ module Bearings::Pipeline
   CHECKS = [
     ->(input, _files) { Bearings::Checks::ManifestMatchesDisk.call(manifest: input.manifest, paths: input.watched) },
     ->(input, _files) { Bearings::Checks::CodeExamples.call(input.site) },
+    ->(input, _files) { Bearings::Checks::Diagrams.call(input.site) },
     ->(input, _files) { Bearings::Checks::ConstantNames.call(site: input.site, declared: input.declared) },
     lambda do |input, files|
       redirects = input.manifest.redirects
