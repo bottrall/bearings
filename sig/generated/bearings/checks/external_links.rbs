@@ -1,0 +1,29 @@
+# Generated from lib/bearings/checks/external_links.rb with RBS::Inline
+
+module Bearings::Checks::ExternalLinks
+  EXTERNAL: Regexp
+
+  SUCCESS: Range[Integer]
+
+  HINTS: Hash[Symbol, String]
+
+  # @rbs site: Bearings::Site
+  # @rbs http: Bearings::_HttpClient
+  # @rbs return: Array[Bearings::Problem]
+  def call: (Bearings::Site site, Bearings::_HttpClient http) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs file: String
+  # @rbs link: Bearings::Document::Link
+  # @rbs result: Integer | Bearings::Checks::ExternalLinks::Failure
+  # @rbs return: Bearings::Problem?
+  def problem: (String file, Bearings::Document::Link link, Integer | Bearings::Checks::ExternalLinks::Failure result) -> Bearings::Problem?
+
+  # @rbs file: String
+  # @rbs link: Bearings::Document::Link
+  # @rbs level: :error | :warning
+  # @rbs outcome: String
+  # @rbs return: Bearings::Problem
+  def failed: (String file, Bearings::Document::Link link, :error | :warning level, String outcome) -> Bearings::Problem
+end

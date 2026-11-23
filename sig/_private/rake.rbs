@@ -1,0 +1,12 @@
+# Rake ships no signatures, and gem_rbs_collection's cover only the DSL, not the application and task API Bearings::Rake calls.
+module Rake
+  def self.application: () -> Rake::Application
+
+  class Application
+    attr_writer last_description: String
+  end
+
+  class Task
+    def self.define_task: (String name) { () -> void } -> Rake::Task
+  end
+end

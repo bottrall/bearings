@@ -15,6 +15,9 @@ target :lib do
   library 'json'
   library 'fileutils'
   library 'psych'
+  library 'net-http'
+  library 'openssl'
+  library 'socket'
 
   configure_code_diagnostics(D::Ruby.all_error)
 end
