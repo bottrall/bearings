@@ -8,18 +8,20 @@ class Bearings::Document < Data
 
   attr_reader code_blocks: Array[Bearings::Document::CodeBlock]
 
+  attr_reader code_spans: Array[Bearings::Document::CodeSpan]
+
   attr_reader images: Array[Bearings::Document::Image]
 
   attr_reader diagrams: Array[Bearings::Document::Diagram]
 
   attr_reader body: String
 
-  def self.new: (String title, Array[Bearings::Document::Heading] headings, Array[Bearings::Document::Link] links, Array[Bearings::Document::CodeBlock] code_blocks, Array[Bearings::Document::Image] images, Array[Bearings::Document::Diagram] diagrams, String body) -> instance
-              | (title: String, headings: Array[Bearings::Document::Heading], links: Array[Bearings::Document::Link], code_blocks: Array[Bearings::Document::CodeBlock], images: Array[Bearings::Document::Image], diagrams: Array[Bearings::Document::Diagram], body: String) -> instance
+  def self.new: (String title, Array[Bearings::Document::Heading] headings, Array[Bearings::Document::Link] links, Array[Bearings::Document::CodeBlock] code_blocks, Array[Bearings::Document::CodeSpan] code_spans, Array[Bearings::Document::Image] images, Array[Bearings::Document::Diagram] diagrams, String body) -> instance
+              | (title: String, headings: Array[Bearings::Document::Heading], links: Array[Bearings::Document::Link], code_blocks: Array[Bearings::Document::CodeBlock], code_spans: Array[Bearings::Document::CodeSpan], images: Array[Bearings::Document::Image], diagrams: Array[Bearings::Document::Diagram], body: String) -> instance
 
-  def self.members: () -> [ :title, :headings, :links, :code_blocks, :images, :diagrams, :body ]
+  def self.members: () -> [ :title, :headings, :links, :code_blocks, :code_spans, :images, :diagrams, :body ]
 
-  def members: () -> [ :title, :headings, :links, :code_blocks, :images, :diagrams, :body ]
+  def members: () -> [ :title, :headings, :links, :code_blocks, :code_spans, :images, :diagrams, :body ]
 end
 
 class Bearings::Document::Heading < Data
@@ -63,6 +65,19 @@ class Bearings::Document::CodeBlock < Data
   def self.members: () -> [ :language, :code, :line ]
 
   def members: () -> [ :language, :code, :line ]
+end
+
+class Bearings::Document::CodeSpan < Data
+  attr_reader code: String
+
+  attr_reader line: Integer
+
+  def self.new: (String code, Integer line) -> instance
+              | (code: String, line: Integer) -> instance
+
+  def self.members: () -> [ :code, :line ]
+
+  def members: () -> [ :code, :line ]
 end
 
 class Bearings::Document::Image < Data

@@ -23,7 +23,7 @@ describe Bearings::Images do
       previous_slug: nil,
       next_slug: nil,
       document: Bearings::Document.new(
-        title: '', headings: [], links: [], code_blocks: [], images:, diagrams: [], body: ''
+        title: '', headings: [], links: [], code_blocks: [], code_spans: [], images:, diagrams: [], body: ''
       ),
       extras: {}
     )

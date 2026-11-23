@@ -17,6 +17,7 @@ describe Bearings::MarkdownCopies do
       headings: [],
       links: items.grep(Bearings::Document::Link),
       code_blocks: items.grep(Bearings::Document::CodeBlock),
+      code_spans: [],
       images: items.grep(Bearings::Document::Image),
       diagrams: items.grep(Bearings::Document::Diagram),
       body: ''

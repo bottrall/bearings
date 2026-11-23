@@ -1,0 +1,7 @@
+# Generated from lib/bearings/rbs.rb with RBS::Inline
+
+module Bearings::Rbs
+  # @rbs dir: String
+  # @rbs return: Set[String]
+  def declared: (String dir) -> Set[String]
+end

@@ -10,7 +10,7 @@ module Bearings::Kramdown
 
   OPTIONS = { input: 'GFM', syntax_highlighter: :rouge, hard_wrap: false }.freeze #: Hash[Symbol, untyped]
   TITLE = /^# .+\n?/ #: Regexp
-  ITEM_TYPES = %i[header a img codeblock].freeze #: Array[Symbol]
+  ITEM_TYPES = %i[header a img codeblock codespan].freeze #: Array[Symbol]
   HTML_IMAGES = %w[img source].freeze #: Array[String]
   ALERT = /\A\[!(note|tip|important|warning|caution)\][ \t]*\z/i #: Regexp
 
@@ -30,6 +30,7 @@ module Bearings::Kramdown
       headings: headings(elements),
       links: links(elements),
       code_blocks: code_blocks(elements),
+      code_spans: code_spans(elements),
       images: images(elements),
       diagrams: diagrams(elements),
       body: html(parsed)
@@ -150,6 +151,14 @@ module Bearings::Kramdown
       next unless fence?(element) && !diagram?(element)
 
       Bearings::Document::CodeBlock.new(language: element.options[:lang], code: element.value, line:)
+    end
+  end
+
+  # @rbs elements: Array[located]
+  # @rbs return: Array[Bearings::Document::CodeSpan]
+  def code_spans(elements)
+    elements.filter_map do |element, line|
+      Bearings::Document::CodeSpan.new(code: element.value, line:) if element.type == :codespan
     end
   end
 
