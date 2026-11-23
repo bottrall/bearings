@@ -2,6 +2,8 @@
 module Psych
   def self.parse: (String yaml, ?filename: String?) -> (Psych::Nodes::Document | false)
 
+  def self.parse_stream: (String yaml, ?filename: String?) -> Psych::Nodes::Stream
+
   module Nodes
     class Node
       def children: () -> Array[Psych::Nodes::Node]?
@@ -22,6 +24,9 @@ module Psych
     end
 
     class Scalar < Node
+    end
+
+    class Stream < Node
     end
   end
 

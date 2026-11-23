@@ -1,0 +1,35 @@
+# Generated from lib/bearings/checks/code_examples.rb with RBS::Inline
+
+module Bearings::Checks::CodeExamples
+  type failure = [ Integer, String ]
+
+  JSON_LOCATION: Regexp
+
+  # @rbs site: Bearings::Site
+  # @rbs return: Array[Bearings::Problem]
+  def call: (Bearings::Site site) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs file: String
+  # @rbs block: Bearings::Document::CodeBlock
+  # @rbs return: Bearings::Problem?
+  def problem: (String file, Bearings::Document::CodeBlock block) -> Bearings::Problem?
+
+  # @rbs language: String?
+  # @rbs code: String
+  # @rbs return: failure?
+  def failure: (String? language, String code) -> failure?
+
+  # @rbs code: String
+  # @rbs return: failure?
+  def ruby: (String code) -> failure?
+
+  # @rbs code: String
+  # @rbs return: failure?
+  def json: (String code) -> failure?
+
+  # @rbs code: String
+  # @rbs return: failure?
+  def yaml: (String code) -> failure?
+end
