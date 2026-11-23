@@ -15,12 +15,12 @@ describe Bearings::Rbs do
       assert_includes declared, 'Riffer::Providers'
     end
 
-    it 'names a declared constant' do
-      assert_includes declared, 'Riffer::Agent::LIMIT'
-    end
-
     it 'names a declared class alias' do
       assert_includes declared, 'Riffer::Model'
+    end
+
+    it 'names a declared constant' do
+      assert_includes declared, 'Riffer::Agent::LIMIT'
     end
 
     it 'leaves out an interface' do

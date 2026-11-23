@@ -70,16 +70,28 @@ describe Bearings::Checks::ConstantNames do
       )
     end
 
+    it 'leaves out a block in another language' do
+      assert_empty check(code_blocks: [block(%({ "class": "Riffer::Missing" }\n), language: 'json')])
+    end
+
     it 'gives a constant in a block the line it has in the guide' do
       assert_equal [12], lines(code_blocks: [block("agent = nil\nRiffer::Missing.new\n")])
     end
 
-    it 'passes a declared constant in a block' do
-      assert_empty check(code_blocks: [block("Riffer::Agent.new\n")])
+    it 'checks a configured namespace itself' do
+      assert_equal ['Rig'], names(code_spans: [span('Rig')], namespaces: ['Rig'])
     end
 
-    it 'leaves out a block in another language' do
-      assert_empty check(code_blocks: [block(%({ "class": "Riffer::Missing" }\n), language: 'json')])
+    it 'leaves out a constant in a namespace that is not configured' do
+      assert_empty check(code_spans: [span('Other::Missing')])
+    end
+
+    it 'leaves out a constant whose first segment only starts with a namespace' do
+      assert_empty check(code_spans: [span('RifferRig::Missing')])
+    end
+
+    it 'passes a declared constant in a block' do
+      assert_empty check(code_blocks: [block("Riffer::Agent.new\n")])
     end
 
     it 'reports the constants in a block that does not parse' do
@@ -104,18 +116,6 @@ describe Bearings::Checks::ConstantNames do
 
     it 'reports a constant named twice on one line once' do
       assert_equal 1, check(code_blocks: [block("Riffer::Missing.new(Riffer::Missing)\n")]).size
-    end
-
-    it 'checks a configured namespace itself' do
-      assert_equal ['Rig'], names(code_spans: [span('Rig')], namespaces: ['Rig'])
-    end
-
-    it 'leaves out a constant in a namespace that is not configured' do
-      assert_empty check(code_spans: [span('Other::Missing')])
-    end
-
-    it 'leaves out a constant whose first segment only starts with a namespace' do
-      assert_empty check(code_spans: [span('RifferRig::Missing')])
     end
 
     it 'passes a class a block on the page defines' do

@@ -34,10 +34,10 @@ module Bearings::Checks::ConstantNames
     blocks = document.code_blocks.select { |block| block.language == 'ruby' }
     examples = blocks.map { |block| [Prism.parse(block.code).value, block.line + 1] } #: Array[snippet]
     spans = document.code_spans.map { |span| [Prism.parse(span.code).value, span.line] } #: Array[snippet]
-    defined = examples.flat_map { |tree, _| definitions(tree, nil) }
+    known = declared + examples.flat_map { |tree, _| definitions(tree, nil) }
+    scopes = namespaces.map { |namespace| "#{namespace}::" }
     [*examples, *spans].flat_map { |tree, first_line| references(tree, first_line) }.uniq.select do |name, _|
-      namespaces.any? { |namespace| name == namespace || name.start_with?("#{namespace}::") } &&
-        !declared.include?(name) && !defined.include?(name)
+      "#{name}::".start_with?(*scopes) && !known.include?(name)
     end
   end
 
