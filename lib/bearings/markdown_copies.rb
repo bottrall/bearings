@@ -9,9 +9,9 @@ module Bearings::MarkdownCopies
   #   type rewrite = [String, Integer, String]
 
   SCHEME = /\A[a-z][a-z\d+.-]*:/i #: Regexp
-  # A code span comes first so a link-shaped string inside one is matched, and kept, as code.
-  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)/ #: Regexp
-  DEFINITION = /\A(?<lead> {0,3}\[[^\]\n]+\]:[ \t]*<?)(?<destination>[^\s<>]+)/ #: Regexp
+  # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
+  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)/ #: Regexp
+  DEFINITION = /\A(?<lead> {0,3}\[(?!\^)[^\]\n]+\]:[ \t]*<?)(?<destination>[^\s<>]+)/ #: Regexp
 
   # @rbs site: Bearings::Site
   # @rbs files: Hash[String, String]
@@ -66,12 +66,12 @@ module Bearings::MarkdownCopies
   def copy(source, document, rewrites)
     lines = source.lines
     breaks = breaks(lines, document)
+    unused = rewrites
     lines.map.with_index(1) do |line, number|
       next line if breaks.include?(number)
 
-      # Only a destination kramdown read as a link in this paragraph is one; elsewhere it's code or plain text.
-      paragraph = rewrites.select { |_, at, _| same_paragraph?(at, number, breaks) }
-      swap(swap(line, DEFINITION, rewrites), INLINE, paragraph)
+      copied, unused = inline(definition(line, rewrites), number, unused, breaks)
+      copied
     end.join
   end
 
@@ -82,7 +82,7 @@ module Bearings::MarkdownCopies
     fenced = [*document.code_blocks, *document.diagrams].flat_map do |block|
       (block.line..(block.line + block.code.lines.count + 1)).to_a
     end
-    blank = lines.each.with_index(1).filter_map { |line, number| number if line.strip.empty? }
+    blank = lines.filter_map.with_index(1) { |line, number| number if line.strip.empty? }
     Set.new(fenced + blank)
   end
 
@@ -91,18 +91,39 @@ module Bearings::MarkdownCopies
   # @rbs breaks: Set[Integer]
   # @rbs return: bool
   def same_paragraph?(from, to, breaks)
-    from <= to && (from..to).none? { |number| breaks.include?(number) }
+    from <= to && breaks.disjoint?(from..to)
   end
 
   # @rbs line: String
-  # @rbs pattern: Regexp
   # @rbs rewrites: Array[rewrite]
   # @rbs return: String
-  def swap(line, pattern, rewrites)
-    line.gsub(pattern) do
+  def definition(line, rewrites)
+    line.sub(DEFINITION) do
       match = Regexp.last_match #: MatchData
       url = rewrites.find { |destination, _, _| destination == match[:destination] }&.last
       url ? "#{match[:lead]}#{url}" : match.to_s
     end
+  end
+
+  # @rbs line: String
+  # @rbs number: Integer
+  # @rbs unused: Array[rewrite]
+  # @rbs breaks: Set[Integer]
+  # @rbs return: [String, Array[rewrite]]
+  def inline(line, number, unused, breaks)
+    left = unused
+    rewritten = line.gsub(INLINE) do
+      match = Regexp.last_match #: MatchData
+      # Each link kramdown found in this paragraph rewrites one destination; a copy in plain text stays as written.
+      found = left.index do |destination, at, _|
+        destination == match[:destination] && same_paragraph?(at, number, breaks)
+      end
+      next match.to_s unless found
+
+      url = left.fetch(found).last
+      left = left.reject.with_index { |_, index| index == found }
+      "#{match[:lead]}#{url}"
+    end
+    [rewritten, left]
   end
 end

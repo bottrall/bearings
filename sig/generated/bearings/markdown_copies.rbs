@@ -5,7 +5,7 @@ module Bearings::MarkdownCopies
 
   SCHEME: Regexp
 
-  # A code span comes first so a link-shaped string inside one is matched, and kept, as code.
+  # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
   INLINE: Regexp
 
   DEFINITION: Regexp
@@ -50,8 +50,14 @@ module Bearings::MarkdownCopies
   def same_paragraph?: (Integer from, Integer to, Set[Integer] breaks) -> bool
 
   # @rbs line: String
-  # @rbs pattern: Regexp
   # @rbs rewrites: Array[rewrite]
   # @rbs return: String
-  def swap: (String line, Regexp pattern, Array[rewrite] rewrites) -> String
+  def definition: (String line, Array[rewrite] rewrites) -> String
+
+  # @rbs line: String
+  # @rbs number: Integer
+  # @rbs unused: Array[rewrite]
+  # @rbs breaks: Set[Integer]
+  # @rbs return: [String, Array[rewrite]]
+  def inline: (String line, Integer number, Array[rewrite] unused, Set[Integer] breaks) -> [ String, Array[rewrite] ]
 end
