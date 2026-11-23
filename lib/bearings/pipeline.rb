@@ -46,6 +46,10 @@ module Bearings::Pipeline
     ->(input, _files) { Bearings::Checks::CodeExamples.call(input.site) },
     ->(input, _files) { Bearings::Checks::Diagrams.call(input.site) },
     ->(input, _files) { Bearings::Checks::ConstantNames.call(site: input.site, declared: input.declared) },
+    lambda do |input, _files|
+      limit_kb = input.manifest.checks.image_limit_kb
+      Bearings::Checks::Images.call(site: input.site, images: input.images, watched: input.watched, limit_kb:)
+    end,
     lambda do |input, files|
       redirects = input.manifest.redirects
       # Redirects.problems knows the stubs; passed in as pages, each would replace itself.
