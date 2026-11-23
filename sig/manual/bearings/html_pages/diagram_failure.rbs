@@ -1,0 +1,11 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::HtmlPages::DiagramFailure`.
+class Bearings::HtmlPages::DiagramFailure < Data
+  attr_reader reason: String
+
+  def self.new: (String reason) -> instance
+              | (reason: String) -> instance
+
+  def self.members: () -> [ :reason ]
+
+  def members: () -> [ :reason ]
+end

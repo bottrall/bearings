@@ -2,3 +2,7 @@
 module Bearings::HtmlPages
   extend Bearings::HtmlPages
 end
+
+interface Bearings::_DiagramRenderer
+  def render: (String source) -> (String | Bearings::HtmlPages::DiagramFailure)
+end
