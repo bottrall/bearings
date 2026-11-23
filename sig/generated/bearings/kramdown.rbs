@@ -30,6 +30,20 @@ module Bearings::Kramdown
   def title: (String label) -> ::Kramdown::Element
 
   # @rbs element: ::Kramdown::Element
+  # @rbs chain: Array[String]
+  # @rbs return: ::Kramdown::Element
+  def mark_diagrams: (::Kramdown::Element element, ?Array[String] chain) -> ::Kramdown::Element
+
+  # @rbs reference: ::Kramdown::Element
+  # @rbs chain: Array[String]
+  # @rbs return: ::Kramdown::Element
+  def mark_footnote: (::Kramdown::Element reference, Array[String] chain) -> ::Kramdown::Element
+
+  # @rbs code: String
+  # @rbs return: ::Kramdown::Element
+  def mermaid: (String code) -> ::Kramdown::Element
+
+  # @rbs element: ::Kramdown::Element
   # @rbs children: Array[::Kramdown::Element]
   # @rbs return: ::Kramdown::Element
   def with_children: (::Kramdown::Element element, Array[::Kramdown::Element] children) -> ::Kramdown::Element

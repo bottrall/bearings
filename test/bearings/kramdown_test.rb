@@ -205,5 +205,30 @@ describe Bearings::Kramdown do
       assert_equal alert('note', 'Note', "  <p><strong>Read</strong> this.</p>\n"),
                    body("> [!NOTE]\n> **Read** this.\n")
     end
+
+    it 'renders a mermaid fence as a pre for the browser to draw, holding the escaped source' do
+      assert_equal %(\n<pre class="mermaid">graph LR\n  a --&gt; b\n</pre>\n),
+                   body("```mermaid\ngraph LR\n  a --> b\n```\n")
+    end
+
+    it 'escapes an entity in a mermaid fence, so the pre holds the source as written' do
+      assert_equal %(\n<pre class="mermaid">A[&quot;x &amp;amp; &amp;#35;&quot;] --&gt; B\n</pre>\n),
+                   body("```mermaid\nA[\"x &amp; &#35;\"] --> B\n```\n")
+    end
+
+    it 'renders a mermaid fence in a footnote as a pre for the browser to draw' do
+      assert_includes body("See[^f]\n\n[^f]: The flow:\n\n    ```mermaid\n    graph LR\n    ```\n"),
+                      %(<pre class="mermaid">graph LR\n</pre>)
+    end
+
+    it 'renders a mermaid fence in footnotes that cite each other as a pre for the browser to draw' do
+      source = "See[^n]\n\n[^n]: n[^m]\n\n[^m]: m[^n]\n\n    ```mermaid\n    graph LR\n    ```\n"
+
+      assert_includes body(source), %(<pre class="mermaid">graph LR\n</pre>)
+    end
+
+    it 'renders a mermaid fence nested in another block as a pre for the browser to draw' do
+      assert_includes body("- Item\n\n  ```mermaid\n  graph LR\n  ```\n"), %(<pre class="mermaid">graph LR\n</pre>)
+    end
   end
 end

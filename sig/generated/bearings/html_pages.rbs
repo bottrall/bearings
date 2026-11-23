@@ -3,6 +3,8 @@
 module Bearings::HtmlPages
   type toc_entry = { id: String, title: String }
 
+  type drawing = String | Bearings::HtmlPages::DiagramFailure
+
   GUIDE_LINK: Regexp
 
   GUIDE_HREF: Regexp
@@ -11,14 +13,22 @@ module Bearings::HtmlPages
 
   H2: Regexp
 
+  DIAGRAM: Regexp
+
   # @rbs site: Bearings::Site
   # @rbs layout: String
   # @rbs landing: String
   # @rbs assets: Hash[String, Pathname]
+  # @rbs diagram_renderer: Bearings::_DiagramRenderer?
   # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
-  def call: (Bearings::Site site, layout: String, landing: String, assets: Hash[String, Pathname]) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
+  def call: (Bearings::Site site, layout: String, landing: String, assets: Hash[String, Pathname], ?diagram_renderer: Bearings::_DiagramRenderer?) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
 
   private
+
+  # @rbs pages: Array[Bearings::Site::Page]
+  # @rbs renderer: Bearings::_DiagramRenderer?
+  # @rbs return: Hash[String, drawing]
+  def draw: (Array[Bearings::Site::Page] pages, Bearings::_DiagramRenderer? renderer) -> Hash[String, drawing]
 
   # @rbs site: Bearings::Site
   # @rbs return: Hash[Symbol, untyped]
@@ -34,13 +44,19 @@ module Bearings::HtmlPages
   # @rbs layout: ERB
   # @rbs by_source: Hash[String, Bearings::Site::Page]
   # @rbs by_slug: Hash[String, Bearings::Site::Page]
+  # @rbs drawn: Hash[String, drawing]
   # @rbs return: Bearings::OutputFile
-  def page_file: (Bearings::Site::Page page, Bearings::Site site, ERB layout, Hash[String, Bearings::Site::Page] by_source, Hash[String, Bearings::Site::Page] by_slug) -> Bearings::OutputFile
+  def page_file: (Bearings::Site::Page page, Bearings::Site site, ERB layout, Hash[String, Bearings::Site::Page] by_source, Hash[String, Bearings::Site::Page] by_slug, Hash[String, drawing] drawn) -> Bearings::OutputFile
 
   # @rbs page: Bearings::Site::Page
   # @rbs by_source: Hash[String, Bearings::Site::Page]
   # @rbs return: String
   def rewrite_links: (Bearings::Site::Page page, Hash[String, Bearings::Site::Page] by_source) -> String
+
+  # @rbs body: String
+  # @rbs drawn: Hash[String, drawing]
+  # @rbs return: String
+  def with_drawings: (String body, Hash[String, drawing] drawn) -> String
 
   # @rbs body: String
   # @rbs return: Array[toc_entry]
@@ -55,6 +71,11 @@ module Bearings::HtmlPages
   # @rbs by_source: Hash[String, Bearings::Site::Page]
   # @rbs return: Array[Bearings::Problem]
   def unknown_links: (Bearings::Site::Page page, Hash[String, Bearings::Site::Page] by_source) -> Array[Bearings::Problem]
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs drawn: Hash[String, drawing]
+  # @rbs return: Array[Bearings::Problem]
+  def undrawn: (Bearings::Site::Page page, Hash[String, drawing] drawn) -> Array[Bearings::Problem]
 
   # @rbs source: String
   # @rbs path: String

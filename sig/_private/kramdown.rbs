@@ -14,6 +14,8 @@ module Kramdown
 
     def value: () -> untyped
 
+    def value=: (untyped value) -> untyped
+
     def children: () -> Array[Kramdown::Element]
 
     def children=: (Array[Kramdown::Element] children) -> Array[Kramdown::Element]
