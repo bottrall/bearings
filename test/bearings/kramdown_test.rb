@@ -146,6 +146,52 @@ describe Bearings::Kramdown do
                    sample.images
     end
 
+    it 'leaves out the src of raw HTML that is not an image' do
+      assert_empty document(%(# Title\n\n<iframe src="demo.html"></iframe>\n)).images
+    end
+
+    it 'lists a raw <img> with its src, alt text and line' do
+      assert_equal [Bearings::Document::Image.new(src: 'logo.png', alt: 'Logo', line: 3)],
+                   document(%(# Title\n\n<p align="center"><img src="logo.png" alt="Logo"></p>\n)).images
+    end
+
+    it 'gives a raw <img> with no alt attribute empty alt text' do
+      assert_equal [''], document(%(# Title\n\nSee <img src="logo.png"> here.\n)).images.map(&:alt)
+    end
+
+    it 'lists each URL in a srcset' do
+      source = %(# Title\n\n<img src="a.png" srcset="a.png 1x, a@2x.png 2x" alt="A">\n)
+
+      assert_equal %w[a.png a.png a@2x.png], document(source).images.map(&:src)
+    end
+
+    it 'lists a raw src with a comma as one URL' do
+      assert_equal %w[a,b.png], document(%(# Title\n\n<img src="a,b.png" alt="A">\n)).images.map(&:src)
+    end
+
+    it 'keeps a srcset URL with a comma whole' do
+      source = %(# Title\n\n<source srcset="w_100,h_100/a.png 2x, a.png 1x">\n)
+
+      assert_equal %w[w_100,h_100/a.png a.png], document(source).images.map(&:src)
+    end
+
+    it "lists a <picture>'s sources, giving a <source> no alt text" do
+      source = <<~MD
+        # Title
+
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="dark.svg">
+          <img src="light.svg" alt="Light">
+        </picture>
+      MD
+
+      assert_equal(
+        [Bearings::Document::Image.new(src: 'dark.svg', alt: nil, line: 4),
+         Bearings::Document::Image.new(src: 'light.svg', alt: 'Light', line: 5)],
+        document(source).images
+      )
+    end
+
     it 'lists the mermaid fences as diagrams with their code and line' do
       assert_equal [Bearings::Document::Diagram.new(code: "graph LR\n  guides --> site\n", line: 25)], sample.diagrams
     end

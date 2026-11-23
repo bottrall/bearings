@@ -82,6 +82,7 @@ module Bearings::Rake
       manifest_file: path,
       site:,
       sources:,
+      images: images(site),
       watched: watched(manifest.watch),
       layout:,
       landing:,
@@ -105,6 +106,12 @@ module Bearings::Rake
   def sources(manifest)
     paths = [*manifest.groups.flat_map(&:pages).map(&:source), manifest.site.version].compact
     paths.select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }
+  end
+
+  # @rbs site: Bearings::Site
+  # @rbs return: Hash[String, String]
+  def images(site)
+    Bearings::Images.paths(site).select { |path| File.file?(path) }.to_h { |path| [path, File.binread(path)] }
   end
 
   # @rbs manifest: Bearings::Manifest

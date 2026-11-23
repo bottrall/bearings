@@ -1,0 +1,10 @@
+# Generated from lib/bearings/repo_path.rb with RBS::Inline
+
+module Bearings::RepoPath
+  SCHEME: Regexp
+
+  # @rbs from: String
+  # @rbs destination: String
+  # @rbs return: String?
+  def resolve: (String from, String destination) -> String?
+end
