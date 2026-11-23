@@ -1,0 +1,22 @@
+# Generated from lib/bearings/sitemap.rb with RBS::Inline
+
+module Bearings::Sitemap
+  # @rbs site: Bearings::Site
+  # @rbs manifest_file: String
+  # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
+  def call: (Bearings::Site site, manifest_file: String) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
+
+  private
+
+  # @rbs manifest_file: String
+  # @rbs return: Bearings::Problem
+  def no_url: (String manifest_file) -> Bearings::Problem
+
+  # @rbs urls: Array[String]
+  # @rbs return: String
+  def sitemap: (Array[String] urls) -> String
+
+  # @rbs sitemap_url: String
+  # @rbs return: String
+  def robots: (String sitemap_url) -> String
+end
