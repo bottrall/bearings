@@ -92,3 +92,10 @@ jobs:
       # The file name carries the version the gemspec built, so a tag that
       # doesn't match it fails here rather than publishing the wrong version.
       - run: gem push "bearings-${TAG#v}.gem"
+
+  docs:
+    needs: [release-please, publish]
+    if: needs.release-please.outputs.release_created == 'true'
+    permissions:
+      contents: write
+    uses: ./.github/workflows/docs.yml

@@ -29,6 +29,8 @@ jobs:
           # installs it into an empty GEM_HOME and loads it.
           - name: build
             run: bin/build
+          - name: docs
+            run: bin/docs --check
 
     steps:
       - uses: actions/checkout@v7

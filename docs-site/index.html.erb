@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= site.name %></title>
+    <meta name="description" content="<%= site.summary %>">
+    <link rel="canonical" href="<%= site.url %>/">
+    <link rel="stylesheet" href="/site.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/"><%= site.name %></a>
+      <span class="version">v<%= version %></span>
+      <a href="<%= site.repo %>">GitHub</a>
+    </header>
+
+    <main class="landing">
+      <h1><%= site.name %></h1>
+      <p class="summary"><%= site.summary %></p>
+
+      <ul class="promises">
+        <li>Guides are plain markdown that reads the same on GitHub.</li>
+        <li>The manifest is the only list of what exists.</li>
+        <li>If the check passes, the site is correct.</li>
+      </ul>
+
+      <p>bearings has no theme. Your repo writes the layout; bearings builds the pages, a markdown copy of each, <a href="/llms.txt">llms.txt</a> and a search index, and checks every link, anchor, example, constant, image and diagram in them. This site is built by bearings from its own repo.</p>
+
+      <%- featured = pages.find(&:featured) || pages.first -%>
+      <p><a class="start" href="<%= featured.url %>"><%= featured.title %> →</a></p>
+
+      <%- groups.each do |group| -%>
+      <h2><%= group.label %></h2>
+      <dl>
+        <%- group.pages.each do |page| -%>
+        <dt><a href="<%= page.url %>"><%= page.title %></a></dt>
+        <dd><%= page.description %></dd>
+        <%- end -%>
+      </dl>
+      <%- end -%>
+    </main>
+  </body>
+</html>

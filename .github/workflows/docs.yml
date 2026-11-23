@@ -1,0 +1,49 @@
+name: docs
+
+on:
+  workflow_dispatch: # redeploys between releases
+  workflow_call: # release.yml, after each release
+
+permissions:
+  contents: read
+
+jobs:
+  # Building runs the dev bundle, so it happens here, without a write token,
+  # and hands deploy the built site.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bin/docs
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: _site
+          if-no-files-found: error
+
+  # Holds the write token, so it runs none of the bundle: it only pushes the
+  # built site. The deploy action works on a checkout and brings its own token.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: _site
+      # Without it GitHub Pages runs Jekyll, which turns the .md copies into HTML.
+      - run: touch _site/.nojekyll
+      - uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
+        with:
+          branch: gh-pages
+          folder: _site

@@ -14,6 +14,7 @@ Everything runs through its `bin/` script, never a tool directly (`rake`, `ruboc
 | `bin/typecheck`               | Type-check the code                                                             |
 | `bin/generate [--watch]`      | Regenerate the generated files; `--watch` keeps them current                    |
 | `bin/build`                   | Build what the repo ships                                                       |
+| `bin/docs [--serve\|--check]` | Build the docs; `--serve` serves them, `--check` checks them                    |
 | `bin/check`                   | `bin/lint --fix`, `bin/typecheck`, `bin/test`: run before calling a change done |
 | `bin/ci`                      | Run exactly what CI runs, without fixes: run before pushing                     |
 
@@ -23,12 +24,13 @@ Everything runs through its `bin/` script, never a tool directly (`rake`, `ruboc
 - Namespaces are compact (`module Bearings::Report`), except `lib/bearings/version.rb`, which the gemspec loads before anything else and the entry point `require_relative`s.
 - `test/` mirrors `lib/`: `test/bearings/report_test.rb` tests `lib/bearings/report.rb`. Fixtures go in `test/fixtures/<topic>/`.
 - `sig/generated/` holds the signatures `bin/generate` writes from `lib/`'s inline annotations, `sig/manual/` the hand-written ones, mirroring `lib/`, and `sig/_private/` stubs for gaps in other gems' signatures.
+- `docs/` holds bearings' own guides and `docs-site/` builds them with bearings: its manifest, and an example layout, landing page and stylesheet the gem never ships.
 - The gemspec ships `lib/`, `sig/`, `README.md`, `CHANGELOG.md` and `LICENSE`. `bin/build` fails when the gem leaves out a file in `lib/` or `sig/`, then installs the built gem into an empty `GEM_HOME` and loads every file.
 
 ## Releasing
 
 - release-please keeps a release PR open that bumps `VERSION` in `lib/bearings/version.rb` and `Gemfile.lock`, and writes the `CHANGELOG.md` section, from the PR titles merged since the last release. Never edit the version or `CHANGELOG.md` by hand.
-- Merging the release PR tags the release, and `.github/workflows/release.yml` runs `bin/ci`, then publishes the gem to RubyGems with trusted publishing from the `release` environment.
+- Merging the release PR tags the release, and `.github/workflows/release.yml` runs `bin/ci`, then publishes the gem to RubyGems with trusted publishing from the `release` environment. It then calls `.github/workflows/docs.yml`, which deploys `_site/` to the `gh-pages` branch; run that workflow by hand to redeploy between releases.
 
 ## Code style
 
