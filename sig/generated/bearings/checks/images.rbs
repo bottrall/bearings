@@ -1,0 +1,59 @@
+# Generated from lib/bearings/checks/images.rb with RBS::Inline
+
+module Bearings::Checks::Images
+  REMOTE: Regexp
+
+  EXTENSIONS: Array[String]
+
+  # @rbs site: Bearings::Site
+  # @rbs images: Hash[String, String]
+  # @rbs watched: Array[String]
+  # @rbs limit_kb: Integer
+  # @rbs return: Array[Bearings::Problem]
+  def call: (site: Bearings::Site, images: Hash[String, String], watched: Array[String], limit_kb: Integer) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs file: String
+  # @rbs image: Bearings::Document::Image
+  # @rbs images: Hash[String, String]
+  # @rbs limit_kb: Integer
+  # @rbs return: Array[Bearings::Problem]
+  def shown: (String file, Bearings::Document::Image image, Hash[String, String] images, Integer limit_kb) -> Array[Bearings::Problem]
+
+  # @rbs watched: Array[String]
+  # @rbs used: Array[String]
+  # @rbs return: Array[Bearings::Problem]
+  def unused: (Array[String] watched, Array[String] used) -> Array[Bearings::Problem]
+
+  # @rbs file: String
+  # @rbs image: Bearings::Document::Image
+  # @rbs return: Bearings::Problem
+  def undescribed: (String file, Bearings::Document::Image image) -> Bearings::Problem
+
+  # @rbs file: String
+  # @rbs image: Bearings::Document::Image
+  # @rbs path: String
+  # @rbs return: Bearings::Problem
+  def missing: (String file, Bearings::Document::Image image, String path) -> Bearings::Problem
+
+  # @rbs file: String
+  # @rbs image: Bearings::Document::Image
+  # @rbs size_kb: Integer
+  # @rbs limit_kb: Integer
+  # @rbs return: Bearings::Problem
+  def oversized: (String file, Bearings::Document::Image image, Integer size_kb, Integer limit_kb) -> Bearings::Problem
+
+  # @rbs file: String
+  # @rbs image: Bearings::Document::Image
+  # @rbs return: Bearings::Problem
+  def remote: (String file, Bearings::Document::Image image) -> Bearings::Problem
+
+  # @rbs level: :error | :warning
+  # @rbs file: String
+  # @rbs line: Integer
+  # @rbs message: String
+  # @rbs hint: String
+  # @rbs return: Bearings::Problem
+  def problem: (level: :error | :warning, file: String, line: Integer, message: String, hint: String) -> Bearings::Problem
+end

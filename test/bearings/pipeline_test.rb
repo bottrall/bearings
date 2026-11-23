@@ -112,6 +112,10 @@ describe Bearings::Pipeline do
       )
     end
 
+    it 'reports an image with no alt text' do
+      assert_equal ['image'], check_defaults(source: "# Start\n\n![](flow.gif)\n").map(&:check)
+    end
+
     it 'reports a redirect to a page the site does not have' do
       assert_equal ['redirect'], check_defaults(redirect_to: '/guides/gone/').map(&:check)
     end
