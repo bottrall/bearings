@@ -1,13 +1,13 @@
 # Generated from lib/bearings/images.rb with RBS::Inline
 
 module Bearings::Images
-  SOURCE_URL: Regexp
+  # A src is one URL. A srcset has a URL per candidate, and HTML lets that URL hold a comma that neither starts
+  # nor ends it, as a data: URI or a `w_100,h_100` path does.
+  SOURCE_URLS: Hash[String, Regexp]
 
   TAG: Regexp
 
   ATTRIBUTE: Regexp
-
-  SOURCE_ATTRIBUTES: Array[String]
 
   TAG_END: Regexp
 

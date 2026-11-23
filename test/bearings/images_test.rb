@@ -87,6 +87,58 @@ describe Bearings::Images do
   end
 
   describe '.html' do
+    it 'leaves a remote image as it is' do
+      assert_equal '<img src="https://cdn.example/flow.gif" alt="Flow" />',
+                   html('<img src="https://cdn.example/flow.gif" alt="Flow" />', { 'docs/flow.gif' => gif(3, 2) })
+    end
+
+    it 'leaves a remote image whose URL has a comma as it is' do
+      assert_equal '<img src="https://cdn.example/w_100,h_100/flow.gif" alt="Flow" />',
+                   html('<img src="https://cdn.example/w_100,h_100/flow.gif" alt="Flow" />')
+    end
+
+    it 'leaves a data: URI image as it is' do
+      assert_equal '<img src="data:image/png;base64,iVBORw0KGgo/AAA+B,CCC=" alt="Flow" />',
+                   html('<img src="data:image/png;base64,iVBORw0KGgo/AAA+B,CCC=" alt="Flow" />')
+    end
+
+    it 'points the srcset of an <img> with no src at its asset, adding nothing' do
+      assert_equal '<img srcset="/assets/docs/flow.gif 2x" alt="Flow" />',
+                   html('<img srcset="flow.gif 2x" alt="Flow" />', { 'docs/flow.gif' => gif(3, 2) })
+    end
+
+    it 'leaves an attribute other than src and srcset as it is' do
+      assert_equal '<img src="https://cdn.example/flow.gif" alt="a.png" />',
+                   html('<img src="https://cdn.example/flow.gif" alt="a.png" />')
+    end
+
+    it 'points each source in a <picture> at its asset, sizing only the <img>' do
+      source = <<~HTML
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="dark.gif 1x, dark@2x.gif 2x" />
+          <img src="light.gif" alt="Flow" />
+        </picture>
+      HTML
+      images = { 'docs/dark.gif' => gif(3, 2), 'docs/light.gif' => gif(3, 2) }
+
+      assert_equal <<~HTML, html(source, images)
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="/assets/docs/dark.gif 1x, /assets/docs/dark@2x.gif 2x" />
+          <img src="/assets/docs/light.gif" alt="Flow" width="3" height="2" loading="lazy" />
+        </picture>
+      HTML
+    end
+
+    it 'keeps a srcset URL with a comma whole' do
+      assert_equal '<source srcset="/assets/docs/w_100,h_100/flow.gif 2x, /assets/docs/flow.gif 1x" />',
+                   html('<source srcset="w_100,h_100/flow.gif 2x, flow.gif 1x" />')
+    end
+
+    it 'keeps a src with a comma whole' do
+      assert_equal '<img src="/assets/docs/a,b.gif" alt="Flow" width="3" height="2" loading="lazy" />',
+                   html('<img src="a,b.gif" alt="Flow" />', { 'docs/a,b.gif' => gif(3, 2) })
+    end
+
     it 'points an <img> at its asset, sized from its file, loading lazily' do
       assert_equal '<p><img src="/assets/docs/images/flow.gif" alt="Flow" width="3" height="2" loading="lazy" /></p>',
                    html('<p><img src="images/flow.gif" alt="Flow" /></p>', { 'docs/images/flow.gif' => gif(3, 2) })
@@ -110,38 +162,6 @@ describe Bearings::Images do
     it 'keeps the loading the guide gave an image' do
       assert_equal '<img src="/assets/docs/flow.gif" loading="eager" width="3" height="2" />',
                    html('<img src="flow.gif" loading="eager" />', { 'docs/flow.gif' => gif(3, 2) })
-    end
-
-    it 'leaves a remote image as it is' do
-      assert_equal '<img src="https://cdn.example/flow.gif" alt="Flow" />',
-                   html('<img src="https://cdn.example/flow.gif" alt="Flow" />', { 'docs/flow.gif' => gif(3, 2) })
-    end
-
-    it 'points each source in a <picture> at its asset, sizing only the <img>' do
-      source = <<~HTML
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="dark.gif 1x, dark@2x.gif 2x" />
-          <img src="light.gif" alt="Flow" />
-        </picture>
-      HTML
-      images = { 'docs/dark.gif' => gif(3, 2), 'docs/light.gif' => gif(3, 2) }
-
-      assert_equal <<~HTML, html(source, images)
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="/assets/docs/dark.gif 1x, /assets/docs/dark@2x.gif 2x" />
-          <img src="/assets/docs/light.gif" alt="Flow" width="3" height="2" loading="lazy" />
-        </picture>
-      HTML
-    end
-
-    it 'points the srcset of an <img> with no src at its asset, adding nothing' do
-      assert_equal '<img srcset="/assets/docs/flow.gif 2x" alt="Flow" />',
-                   html('<img srcset="flow.gif 2x" alt="Flow" />', { 'docs/flow.gif' => gif(3, 2) })
-    end
-
-    it 'leaves an attribute other than src and srcset as it is' do
-      assert_equal '<img src="https://cdn.example/flow.gif" alt="a.png" />',
-                   html('<img src="https://cdn.example/flow.gif" alt="a.png" />')
     end
   end
 end

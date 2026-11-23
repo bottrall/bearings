@@ -5,10 +5,11 @@ require 'pathname'
 module Bearings::Images
   extend self
 
-  SOURCE_URL = /(?:\A|,)\s*\K[^\s,]+/ #: Regexp
+  # A src is one URL. A srcset has a URL per candidate, and HTML lets that URL hold a comma that neither starts
+  # nor ends it, as a data: URI or a `w_100,h_100` path does.
+  SOURCE_URLS = { 'src' => /\A.+\z/, 'srcset' => /(?:\A|,)\s*\K[^\s,]\S*?(?=,*(?:\s|\z))/ }.freeze #: Hash[String, Regexp]
   TAG = /<(?<name>img|source)\s[^>]*>/ #: Regexp
   ATTRIBUTE = /(?<=\s)(?<name>[^\s=]+)="(?<value>[^"]*)"/ #: Regexp
-  SOURCE_ATTRIBUTES = %w[src srcset].freeze #: Array[String]
   TAG_END = %r{\s*/?>\z} #: Regexp
 
   # @rbs path: String
@@ -29,8 +30,8 @@ module Bearings::Images
   # @rbs images: Hash[String, String]
   # @rbs return: Array[Bearings::OutputFile]
   def call(site, images)
-    paths(site).select { |path| images.key?(path) }.map do |path|
-      Bearings::OutputFile.new(path: url(path).delete_prefix('/'), content: Pathname(path))
+    paths(site).filter_map do |path|
+      Bearings::OutputFile.new(path: url(path).delete_prefix('/'), content: Pathname(path)) if images.key?(path)
     end
   end
 
@@ -58,9 +59,10 @@ module Bearings::Images
     tag.gsub(ATTRIBUTE) do |attribute|
       match = Regexp.last_match #: MatchData
       name = match[:name].to_s
-      next attribute unless SOURCE_ATTRIBUTES.include?(name)
+      pattern = SOURCE_URLS.fetch(name, nil)
+      next attribute unless pattern
 
-      urls = match[:value].to_s.gsub(SOURCE_URL) do |source|
+      urls = match[:value].to_s.gsub(pattern) do |source|
         Bearings::RepoPath.resolve(from, source)&.then { |path| url(path) } || source
       end
       %(#{name}="#{urls}")

@@ -180,8 +180,8 @@ module Bearings::Kramdown
   def html_images(element, line)
     # A <source> takes no alt text: the <img> in its <picture> describes it.
     alt = element.attr['alt'].to_s if element.value == 'img'
-    urls = element.attr.values_at('src', 'srcset').compact.flat_map do |value|
-      value.scan(Bearings::Images::SOURCE_URL) #: Array[String]
+    urls = Bearings::Images::SOURCE_URLS.flat_map do |name, pattern|
+      element.attr.fetch(name, '').scan(pattern) #: Array[String]
     end
     urls.map { |src| Bearings::Document::Image.new(src:, alt:, line:) }
   end

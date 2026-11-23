@@ -161,6 +161,16 @@ describe Bearings::Kramdown do
       assert_equal %w[a.png a.png a@2x.png], document(source).images.map(&:src)
     end
 
+    it 'lists a raw src with a comma as one URL' do
+      assert_equal %w[a,b.png], document(%(# Title\n\n<img src="a,b.png" alt="A">\n)).images.map(&:src)
+    end
+
+    it 'keeps a srcset URL with a comma whole' do
+      source = %(# Title\n\n<source srcset="w_100,h_100/a.png 2x, a.png 1x">\n)
+
+      assert_equal %w[w_100,h_100/a.png a.png], document(source).images.map(&:src)
+    end
+
     it "lists a <picture>'s sources, giving a <source> no alt text" do
       source = <<~MD
         # Title

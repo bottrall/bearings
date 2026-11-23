@@ -254,11 +254,21 @@ describe Bearings::MarkdownCopies do
         )
       end
 
+      it 'points a raw src with a comma at its asset whole' do
+        assert_equal %(# Start\n\n<img src="/assets/docs/a,b.png">\n),
+                     start(%(<img src="a,b.png">\n), image('a,b.png'), url: nil)
+      end
+
       it 'points each URL in a srcset at its asset, keeping its descriptor' do
         assert_equal(
           %(# Start\n\n<source srcset="/assets/docs/dark.png 1x, /assets/docs/dark@2x.png 2x">\n),
           start(%(<source srcset="dark.png 1x, dark@2x.png 2x">\n), image('dark.png'), image('dark@2x.png'), url: nil)
         )
+      end
+
+      it 'points a srcset URL with a comma at its asset whole' do
+        assert_equal %(# Start\n\n<source srcset="/assets/docs/w_100,h_100/dark.png 2x">\n),
+                     start(%(<source srcset="w_100,h_100/dark.png 2x">\n), image('w_100,h_100/dark.png'), url: nil)
       end
 
       it 'leaves a src as written when kramdown found no image there' do

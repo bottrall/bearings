@@ -29,5 +29,9 @@ describe Bearings::RepoPath do
     it 'gives nil for a path that climbs out of the repo' do
       assert_nil Bearings::RepoPath.resolve('docs/START.md', '../../secrets/key.png')
     end
+
+    it 'gives nil for the folder above the repo' do
+      assert_nil Bearings::RepoPath.resolve('START.md', '..')
+    end
   end
 end

@@ -7,7 +7,7 @@ module Bearings::MarkdownCopies
   #   type rewrite = [String, Integer, String]
 
   # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
-  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)|(?<attribute>\ssrc(?:set)?=["'])(?<value>[^"'\n]*)/ #: Regexp
+  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)|(?<attribute>\s(?<source>src|srcset)=["'])(?<value>[^"'\n]*)/ #: Regexp
   DEFINITION = /\A(?<lead> {0,3}\[(?!\^)[^\]\n]+\]:[ \t]*<?)(?<destination>[^\s<>]+)/ #: Regexp
 
   # @rbs site: Bearings::Site
@@ -99,7 +99,8 @@ module Bearings::MarkdownCopies
     rewritten = line.gsub(INLINE) do
       match = Regexp.last_match #: MatchData
       if match[:attribute]
-        urls = match[:value].to_s.gsub(Bearings::Images::SOURCE_URL) do |destination|
+        pattern = Bearings::Images::SOURCE_URLS.fetch(match[:source].to_s)
+        urls = match[:value].to_s.gsub(pattern) do |destination|
           url, left = take(left, destination, number, breaks)
           url || destination
         end

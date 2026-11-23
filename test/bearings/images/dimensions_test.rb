@@ -14,28 +14,28 @@ describe Bearings::Images::Dimensions do
   def size(bytes) = Bearings::Images::Dimensions.call(bytes)
 
   describe '.call' do
-    it "reads a PNG's width and height from its header" do
-      assert_equal [640, 480], size(png([13, 'IHDR', 640, 480].pack('Na4N2')))
-    end
-
     it 'gives nil for a PNG cut off before its size' do
       assert_nil size(png([13].pack('N')))
     end
 
-    it "reads a GIF's width and height from its header" do
-      assert_equal [640, 480], size("GIF89a#{[640, 480].pack('v2')}")
+    it "reads a PNG's width and height from its header" do
+      assert_equal [640, 480], size(png([13, 'IHDR', 640, 480].pack('Na4N2')))
     end
 
     it 'gives nil for a GIF cut off before its size' do
       assert_nil size('GIF87a')
     end
 
-    it "reads a JPEG's width and height from its frame header" do
-      assert_equal [640, 480], size(jpeg(frame))
+    it "reads a GIF's width and height from its header" do
+      assert_equal [640, 480], size("GIF89a#{[640, 480].pack('v2')}")
     end
 
-    it 'reads the frame header of a progressive JPEG' do
-      assert_equal [640, 480], size(jpeg(frame(0xC2)))
+    it 'gives nil for a JPEG with no frame header' do
+      assert_nil size(jpeg(segment(0xE0, "JFIF\x00")))
+    end
+
+    it 'gives nil for a JPEG whose next segment has no marker' do
+      assert_nil size(jpeg("\x00" * 12))
     end
 
     it 'skips the segments before the frame header' do
@@ -46,12 +46,12 @@ describe Bearings::Images::Dimensions do
       assert_equal [640, 480], size(jpeg(segment(0xC4, "\x00" * 20), frame))
     end
 
-    it 'gives nil for a JPEG with no frame header' do
-      assert_nil size(jpeg(segment(0xE0, "JFIF\x00")))
+    it "reads a JPEG's width and height from its frame header" do
+      assert_equal [640, 480], size(jpeg(frame))
     end
 
-    it 'gives nil for a JPEG whose next segment has no marker' do
-      assert_nil size(jpeg("\x00" * 12))
+    it 'reads the frame header of a progressive JPEG' do
+      assert_equal [640, 480], size(jpeg(frame(0xC2)))
     end
 
     it "reads an SVG's width and height" do
