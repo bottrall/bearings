@@ -3,31 +3,86 @@
 module Bearings::Rake
   MANIFEST: String
 
+  SITE: String
+
+  SIG: String
+
+  LAYOUT: String
+
+  LANDING: String
+
   # @rbs manifest: String
   # @rbs http: Bearings::_HttpClient
+  # @rbs outputs: Array[Bearings::Pipeline::output]
+  # @rbs checks: Array[Bearings::Pipeline::check]
   # @rbs return: void
-  def install: (?manifest: String, ?http: Bearings::_HttpClient) -> void
+  def install: (?manifest: String, ?http: Bearings::_HttpClient, ?outputs: Array[Bearings::Pipeline::output], ?checks: Array[Bearings::Pipeline::check]) -> void
 
   private
 
-  # @rbs manifest: String
+  # @rbs name: String
+  # @rbs description: String
+  # @rbs &problems: () -> Array[Bearings::Problem]
+  # @rbs return: void
+  def define: (String name, String description) { () -> Array[Bearings::Problem] } -> void
+
+  # @rbs path: String
+  # @rbs outputs: Array[Bearings::Pipeline::output]
+  # @rbs checks: Array[Bearings::Pipeline::check]
+  # @rbs return: Array[Bearings::Problem]
+  def build: (String path, Array[Bearings::Pipeline::output] outputs, Array[Bearings::Pipeline::check] checks) -> Array[Bearings::Problem]
+
+  # @rbs path: String
   # @rbs http: Bearings::_HttpClient
   # @rbs return: Array[Bearings::Problem]
-  def external: (String manifest, Bearings::_HttpClient http) -> Array[Bearings::Problem]
+  def external: (String path, Bearings::_HttpClient http) -> Array[Bearings::Problem]
 
   # @rbs path: String
-  # @rbs return: [Bearings::Site?, Array[Bearings::Problem]]
-  def site: (String path) -> [ Bearings::Site?, Array[Bearings::Problem] ]
+  # @rbs return: [Bearings::Pipeline::Input?, Array[Bearings::Problem]]
+  def input: (String path) -> [ Bearings::Pipeline::Input?, Array[Bearings::Problem] ]
 
   # @rbs path: String
-  # @rbs return: Bearings::Problem
-  def missing: (String path) -> Bearings::Problem
+  # @rbs return: [Bearings::Manifest?, Array[Bearings::Problem]]
+  def manifest: (String path) -> [ Bearings::Manifest?, Array[Bearings::Problem] ]
 
   # @rbs manifest: Bearings::Manifest
   # @rbs return: Hash[String, String]
-  def files: (Bearings::Manifest manifest) -> Hash[String, String]
+  def sources: (Bearings::Manifest manifest) -> Hash[String, String]
+
+  # @rbs manifest: Bearings::Manifest
+  # @rbs sources: Hash[String, String]
+  # @rbs return: [Bearings::Site, Array[Bearings::Problem]]
+  def site: (Bearings::Manifest manifest, Hash[String, String] sources) -> [ Bearings::Site, Array[Bearings::Problem] ]
+
+  # @rbs folders: Array[String]
+  # @rbs return: Array[String]
+  def watched: (Array[String] folders) -> Array[String]
+
+  # @rbs dir: String
+  # @rbs read: Array[String]
+  # @rbs return: Hash[String, Pathname]
+  def assets: (String dir, Array[String] read) -> Hash[String, Pathname]
+
+  # @rbs namespaces: Array[String]
+  # @rbs return: Set[String]
+  def declared: (Array[String] namespaces) -> Set[String]
+
+  # @rbs path: String
+  # @rbs return: Bearings::Problem
+  def no_manifest: (String path) -> Bearings::Problem
+
+  # @rbs path: String
+  # @rbs return: Bearings::Problem
+  def no_template: (String path) -> Bearings::Problem
+
+  # @rbs path: String
+  # @rbs check: String
+  # @rbs hint: String
+  # @rbs return: Bearings::Problem
+  def not_found: (String path, String check, String hint) -> Bearings::Problem
 
   # @rbs problems: Array[Bearings::Problem]
+  # @rbs format: String?
   # @rbs return: void
-  def finish: (Array[Bearings::Problem] problems) -> void
+  def finish: (Array[Bearings::Problem] problems, String? format) -> void
 end

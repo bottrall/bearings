@@ -1,0 +1,8 @@
+<!doctype html>
+<title><%= site.name %></title>
+<%- groups.each do |group| -%>
+<h2><%= group.label %></h2>
+<%- group.pages.each do |page| -%>
+<a href="<%= page.url %>"><%= page.title %></a> <%= page.description %>
+<%- end -%>
+<%- end -%>

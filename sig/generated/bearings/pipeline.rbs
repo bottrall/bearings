@@ -1,0 +1,52 @@
+# Generated from lib/bearings/pipeline.rb with RBS::Inline
+
+module Bearings::Pipeline
+  type result = [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
+
+  type output = ^(Input) -> result
+
+  type check = ^(Input, Array[Bearings::OutputFile]) -> Array[Bearings::Problem]
+
+  class Input < Data
+    attr_reader manifest(): Bearings::Manifest
+
+    attr_reader manifest_file(): String
+
+    attr_reader site(): Bearings::Site
+
+    attr_reader sources(): Hash[String, String]
+
+    attr_reader watched(): Array[String]
+
+    attr_reader layout(): String?
+
+    attr_reader landing(): String?
+
+    attr_reader assets(): Hash[String, Pathname]
+
+    attr_reader declared(): Set[String]
+
+    def self.new: (Bearings::Manifest manifest, String manifest_file, Bearings::Site site, Hash[String, String] sources, Array[String] watched, String? layout, String? landing, Hash[String, Pathname] assets, Set[String] declared) -> instance
+                | (manifest: Bearings::Manifest, manifest_file: String, site: Bearings::Site, sources: Hash[String, String], watched: Array[String], layout: String?, landing: String?, assets: Hash[String, Pathname], declared: Set[String]) -> instance
+
+    def self.members: () -> [ :manifest, :manifest_file, :site, :sources, :watched, :layout, :landing, :assets, :declared ]
+
+    def members: () -> [ :manifest, :manifest_file, :site, :sources, :watched, :layout, :landing, :assets, :declared ]
+  end
+
+  OUTPUTS: Array[output]
+
+  CHECKS: Array[check]
+
+  # @rbs input: Input
+  # @rbs outputs: Array[output]
+  # @rbs checks: Array[check]
+  # @rbs return: result
+  def call: (Input input, outputs: Array[output], checks: Array[check]) -> result
+
+  private
+
+  # @rbs files: Array[Bearings::OutputFile]
+  # @rbs return: result
+  def files_only: (Array[Bearings::OutputFile] files) -> result
+end

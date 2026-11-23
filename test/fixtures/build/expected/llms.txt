@@ -1,0 +1,8 @@
+# Bearings
+
+> A themeless docs engine
+
+## Start here
+
+- [Start](https://bearings.example/guides/start.md): Where to begin
+- [Manifest](https://bearings.example/guides/reference/manifest.md): Every manifest key
