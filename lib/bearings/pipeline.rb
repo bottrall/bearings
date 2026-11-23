@@ -13,6 +13,7 @@ module Bearings::Pipeline
     :manifest_file, #: String
     :site, #: Bearings::Site
     :sources, #: Hash[String, String]
+    :images, #: Hash[String, String]
     :watched, #: Array[String]
     :layout, #: String?
     :landing, #: String?
@@ -24,8 +25,11 @@ module Bearings::Pipeline
     lambda do |input|
       layout = input.layout
       landing = input.landing
-      layout && landing ? Bearings::HtmlPages.call(input.site, layout:, landing:, assets: input.assets) : files_only([])
+      return files_only([]) unless layout && landing
+
+      Bearings::HtmlPages.call(input.site, layout:, landing:, assets: input.assets, images: input.images)
     end,
+    ->(input) { files_only(Bearings::Images.call(input.site, input.images)) },
     ->(input) { files_only(Bearings::MarkdownCopies.call(input.site, input.sources)) },
     lambda do |input|
       copies = Bearings::MarkdownCopies.call(input.site, input.sources)
