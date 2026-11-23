@@ -1,0 +1,15 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Manifest::Redirect`.
+class Bearings::Manifest::Redirect < Data
+  attr_reader from: String
+
+  attr_reader to: String
+
+  attr_reader line: Integer
+
+  def self.new: (String from, String to, Integer line) -> instance
+              | (from: String, to: String, line: Integer) -> instance
+
+  def self.members: () -> [ :from, :to, :line ]
+
+  def members: () -> [ :from, :to, :line ]
+end
