@@ -1,0 +1,24 @@
+# Generated from lib/bearings/net_http.rb with RBS::Inline
+
+module Bearings::NetHttp
+  REDIRECTS: Integer
+
+  TIMEOUT: Numeric
+
+  # @rbs url: String
+  # @rbs timeout: Numeric
+  # @rbs return: Integer | Bearings::Checks::ExternalLinks::Failure
+  def status: (String url, ?timeout: Numeric) -> (Integer | Bearings::Checks::ExternalLinks::Failure)
+
+  private
+
+  # @rbs uri: URI::Generic
+  # @rbs redirects: Integer
+  # @rbs timeout: Numeric
+  # @rbs return: Integer | Bearings::Checks::ExternalLinks::Failure
+  def follow: (URI::Generic uri, Integer redirects, Numeric timeout) -> (Integer | Bearings::Checks::ExternalLinks::Failure)
+
+  # @rbs reason: String
+  # @rbs return: Bearings::Checks::ExternalLinks::Failure
+  def failure: (String reason) -> Bearings::Checks::ExternalLinks::Failure
+end

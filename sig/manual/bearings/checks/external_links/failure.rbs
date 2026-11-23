@@ -1,0 +1,13 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Checks::ExternalLinks::Failure`.
+class Bearings::Checks::ExternalLinks::Failure < Data
+  attr_reader reason: String
+
+  attr_reader timed_out: bool
+
+  def self.new: (String reason, bool timed_out) -> instance
+              | (reason: String, timed_out: bool) -> instance
+
+  def self.members: () -> [ :reason, :timed_out ]
+
+  def members: () -> [ :reason, :timed_out ]
+end

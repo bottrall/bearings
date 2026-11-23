@@ -1,0 +1,63 @@
+# Generated from lib/bearings/markdown_copies.rb with RBS::Inline
+
+module Bearings::MarkdownCopies
+  type rewrite = [ String, Integer, String ]
+
+  SCHEME: Regexp
+
+  # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
+  INLINE: Regexp
+
+  DEFINITION: Regexp
+
+  # @rbs site: Bearings::Site
+  # @rbs files: Hash[String, String]
+  # @rbs return: Array[Bearings::OutputFile]
+  def call: (Bearings::Site site, Hash[String, String] files) -> Array[Bearings::OutputFile]
+
+  private
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs copies: Hash[String, String]
+  # @rbs assets: String
+  # @rbs return: Array[rewrite]
+  def rewrites: (Bearings::Site::Page page, Hash[String, String] copies, String assets) -> Array[rewrite]
+
+  # @rbs destination: String
+  # @rbs return: bool
+  def relative?: (String destination) -> bool
+
+  # @rbs folder: String
+  # @rbs path: String
+  # @rbs return: String
+  def in_repo: (String folder, String path) -> String
+
+  # @rbs source: String
+  # @rbs document: Bearings::Document
+  # @rbs rewrites: Array[rewrite]
+  # @rbs return: String
+  def copy: (String source, Bearings::Document document, Array[rewrite] rewrites) -> String
+
+  # @rbs lines: Array[String]
+  # @rbs document: Bearings::Document
+  # @rbs return: Set[Integer]
+  def breaks: (Array[String] lines, Bearings::Document document) -> Set[Integer]
+
+  # @rbs from: Integer
+  # @rbs to: Integer
+  # @rbs breaks: Set[Integer]
+  # @rbs return: bool
+  def same_paragraph?: (Integer from, Integer to, Set[Integer] breaks) -> bool
+
+  # @rbs line: String
+  # @rbs rewrites: Array[rewrite]
+  # @rbs return: String
+  def definition: (String line, Array[rewrite] rewrites) -> String
+
+  # @rbs line: String
+  # @rbs number: Integer
+  # @rbs unused: Array[rewrite]
+  # @rbs breaks: Set[Integer]
+  # @rbs return: [String, Array[rewrite]]
+  def inline: (String line, Integer number, Array[rewrite] unused, Set[Integer] breaks) -> [ String, Array[rewrite] ]
+end

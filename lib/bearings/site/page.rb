@@ -17,3 +17,11 @@ Bearings::Site::Page = Data.define(
   :document,
   :extras
 )
+
+# Reopened because rbs-inline reads nothing in a block given to `Data.define` on a compact constant.
+class Bearings::Site::Page
+  # @rbs return: bool
+  def diagrams?
+    document.diagrams.any?
+  end
+end
