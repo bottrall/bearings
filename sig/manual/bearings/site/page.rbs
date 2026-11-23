@@ -1,0 +1,39 @@
+# rbs-inline reads `Data.define` only when assigned to a bare constant, not to the compact `Bearings::Site::Page`.
+class Bearings::Site::Page < Data
+  attr_reader title: String
+
+  attr_reader slug: String
+
+  attr_reader description: String?
+
+  attr_reader group_label: String
+
+  attr_reader featured: bool
+
+  attr_reader num: String
+
+  attr_reader url: String
+
+  attr_reader markdown_url: String
+
+  attr_reader canonical_url: String?
+
+  attr_reader source_path: String
+
+  attr_reader edit_url: String?
+
+  attr_reader previous_slug: String?
+
+  attr_reader next_slug: String?
+
+  attr_reader document: Bearings::Document
+
+  attr_reader extras: Hash[String, untyped]
+
+  def self.new: (String title, String slug, String? description, String group_label, bool featured, String num, String url, String markdown_url, String? canonical_url, String source_path, String? edit_url, String? previous_slug, String? next_slug, Bearings::Document document, Hash[String, untyped] extras) -> instance
+              | (title: String, slug: String, description: String?, group_label: String, featured: bool, num: String, url: String, markdown_url: String, canonical_url: String?, source_path: String, edit_url: String?, previous_slug: String?, next_slug: String?, document: Bearings::Document, extras: Hash[String, untyped]) -> instance
+
+  def self.members: () -> [ :title, :slug, :description, :group_label, :featured, :num, :url, :markdown_url, :canonical_url, :source_path, :edit_url, :previous_slug, :next_slug, :document, :extras ]
+
+  def members: () -> [ :title, :slug, :description, :group_label, :featured, :num, :url, :markdown_url, :canonical_url, :source_path, :edit_url, :previous_slug, :next_slug, :document, :extras ]
+end
