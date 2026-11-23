@@ -18,6 +18,9 @@ target :lib do
   library 'psych'
   library 'prism'
   library 'cgi-escape'
+  library 'net-http'
+  library 'openssl'
+  library 'socket'
 
   configure_code_diagnostics(D::Ruby.all_error)
 end

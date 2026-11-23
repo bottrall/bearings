@@ -1,0 +1,8 @@
+# rbs-inline drops `extend self`, so the module's methods are declared on it here.
+module Bearings::Checks::ExternalLinks
+  extend Bearings::Checks::ExternalLinks
+end
+
+interface Bearings::_HttpClient
+  def status: (String url) -> (Integer | Bearings::Checks::ExternalLinks::Failure)
+end

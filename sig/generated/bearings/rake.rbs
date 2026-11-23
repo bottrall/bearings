@@ -1,0 +1,33 @@
+# Generated from lib/bearings/rake.rb with RBS::Inline
+
+module Bearings::Rake
+  MANIFEST: String
+
+  # @rbs manifest: String
+  # @rbs http: Bearings::_HttpClient
+  # @rbs return: void
+  def install: (?manifest: String, ?http: Bearings::_HttpClient) -> void
+
+  private
+
+  # @rbs manifest: String
+  # @rbs http: Bearings::_HttpClient
+  # @rbs return: Array[Bearings::Problem]
+  def external: (String manifest, Bearings::_HttpClient http) -> Array[Bearings::Problem]
+
+  # @rbs path: String
+  # @rbs return: [Bearings::Site?, Array[Bearings::Problem]]
+  def site: (String path) -> [ Bearings::Site?, Array[Bearings::Problem] ]
+
+  # @rbs path: String
+  # @rbs return: Bearings::Problem
+  def missing: (String path) -> Bearings::Problem
+
+  # @rbs manifest: Bearings::Manifest
+  # @rbs return: Hash[String, String]
+  def files: (Bearings::Manifest manifest) -> Hash[String, String]
+
+  # @rbs problems: Array[Bearings::Problem]
+  # @rbs return: void
+  def finish: (Array[Bearings::Problem] problems) -> void
+end
