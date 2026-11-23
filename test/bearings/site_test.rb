@@ -57,7 +57,7 @@ describe Bearings::Site do
       ),
       groups:,
       watch: [],
-      redirects: {},
+      redirects: [],
       outputs: Bearings::Manifest::Outputs.new(llms_full: false),
       checks: Bearings::Manifest::Checks.new(image_limit_kb: 300, external_links: false)
     )
