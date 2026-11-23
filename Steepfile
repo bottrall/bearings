@@ -13,6 +13,7 @@ target :lib do
   collection_config 'rbs_collection.yaml'
 
   library 'json'
+  library 'cgi-escape'
   library 'fileutils'
   library 'psych'
 
