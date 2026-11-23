@@ -9,7 +9,7 @@ describe Bearings::HtmlPages do
 
   def link(href, line) = Bearings::Document::Link.new(href:, line:)
 
-  def page(title, slug, source, body:, links: [], **fields)
+  def page(title, slug, source, body:, links: [], diagrams: [], **fields)
     Bearings::Site::Page.new(
       title:,
       slug:,
@@ -31,7 +31,7 @@ describe Bearings::HtmlPages do
         code_blocks: [],
         code_spans: [],
         images: [],
-        diagrams: [],
+        diagrams:,
         body:
       ),
       extras: {},
@@ -76,8 +76,29 @@ describe Bearings::HtmlPages do
     )
   end
 
-  def site
-    pages = [start, install, manifest_page]
+  def flow = "graph LR\n  a --> b\n"
+
+  def flow_pre = %(<pre class="mermaid">graph LR\n  a --&gt; b\n</pre>\n)
+
+  def flow_page(slug, line)
+    diagram = Bearings::Document::Diagram.new(code: flow, line:)
+    page(slug.capitalize, slug, "docs/#{slug.upcase}.md", body: flow_pre, diagrams: [diagram])
+  end
+
+  def renderer(result = nil)
+    Struct.new(:result, :requested) do
+      def render(source)
+        requested << source
+        result || "<svg>#{source}</svg>"
+      end
+    end.new(result, [])
+  end
+
+  def failing_renderer = renderer(Bearings::HtmlPages::DiagramFailure.new(reason: 'Parse error on line 2'))
+
+  def guide_pages = [start, install, manifest_page]
+
+  def site(pages)
     Bearings::Site.new(
       details: Bearings::Manifest::Site.new(
         name: 'Bearings',
@@ -96,8 +117,8 @@ describe Bearings::HtmlPages do
     )
   end
 
-  def build(layout: '', landing: '', assets: {}, images: {})
-    Bearings::HtmlPages.call(site, layout:, landing:, assets:, images:)
+  def build(layout: '', landing: '', assets: {}, images: {}, pages: guide_pages, diagram_renderer: nil)
+    Bearings::HtmlPages.call(site(pages), layout:, landing:, assets:, images:, diagram_renderer:)
   end
 
   def files(...) = build(...).first
@@ -108,11 +129,20 @@ describe Bearings::HtmlPages do
 
   def guides(layout) = files(layout:).select { |file| file.path.start_with?('guides/') }.map(&:content)
 
-  def guide(slug, layout, images: {})
-    files(layout:, images:).find { |file| file.path == "guides/#{slug}/index.html" }&.content
+  def guide(slug, layout, **options)
+    files(layout:, **options).find { |file| file.path == "guides/#{slug}/index.html" }&.content
   end
 
+  def flow_body(diagram_renderer) = guide('flow', '<%= body %>', pages: [flow_page('flow', 5)], diagram_renderer:)
+
   describe '.call' do
+    it 'gives the renderer the source of each distinct diagram once, across every guide' do
+      drawer = renderer
+      build(pages: [flow_page('flow', 5), flow_page('again', 9)], diagram_renderer: drawer)
+
+      assert_equal [flow], drawer.requested
+    end
+
     it 'writes the landing page, a page at each guide URL, then the assets' do
       assert_equal(
         %w[index.html guides/start/index.html guides/install/index.html guides/reference/manifest/index.html 404.html],
@@ -193,6 +223,18 @@ describe Bearings::HtmlPages do
                       '<img src="/assets/docs/images/flow.gif" alt="Flow" width="3" height="2" loading="lazy" />'
     end
 
+    it 'leaves a diagram for the browser to draw when there is no renderer' do
+      assert_equal flow_pre, flow_body(nil)
+    end
+
+    it 'puts the SVG the renderer draws in place of the diagram' do
+      assert_equal "<svg>#{flow}</svg>\n", flow_body(renderer)
+    end
+
+    it 'leaves a diagram the renderer could not draw for the browser to draw' do
+      assert_equal flow_pre, flow_body(failing_renderer)
+    end
+
     it "gives a page the ids of its guide's h2 headings" do
       assert_equal 'set-up,next', guide('install', '<%= toc.map { |item| item[:id] }.join(",") %>')
     end
@@ -251,6 +293,24 @@ describe Bearings::HtmlPages do
           hint: 'point the link at a guide the manifest lists, or add that guide to the manifest'
         )],
         problems
+      )
+    end
+
+    it 'accepts a diagram the renderer draws' do
+      assert_empty problems(pages: [flow_page('flow', 5)], diagram_renderer: renderer)
+    end
+
+    it "reports a diagram the renderer could not draw, at the diagram's line" do
+      assert_equal(
+        [Bearings::Problem.new(
+          check: 'diagram',
+          level: :error,
+          file: 'docs/FLOW.md',
+          line: 5,
+          message: 'has a diagram the renderer could not draw: Parse error on line 2',
+          hint: 'fix the Mermaid source, or remove the diagram'
+        )],
+        problems(pages: [flow_page('flow', 5)], diagram_renderer: failing_renderer)
       )
     end
   end

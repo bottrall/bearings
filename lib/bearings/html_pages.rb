@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'cgi/escape'
 require 'erb'
 require 'pathname'
 
@@ -8,31 +9,44 @@ module Bearings::HtmlPages
 
   # @rbs!
   #   type toc_entry = { id: String, title: String }
+  #   type drawing = String | Bearings::HtmlPages::DiagramFailure
 
   GUIDE_LINK = /(?<path>[^":]+\.md)(?<fragment>#[^"]*)?/ #: Regexp
   GUIDE_HREF = /href="#{GUIDE_LINK}"/ #: Regexp
   WHOLE_GUIDE_LINK = /\A#{GUIDE_LINK}\z/ #: Regexp
   H2 = %r{<h2 id="([^"]+)"[^>]*>(.*?)</h2>}m #: Regexp
+  DIAGRAM = %r{<pre class="mermaid">(.*?)</pre>}m #: Regexp
 
   # @rbs site: Bearings::Site
   # @rbs layout: String
   # @rbs landing: String
   # @rbs assets: Hash[String, Pathname]
   # @rbs images: Hash[String, String]
+  # @rbs diagram_renderer: Bearings::_DiagramRenderer?
   # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
-  def call(site, layout:, landing:, assets:, images:)
+  def call(site, layout:, landing:, assets:, images:, diagram_renderer: nil)
     by_source = site.pages.to_h { |page| [page.source_path, page] }
     by_slug = site.pages.to_h { |page| [page.slug, page] }
     template = ERB.new(layout, trim_mode: '-')
+    drawn = draw(site.pages, diagram_renderer)
     files = [
       landing_file(site, landing),
-      *site.pages.map { |page| page_file(page, site, template, by_source, by_slug, images) },
+      *site.pages.map { |page| page_file(page, site, template, by_source, by_slug, images, drawn) },
       *assets.map { |path, source| Bearings::OutputFile.new(path:, content: source) }
     ]
-    [files, site.pages.flat_map { |page| unknown_links(page, by_source) }]
+    [files, site.pages.flat_map { |page| unknown_links(page, by_source) + undrawn(page, drawn) }]
   end
 
   private
+
+  # @rbs pages: Array[Bearings::Site::Page]
+  # @rbs renderer: Bearings::_DiagramRenderer?
+  # @rbs return: Hash[String, drawing]
+  def draw(pages, renderer)
+    return {} unless renderer
+
+    pages.flat_map { |page| page.document.diagrams.map(&:code) }.uniq.to_h { |code| [code, renderer.render(code)] }
+  end
 
   # @rbs site: Bearings::Site
   # @rbs return: Hash[Symbol, untyped]
@@ -54,9 +68,10 @@ module Bearings::HtmlPages
   # @rbs by_source: Hash[String, Bearings::Site::Page]
   # @rbs by_slug: Hash[String, Bearings::Site::Page]
   # @rbs images: Hash[String, String]
+  # @rbs drawn: Hash[String, drawing]
   # @rbs return: Bearings::OutputFile
-  def page_file(page, site, layout, by_source, by_slug, images)
-    body = Bearings::Images.html(rewrite_links(page, by_source), page.source_path, images)
+  def page_file(page, site, layout, by_source, by_slug, images, drawn)
+    body = with_drawings(Bearings::Images.html(rewrite_links(page, by_source), page.source_path, images), drawn)
     html = layout.result_with_hash(
       **shared(site),
       page:,
@@ -78,6 +93,17 @@ module Bearings::HtmlPages
       path = match['path'] #: String
       target = by_source.fetch(resolve(page.source_path, path), nil)
       target ? %(href="#{target.url}#{match['fragment']}") : href
+    end
+  end
+
+  # @rbs body: String
+  # @rbs drawn: Hash[String, drawing]
+  # @rbs return: String
+  def with_drawings(body, drawn)
+    body.gsub(DIAGRAM) do |pre|
+      source = Regexp.last_match(1) #: String
+      drawing = drawn[CGI.unescapeHTML(source)]
+      drawing.is_a?(String) ? drawing : pre
     end
   end
 
@@ -110,6 +136,25 @@ module Bearings::HtmlPages
         line: link.line,
         message: "links to `#{link.href}`, which is not a page",
         hint: 'point the link at a guide the manifest lists, or add that guide to the manifest'
+      )
+    end
+  end
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs drawn: Hash[String, drawing]
+  # @rbs return: Array[Bearings::Problem]
+  def undrawn(page, drawn)
+    page.document.diagrams.filter_map do |diagram|
+      failure = drawn[diagram.code]
+      next unless failure.is_a?(Bearings::HtmlPages::DiagramFailure)
+
+      Bearings::Problem.new(
+        check: 'diagram',
+        level: :error,
+        file: page.source_path,
+        line: diagram.line,
+        message: "has a diagram the renderer could not draw: #{failure.reason}",
+        hint: 'fix the Mermaid source, or remove the diagram'
       )
     end
   end

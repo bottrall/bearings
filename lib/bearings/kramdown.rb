@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'cgi/escape'
 require 'kramdown'
 
 module Bearings::Kramdown
@@ -44,7 +45,7 @@ module Bearings::Kramdown
   def html(parsed)
     # GitHub renders an alert only at the top level, never nested in another block.
     root = with_children(parsed.root, parsed.root.children.map { |child| alert(child) })
-    ::Kramdown::Converter::Html.convert(root, parsed.options).first
+    ::Kramdown::Converter::Html.convert(mark_diagrams(root), parsed.options).first
   end
 
   # @rbs element: ::Kramdown::Element
@@ -74,6 +75,37 @@ module Bearings::Kramdown
   def title(label)
     paragraph = ::Kramdown::Element.new(:p, nil, { 'class' => 'alert-title' })
     with_children(paragraph, [::Kramdown::Element.new(:text, label)])
+  end
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs chain: Array[String]
+  # @rbs return: ::Kramdown::Element
+  def mark_diagrams(element, chain = [])
+    return mermaid(element.value) if diagram?(element)
+    return mark_footnote(element, chain) if element.type == :footnote
+
+    with_children(element, element.children.map { |child| mark_diagrams(child, chain) })
+  end
+
+  # @rbs reference: ::Kramdown::Element
+  # @rbs chain: Array[String]
+  # @rbs return: ::Kramdown::Element
+  def mark_footnote(reference, chain)
+    name = reference.options[:name]
+    # kramdown reads a footnote's definition only through the first reference to it that it converts. For a
+    # footnote already on this chain that is the outer reference, so the definition behind this one is never read.
+    return reference if chain.include?(name)
+
+    reference.dup.tap { |copy| copy.value = mark_diagrams(reference.value, [*chain, name]) }
+  end
+
+  # @rbs code: String
+  # @rbs return: ::Kramdown::Element
+  def mermaid(code)
+    pre = ::Kramdown::Element.new(
+      :html_element, 'pre', { 'class' => 'mermaid' }, { category: :block, content_model: :span }
+    )
+    with_children(pre, [::Kramdown::Element.new(:raw, CGI.escapeHTML(code))])
   end
 
   # @rbs element: ::Kramdown::Element
@@ -190,7 +222,7 @@ module Bearings::Kramdown
   # @rbs return: Array[Bearings::Document::Diagram]
   def diagrams(elements)
     elements.filter_map do |element, line|
-      Bearings::Document::Diagram.new(code: element.value, line:) if fence?(element) && diagram?(element)
+      Bearings::Document::Diagram.new(code: element.value, line:) if diagram?(element)
     end
   end
 
@@ -203,6 +235,6 @@ module Bearings::Kramdown
   # @rbs element: ::Kramdown::Element
   # @rbs return: bool
   def diagram?(element)
-    element.options[:lang] == 'mermaid'
+    fence?(element) && element.options[:lang] == 'mermaid'
   end
 end
