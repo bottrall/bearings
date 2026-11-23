@@ -13,7 +13,7 @@ describe Bearings::Checks::ExternalLinks do
   end
 
   def page(source_path, *hrefs)
-    links = hrefs.each_with_index.map { |href, index| Bearings::Document::Link.new(href:, line: index + 3) }
+    links = hrefs.map.with_index(3) { |href, line| Bearings::Document::Link.new(href:, line:) }
     document = Bearings::Document.new(
       title: 'Guide', headings: [], links:, code_blocks: [], images: [], diagrams: [], body: ''
     )
