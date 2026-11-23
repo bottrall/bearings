@@ -314,4 +314,10 @@ describe Bearings::HtmlPages do
       )
     end
   end
+
+  describe '.path' do
+    it "gives the path of a page's HTML file in the site" do
+      assert_equal 'guides/reference/manifest/index.html', Bearings::HtmlPages.path(manifest_page)
+    end
+  end
 end

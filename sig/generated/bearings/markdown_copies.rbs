@@ -3,6 +3,8 @@
 module Bearings::MarkdownCopies
   type rewrite = [ String, Integer, String ]
 
+  CODE_SPAN: Regexp
+
   # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
   INLINE: Regexp
 
@@ -12,6 +14,14 @@ module Bearings::MarkdownCopies
   # @rbs files: Hash[String, String]
   # @rbs return: Array[Bearings::OutputFile]
   def call: (Bearings::Site site, Hash[String, String] files) -> Array[Bearings::OutputFile]
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs return: String
+  def path: (Bearings::Site::Page page) -> String
+
+  # @rbs document: Bearings::Document
+  # @rbs return: Array[Integer]
+  def fenced: (Bearings::Document document) -> Array[Integer]
 
   private
 

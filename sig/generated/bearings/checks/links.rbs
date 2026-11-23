@@ -1,0 +1,123 @@
+# Generated from lib/bearings/checks/links.rb with RBS::Inline
+
+module Bearings::Checks::Links
+  type reference = [ String, String, String, Integer ]
+
+  type located = [ String, Integer ]
+
+  EXTERNAL: Regexp
+
+  ATTRIBUTE: Regexp
+
+  CODE: Regexp
+
+  ID: Regexp
+
+  LINK_HINT: String
+
+  ANCHOR_HINT: String
+
+  # @rbs site: Bearings::Site
+  # @rbs files: Array[Bearings::OutputFile]
+  # @rbs sources: Hash[String, String]
+  # @rbs markdown: Bearings::_Markdown
+  # @rbs layout_file: String
+  # @rbs landing_file: String
+  # @rbs manifest_file: String
+  # @rbs return: Array[Bearings::Problem]
+  def call: (Bearings::Site site, Array[Bearings::OutputFile] files, sources: Hash[String, String], markdown: Bearings::_Markdown, layout_file: String, landing_file: String, manifest_file: String) -> Array[Bearings::Problem]
+
+  # @rbs document: Bearings::Document
+  # @rbs return: Array[located]
+  def written: (Bearings::Document document) -> Array[located]
+
+  # @rbs source: String
+  # @rbs document: Bearings::Document
+  # @rbs return: Array[located]
+  def raw: (String source, Bearings::Document document) -> Array[located]
+
+  # @rbs html: String
+  # @rbs return: Array[String]
+  def ids: (String html) -> Array[String]
+
+  private
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs texts: Hash[String, String]
+  # @rbs guides: Hash[String, Bearings::Site::Page]
+  # @rbs source: String
+  # @rbs layout_file: String
+  # @rbs return: Array[reference]
+  def in_page: (Bearings::Site::Page page, Hash[String, String] texts, Hash[String, Bearings::Site::Page] guides, String source, String layout_file) -> Array[reference]
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs found: Array[located]
+  # @rbs guides: Hash[String, Bearings::Site::Page]
+  # @rbs return: Hash[String, Array[Integer]]
+  def by_form: (Bearings::Site::Page page, Array[located] found, Hash[String, Bearings::Site::Page] guides) -> Hash[String, Array[Integer]]
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs source: String
+  # @rbs guides: Hash[String, Bearings::Site::Page]
+  # @rbs return: Array[String]
+  def rewritten: (Bearings::Site::Page page, String source, Hash[String, Bearings::Site::Page] guides) -> Array[String]
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs from: String
+  # @rbs href: String
+  # @rbs raw_at: Hash[String, Array[Integer]]
+  # @rbs layout_file: String
+  # @rbs return: reference
+  def unwritten: (Bearings::Site::Page page, String from, String href, Hash[String, Array[Integer]] raw_at, String layout_file) -> reference
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs return: Array[String]
+  def images: (Bearings::Site::Page page) -> Array[String]
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs texts: Hash[String, String]
+  # @rbs markdown: Bearings::_Markdown
+  # @rbs return: Array[reference]
+  def in_copy: (Bearings::Site::Page page, Hash[String, String] texts, Bearings::_Markdown markdown) -> Array[reference]
+
+  # @rbs path: String
+  # @rbs texts: Hash[String, String]
+  # @rbs return: Array[String]
+  def in_html: (String path, Hash[String, String] texts) -> Array[String]
+
+  # @rbs html: String
+  # @rbs return: Array[String]
+  def attributes: (String html) -> Array[String]
+
+  # @rbs path: String
+  # @rbs texts: Hash[String, String]
+  # @rbs markdown: Bearings::_Markdown
+  # @rbs return: Array[located]
+  def in_markdown: (String path, Hash[String, String] texts, Bearings::_Markdown markdown) -> Array[located]
+
+  # @rbs reference: reference
+  # @rbs contents: Hash[String, String | Pathname]
+  # @rbs texts: Hash[String, String]
+  # @rbs base: String?
+  # @rbs images: Set[String]
+  # @rbs return: Bearings::Problem?
+  def problem: (reference reference, Hash[String, String | Pathname] contents, Hash[String, String] texts, String? base, Set[String] images) -> Bearings::Problem?
+
+  # @rbs from: String
+  # @rbs path: String
+  # @rbs contents: Hash[String, String | Pathname]
+  # @rbs return: String?
+  def target: (String from, String path, Hash[String, String | Pathname] contents) -> String?
+
+  # @rbs from: String
+  # @rbs return: String
+  def subject: (String from) -> String
+
+  # @rbs file: String
+  # @rbs line: Integer
+  # @rbs check: String
+  # @rbs message: String
+  # @rbs hint: String
+  # @rbs return: Bearings::Problem
+  def failed: (String file, Integer line, String check, String message, String hint) -> Bearings::Problem
+end

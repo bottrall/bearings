@@ -20,13 +20,29 @@ module Bearings::Kramdown
     before, heading, after = source.partition(TITLE)
     return if heading.empty?
 
-    parsed = ::Kramdown::Document.new(before + after, OPTIONS)
+    parse(before + after, heading.delete_prefix('# ').chomp, before.count("\n") + 1)
+  end
+
+  # @rbs source: String
+  # @rbs return: Bearings::Document
+  def whole(source)
+    parse(source, '', nil)
+  end
+
+  private
+
+  # @rbs source: String
+  # @rbs title: String
+  # @rbs title_line: Integer?
+  # @rbs return: Bearings::Document
+  def parse(source, title, title_line)
+    parsed = ::Kramdown::Document.new(source, OPTIONS)
     notes = footnotes(parsed.root).flat_map { |definition| located(definition) }
     # GFM gives ids only to headings in the main tree, so one in a footnote would have none.
     found = located(parsed.root) + notes.reject { |element, _| element.type == :header }
-    elements = in_source(found, before.count("\n") + 1)
+    elements = title_line ? in_source(found, title_line) : found
     Bearings::Document.new(
-      title: heading.delete_prefix('# ').chomp,
+      title:,
       headings: headings(elements),
       links: links(elements),
       code_blocks: code_blocks(elements),
@@ -36,8 +52,6 @@ module Bearings::Kramdown
       body: html(parsed)
     )
   end
-
-  private
 
   # @rbs parsed: ::Kramdown::Document
   # @rbs return: String

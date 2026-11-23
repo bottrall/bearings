@@ -27,6 +27,7 @@ describe Bearings::Pipeline do
     layout: '<%= body %>',
     watched: [],
     declared: Set.new,
+    readme: nil,
     **manifest
   )
     parsed = Bearings::Manifest::Parser.parse(manifest_yaml(**manifest), file: 'docs-site/manifest.yml')
@@ -41,8 +42,12 @@ describe Bearings::Pipeline do
       watched:,
       layout:,
       landing: '',
+      layout_file: 'docs-site/layout.html.erb',
+      landing_file: 'docs-site/index.html.erb',
       assets: {},
-      declared:
+      declared:,
+      readme:,
+      readme_paths: []
     )
   end
 
@@ -118,6 +123,14 @@ describe Bearings::Pipeline do
 
     it 'reports a redirect to a page the site does not have' do
       assert_equal ['redirect'], check_defaults(redirect_to: '/guides/gone/').map(&:check)
+    end
+
+    it 'reports a link to a file the site does not write' do
+      assert_equal ['link'], check_defaults(source: "# Start\n\nSee [the licence](/LICENSE).\n").map(&:check).uniq
+    end
+
+    it 'reports a link in the README to a file the repo does not have' do
+      assert_equal ['link'], check_defaults(readme: "# Readme\n\nSee [the licence](LICENSE).\n").map(&:check)
     end
   end
 

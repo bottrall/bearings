@@ -6,8 +6,9 @@ module Bearings::MarkdownCopies
   # @rbs!
   #   type rewrite = [String, Integer, String]
 
+  CODE_SPAN = /(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`)/ #: Regexp
   # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
-  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)|(?<attribute>\s(?<source>#{Bearings::Images::SOURCE_URLS.keys.join('|')})=["'])(?<value>[^"'\n]*)/ #: Regexp
+  INLINE = /(?<code>#{CODE_SPAN})|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)|(?<attribute>\s(?<source>#{Bearings::Images::SOURCE_URLS.keys.join('|')})=["'])(?<value>[^"'\n]*)/ #: Regexp
   DEFINITION = /\A(?<lead> {0,3}\[(?!\^)[^\]\n]+\]:[ \t]*<?)(?<destination>[^\s<>]+)/ #: Regexp
 
   # @rbs site: Bearings::Site
@@ -18,9 +19,23 @@ module Bearings::MarkdownCopies
     site_url = site.details.url&.delete_suffix('/')
     site.pages.map do |page|
       Bearings::OutputFile.new(
-        path: page.markdown_url.delete_prefix('/'),
+        path: path(page),
         content: copy(files.fetch(page.source_path), page.document, rewrites(page, copies, site_url))
       )
+    end
+  end
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs return: String
+  def path(page)
+    page.markdown_url.delete_prefix('/')
+  end
+
+  # @rbs document: Bearings::Document
+  # @rbs return: Array[Integer]
+  def fenced(document)
+    [*document.code_blocks, *document.diagrams].flat_map do |block|
+      (block.line..(block.line + block.code.lines.count + 1)).to_a
     end
   end
 
@@ -63,11 +78,8 @@ module Bearings::MarkdownCopies
   # @rbs document: Bearings::Document
   # @rbs return: Set[Integer]
   def breaks(lines, document)
-    fenced = [*document.code_blocks, *document.diagrams].flat_map do |block|
-      (block.line..(block.line + block.code.lines.count + 1)).to_a
-    end
     blank = lines.filter_map.with_index(1) { |line, number| number if line.strip.empty? }
-    Set.new(fenced + blank)
+    Set.new(fenced(document) + blank)
   end
 
   # @rbs from: Integer

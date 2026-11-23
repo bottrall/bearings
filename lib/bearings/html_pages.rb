@@ -37,6 +37,12 @@ module Bearings::HtmlPages
     [files, site.pages.flat_map { |page| unknown_links(page, by_source) + undrawn(page, drawn) }]
   end
 
+  # @rbs page: Bearings::Site::Page
+  # @rbs return: String
+  def path(page)
+    "#{page.url.delete_prefix('/')}index.html"
+  end
+
   private
 
   # @rbs pages: Array[Bearings::Site::Page]
@@ -81,7 +87,7 @@ module Bearings::HtmlPages
       next_page: neighbour(page.next_slug, by_slug),
       search_index_url: Bearings::SearchIndex::URL
     )
-    Bearings::OutputFile.new(path: "#{page.url.delete_prefix('/')}index.html", content: html)
+    Bearings::OutputFile.new(path: path(page), content: html)
   end
 
   # @rbs page: Bearings::Site::Page
