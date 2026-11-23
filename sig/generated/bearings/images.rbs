@@ -1,0 +1,46 @@
+# Generated from lib/bearings/images.rb with RBS::Inline
+
+module Bearings::Images
+  # A src is one URL. A srcset has a URL per candidate, and HTML lets that URL hold a comma that neither starts
+  # nor ends it, as a data: URI or a `w_100,h_100` path does.
+  SOURCE_URLS: Hash[String, Regexp]
+
+  TAGS: Array[String]
+
+  TAG: Regexp
+
+  ATTRIBUTE: Regexp
+
+  TAG_END: Regexp
+
+  # @rbs path: String
+  # @rbs return: String
+  def url: (String path) -> String
+
+  # @rbs site: Bearings::Site
+  # @rbs return: Array[String]
+  def paths: (Bearings::Site site) -> Array[String]
+
+  # @rbs images: Hash[String, String]
+  # @rbs return: Array[Bearings::OutputFile]
+  def call: (Hash[String, String] images) -> Array[Bearings::OutputFile]
+
+  # @rbs body: String
+  # @rbs from: String
+  # @rbs images: Hash[String, String]
+  # @rbs return: String
+  def html: (String body, String from, Hash[String, String] images) -> String
+
+  private
+
+  # @rbs tag: String
+  # @rbs from: String
+  # @rbs return: String
+  def sources: (String tag, String from) -> String
+
+  # @rbs tag: String
+  # @rbs attributes: Hash[String, String]
+  # @rbs bytes: String?
+  # @rbs return: String
+  def sized: (String tag, Hash[String, String] attributes, String? bytes) -> String
+end

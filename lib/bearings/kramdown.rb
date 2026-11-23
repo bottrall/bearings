@@ -118,7 +118,13 @@ module Bearings::Kramdown
   # @rbs return: Array[located]
   def located(element)
     inside = element.type == :table ? table_rows(element) : element.children.flat_map { |child| located(child) }
-    ITEM_TYPES.include?(element.type) ? [[element, element.options[:location]], *inside] : inside
+    item?(element) ? [[element, element.options[:location]], *inside] : inside
+  end
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs return: bool
+  def item?(element)
+    ITEM_TYPES.include?(element.type) || (element.type == :html_element && Bearings::Images::TAGS.include?(element.value))
   end
 
   # @rbs element: ::Kramdown::Element
@@ -190,9 +196,25 @@ module Bearings::Kramdown
   # @rbs elements: Array[located]
   # @rbs return: Array[Bearings::Document::Image]
   def images(elements)
-    elements.filter_map do |element, line|
-      Bearings::Document::Image.new(src: element.attr['src'], alt: element.attr['alt'], line:) if element.type == :img
+    elements.flat_map do |element, line|
+      case element.type
+      when :img then [Bearings::Document::Image.new(src: element.attr['src'], alt: element.attr['alt'], line:)]
+      when :html_element then html_images(element, line)
+      else []
+      end
     end
+  end
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs line: Integer
+  # @rbs return: Array[Bearings::Document::Image]
+  def html_images(element, line)
+    # A <source> takes no alt text: the <img> in its <picture> describes it.
+    alt = element.attr['alt'].to_s if element.value == 'img'
+    urls = Bearings::Images::SOURCE_URLS.flat_map do |name, pattern|
+      element.attr.fetch(name, '').scan(pattern) #: Array[String]
+    end
+    urls.map { |src| Bearings::Document::Image.new(src:, alt:, line:) }
   end
 
   # @rbs elements: Array[located]

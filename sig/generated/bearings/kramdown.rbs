@@ -53,6 +53,10 @@ module Bearings::Kramdown
   def located: (::Kramdown::Element element) -> Array[located]
 
   # @rbs element: ::Kramdown::Element
+  # @rbs return: bool
+  def item?: (::Kramdown::Element element) -> bool
+
+  # @rbs element: ::Kramdown::Element
   # @rbs seen: Array[::Kramdown::Element]
   # @rbs return: Array[::Kramdown::Element]
   def footnotes: (::Kramdown::Element element, ?Array[::Kramdown::Element] seen) -> Array[::Kramdown::Element]
@@ -85,6 +89,11 @@ module Bearings::Kramdown
   # @rbs elements: Array[located]
   # @rbs return: Array[Bearings::Document::Image]
   def images: (Array[located] elements) -> Array[Bearings::Document::Image]
+
+  # @rbs element: ::Kramdown::Element
+  # @rbs line: Integer
+  # @rbs return: Array[Bearings::Document::Image]
+  def html_images: (::Kramdown::Element element, Integer line) -> Array[Bearings::Document::Image]
 
   # @rbs elements: Array[located]
   # @rbs return: Array[Bearings::Document::Diagram]

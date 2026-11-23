@@ -69,6 +69,12 @@ describe Bearings::Rake do
     tree(File.join(@tmp, '_site'))
   end
 
+  def images
+    lambda do |input|
+      [[Bearings::OutputFile.new(path: 'images', content: input.images.map { |pair| pair.join('=') }.join(','))], []]
+    end
+  end
+
   def timed_out = Bearings::Checks::ExternalLinks::Failure.new(reason: 'timed out after 10s', timed_out: true)
 
   describe 'requiring bearings/rake' do
@@ -133,6 +139,20 @@ describe Bearings::Rake do
       write('_site/index.html', 'before')
 
       refute(built('docs', manifest: 'manifest.yml').keys.any? { |path| path.start_with?('_site/') })
+    end
+
+    it 'gives the outputs the bytes of each image the guides use' do
+      write_site
+
+      assert_equal "images/flow.svg=#{File.read(File.join(fixture('repo'), 'images/flow.svg'))}",
+                   built('docs', outputs: [images])['images']
+    end
+
+    it 'leaves an image whose file is missing out of what it gives the outputs' do
+      write_site
+      delete('images/flow.svg')
+
+      assert_equal '', built('docs', outputs: [images])['images']
     end
 
     it 'gives the outputs the files in the watched folders' do

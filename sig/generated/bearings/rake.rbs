@@ -49,6 +49,10 @@ module Bearings::Rake
   # @rbs return: Hash[String, String]
   def sources: (Bearings::Manifest manifest) -> Hash[String, String]
 
+  # @rbs site: Bearings::Site
+  # @rbs return: Hash[String, String]
+  def images: (Bearings::Site site) -> Hash[String, String]
+
   # @rbs manifest: Bearings::Manifest
   # @rbs sources: Hash[String, String]
   # @rbs return: [Bearings::Site, Array[Bearings::Problem]]

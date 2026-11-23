@@ -22,7 +22,13 @@ describe Bearings::Pipeline do
     YAML
   end
 
-  def input(source: "# Start\n\nBegin.\n", layout: '<%= body %>', watched: [], declared: Set.new, **manifest)
+  def input(
+    source: "# Start\n\nBegin.\n\n![Flow](flow.gif)\n",
+    layout: '<%= body %>',
+    watched: [],
+    declared: Set.new,
+    **manifest
+  )
     parsed = Bearings::Manifest::Parser.parse(manifest_yaml(**manifest), file: 'docs-site/manifest.yml')
     sources = { 'docs/START.md' => source }
     site, = Bearings::Site.build(manifest: parsed, files: sources, markdown: Bearings::Kramdown)
@@ -31,6 +37,7 @@ describe Bearings::Pipeline do
       manifest_file: 'docs-site/manifest.yml',
       site:,
       sources:,
+      images: { 'docs/flow.gif' => "GIF89a\x03\x00\x02\x00" },
       watched:,
       layout:,
       landing: '',
@@ -54,9 +61,9 @@ describe Bearings::Pipeline do
   def failing(check) = ->(_) { [[], [problem(check)]] }
 
   describe '::OUTPUTS' do
-    it 'writes the HTML pages, markdown copies, llms.txt, sitemap, redirect stubs and search index' do
+    it 'writes the HTML pages, images, markdown copies, llms.txt, sitemap, redirect stubs and search index' do
       assert_equal(
-        %w[index.html guides/start/index.html guides/start.md llms.txt sitemap.xml robots.txt
+        %w[index.html guides/start/index.html assets/docs/flow.gif guides/start.md llms.txt sitemap.xml robots.txt
            guides/begin/index.html search.json],
         run_defaults.first.map(&:path)
       )
@@ -64,6 +71,12 @@ describe Bearings::Pipeline do
 
     it 'writes no HTML pages without a layout' do
       refute_includes run_defaults(layout: nil).first.map(&:path), 'index.html'
+    end
+
+    it 'sizes the images in the HTML pages from their files' do
+      page = run_defaults.first.find { |file| file.path == 'guides/start/index.html' }
+
+      assert_includes page.content, '<img src="/assets/docs/flow.gif" alt="Flow" width="3" height="2" loading="lazy" />'
     end
 
     it 'reports the problems the outputs find' do

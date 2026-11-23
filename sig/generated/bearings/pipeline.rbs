@@ -16,6 +16,8 @@ module Bearings::Pipeline
 
     attr_reader sources(): Hash[String, String]
 
+    attr_reader images(): Hash[String, String]
+
     attr_reader watched(): Array[String]
 
     attr_reader layout(): String?
@@ -26,12 +28,12 @@ module Bearings::Pipeline
 
     attr_reader declared(): Set[String]
 
-    def self.new: (Bearings::Manifest manifest, String manifest_file, Bearings::Site site, Hash[String, String] sources, Array[String] watched, String? layout, String? landing, Hash[String, Pathname] assets, Set[String] declared) -> instance
-                | (manifest: Bearings::Manifest, manifest_file: String, site: Bearings::Site, sources: Hash[String, String], watched: Array[String], layout: String?, landing: String?, assets: Hash[String, Pathname], declared: Set[String]) -> instance
+    def self.new: (Bearings::Manifest manifest, String manifest_file, Bearings::Site site, Hash[String, String] sources, Hash[String, String] images, Array[String] watched, String? layout, String? landing, Hash[String, Pathname] assets, Set[String] declared) -> instance
+                | (manifest: Bearings::Manifest, manifest_file: String, site: Bearings::Site, sources: Hash[String, String], images: Hash[String, String], watched: Array[String], layout: String?, landing: String?, assets: Hash[String, Pathname], declared: Set[String]) -> instance
 
-    def self.members: () -> [ :manifest, :manifest_file, :site, :sources, :watched, :layout, :landing, :assets, :declared ]
+    def self.members: () -> [ :manifest, :manifest_file, :site, :sources, :images, :watched, :layout, :landing, :assets, :declared ]
 
-    def members: () -> [ :manifest, :manifest_file, :site, :sources, :watched, :layout, :landing, :assets, :declared ]
+    def members: () -> [ :manifest, :manifest_file, :site, :sources, :images, :watched, :layout, :landing, :assets, :declared ]
   end
 
   OUTPUTS: Array[output]

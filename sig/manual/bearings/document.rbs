@@ -83,12 +83,12 @@ end
 class Bearings::Document::Image < Data
   attr_reader src: String
 
-  attr_reader alt: String
+  attr_reader alt: String?
 
   attr_reader line: Integer
 
-  def self.new: (String src, String alt, Integer line) -> instance
-              | (src: String, alt: String, line: Integer) -> instance
+  def self.new: (String src, String? alt, Integer line) -> instance
+              | (src: String, alt: String?, line: Integer) -> instance
 
   def self.members: () -> [ :src, :alt, :line ]
 
