@@ -84,6 +84,10 @@ describe Bearings::Pipeline do
       assert_equal ['code'], check_defaults(source: "# Start\n\n```ruby\ndef\n```\n").map(&:check)
     end
 
+    it 'reports a diagram that is empty' do
+      assert_equal ['diagram'], check_defaults(source: "# Start\n\n```mermaid\n```\n").map(&:check)
+    end
+
     it 'reports a constant the signatures do not declare' do
       assert_equal(
         ['constant'],
