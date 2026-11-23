@@ -6,14 +6,14 @@ class Bearings::Manifest < Data
 
   attr_reader watch: Array[String]
 
-  attr_reader redirects: Hash[String, String]
+  attr_reader redirects: Array[Bearings::Manifest::Redirect]
 
   attr_reader outputs: Bearings::Manifest::Outputs
 
   attr_reader checks: Bearings::Manifest::Checks
 
-  def self.new: (Bearings::Manifest::Site site, Array[Bearings::Manifest::Group] groups, Array[String] watch, Hash[String, String] redirects, Bearings::Manifest::Outputs outputs, Bearings::Manifest::Checks checks) -> instance
-              | (site: Bearings::Manifest::Site, groups: Array[Bearings::Manifest::Group], watch: Array[String], redirects: Hash[String, String], outputs: Bearings::Manifest::Outputs, checks: Bearings::Manifest::Checks) -> instance
+  def self.new: (Bearings::Manifest::Site site, Array[Bearings::Manifest::Group] groups, Array[String] watch, Array[Bearings::Manifest::Redirect] redirects, Bearings::Manifest::Outputs outputs, Bearings::Manifest::Checks checks) -> instance
+              | (site: Bearings::Manifest::Site, groups: Array[Bearings::Manifest::Group], watch: Array[String], redirects: Array[Bearings::Manifest::Redirect], outputs: Bearings::Manifest::Outputs, checks: Bearings::Manifest::Checks) -> instance
 
   def self.members: () -> [ :site, :groups, :watch, :redirects, :outputs, :checks ]
 

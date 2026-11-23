@@ -1,3 +1,3 @@
-# Zeitwerk defines the namespace from the lib/bearings/checks/ directory, which has no file of its own for rbs-inline to read.
+# Zeitwerk defines the namespace from lib/bearings/checks/, so no file gives rbs-inline a declaration of it.
 module Bearings::Checks
 end
