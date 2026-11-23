@@ -16,6 +16,7 @@ target :lib do
   library 'cgi-escape'
   library 'fileutils'
   library 'psych'
+  library 'prism'
   library 'cgi-escape'
 
   configure_code_diagnostics(D::Ruby.all_error)
