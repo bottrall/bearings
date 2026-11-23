@@ -1,0 +1,48 @@
+# Generated from lib/bearings/site.rb with RBS::Inline
+
+# Reopened because rbs-inline reads nothing in a block given to `Data.define` on a compact constant.
+class Bearings::Site
+  ASSIGNED_VERSION: Regexp
+
+  # @rbs manifest: Bearings::Manifest
+  # @rbs files: Hash[String, String]
+  # @rbs markdown: Bearings::_Markdown
+  # @rbs return: [Bearings::Site, Array[Bearings::Problem]]
+  def self.build: (manifest: Bearings::Manifest, files: Hash[String, String], markdown: Bearings::_Markdown) -> [ Bearings::Site, Array[Bearings::Problem] ]
+
+  # @rbs path: String?
+  # @rbs files: Hash[String, String]
+  # @rbs return: String | Bearings::Problem | nil
+  private def self.read_version: (String? path, Hash[String, String] files) -> (String | Bearings::Problem | nil)
+
+  # @rbs sources: Array[String]
+  # @rbs return: Hash[String, String]
+  private def self.chapter_numbers: (Array[String] sources) -> Hash[String, String]
+
+  # @rbs entry: Bearings::Manifest::Page
+  # @rbs label: String
+  # @rbs num: String
+  # @rbs site: Bearings::Manifest::Site
+  # @rbs files: Hash[String, String]
+  # @rbs markdown: Bearings::_Markdown
+  # @rbs return: Bearings::Site::Page | Bearings::Problem
+  private def self.page: (Bearings::Manifest::Page entry, String label, String num, Bearings::Manifest::Site site, Hash[String, String] files, Bearings::_Markdown markdown) -> (Bearings::Site::Page | Bearings::Problem)
+
+  # @rbs source: String
+  # @rbs return: Bearings::Problem
+  private def self.missing: (String source) -> Bearings::Problem
+
+  # @rbs base: String?
+  # @rbs path: String
+  # @rbs return: String?
+  private def self.under: (String? base, String path) -> String?
+
+  # @rbs pages: Array[Bearings::Site::Page]
+  # @rbs return: Array[Bearings::Site::Page]
+  private def self.linked: (Array[Bearings::Site::Page] pages) -> Array[Bearings::Site::Page]
+
+  # @rbs listed: Array[Bearings::Manifest::Group]
+  # @rbs pages: Array[Bearings::Site::Page]
+  # @rbs return: Array[Bearings::Site::Group]
+  private def self.groups: (Array[Bearings::Manifest::Group] listed, Array[Bearings::Site::Page] pages) -> Array[Bearings::Site::Group]
+end
