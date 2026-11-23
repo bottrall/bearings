@@ -283,6 +283,295 @@ describe Bearings::Rake do
     end
   end
 
+  describe 'docs:serve' do
+    before { @served = [] }
+
+    def serve(watch: ->(_) { [] }, **lists)
+      run_task('docs:serve', server: ->(root) { @served << root }, watch:, **lists)
+    end
+
+    def changing(*paths, &change)
+      lambda do |_|
+        Enumerator.new do |changes|
+          change&.call
+          changes << paths
+        end
+      end
+    end
+
+    def watching(&)
+      lambda do |listing|
+        yield(listing)
+        []
+      end
+    end
+
+    def listed(manifest: 'docs-site/manifest.yml', before: {})
+      paths = nil
+      serve(manifest:, watch: watching { |listing| paths = listing.call(before).keys })
+      paths
+    end
+
+    def relisting(changes)
+      after = nil
+      serve(watch: watching { |listing| after = listing.call(listing.call({}).merge(changes)) })
+      after
+    end
+
+    def relisted(changes) = relisting(changes).keys
+
+    def unreadable(path) = File.binwrite(File.join(@tmp, path), "# Start\n\xFF\xFE\n")
+
+    def raising(error) = ->(_) { raise error, "undefined local variable or method 'nope'" }
+
+    it 'lists the files before the first build' do
+      write_site
+      built = nil
+      serve(watch: watching { built = File.exist?(File.join(@tmp, '_site')) })
+
+      refute built
+    end
+
+    it 'lists the files beside a manifest that does not parse' do
+      write_site
+      write('docs-site/manifest.yml', "site: {}\n")
+
+      assert_includes listed, 'docs-site/layout.html.erb'
+    end
+
+    it 'keeps listing the files the last listing named while the manifest does not parse' do
+      write_site
+      write('docs-site/manifest.yml', "site: {}\n")
+
+      assert_includes listed(before: { 'docs/START.md' => Time.at(0) }), 'docs/START.md'
+    end
+
+    it 'lists a source' do
+      write_site
+
+      assert_includes listed, 'docs/reference/MANIFEST.md'
+    end
+
+    it 'lists the version file' do
+      write_site
+
+      assert_includes listed, 'lib/version.rb'
+    end
+
+    it 'lists a file in a watched folder that the manifest does not list' do
+      write_site
+      write('docs/DRAFT.md', "# Draft\n")
+
+      assert_includes listed, 'docs/DRAFT.md'
+    end
+
+    it 'lists the manifest' do
+      write_site
+
+      assert_includes listed, 'docs-site/manifest.yml'
+    end
+
+    it 'lists the layout' do
+      write_site
+
+      assert_includes listed, 'docs-site/layout.html.erb'
+    end
+
+    it 'lists an asset' do
+      write_site
+
+      assert_includes listed, 'docs-site/images/mark.svg'
+    end
+
+    it 'leaves the last build out of the listing when the manifest is at the repo root' do
+      write_site
+      FileUtils.cp_r("#{@tmp}/docs-site/.", @tmp)
+      write('_site/index.html', 'before')
+
+      refute_includes listed(manifest: 'manifest.yml'), '_site/index.html'
+    end
+
+    it 'lists a source that is not there' do
+      write_site
+      delete('docs/reference/MANIFEST.md')
+
+      assert_includes listed, 'docs/reference/MANIFEST.md'
+    end
+
+    it 'keeps the last listing while none of its files changed' do
+      write_site
+
+      assert_includes relisted('images/old.svg' => nil), 'images/old.svg'
+    end
+
+    it 'lists an image a guide uses' do
+      write_site
+
+      assert_includes listed, 'images/flow.svg'
+    end
+
+    it 'lists an image a guide uses that is not there' do
+      write_site
+      delete('images/flow.svg')
+
+      assert_includes listed, 'images/flow.svg'
+    end
+
+    it 'finds the images the guides use again when a file in the last listing changed' do
+      write_site
+
+      refute_includes relisted('images/old.svg' => nil, 'docs/START.md' => Time.at(0)), 'images/old.svg'
+    end
+
+    it 'lists the files when a guide does not render' do
+      write_site
+      unreadable('docs/START.md')
+
+      assert_includes listed, 'docs/START.md'
+    end
+
+    it 'lists a guide that does not render as changed' do
+      write_site
+      unreadable('docs/START.md')
+
+      refute_equal Time.at(0), relisting('docs/START.md' => Time.at(0))['docs/START.md']
+    end
+
+    it 'says the build failed when the manifest does not parse' do
+      write_site
+      write('docs-site/manifest.yml', "site: {}\n")
+
+      assert_includes serve.first, 'Build failed; _site/ keeps the last good build'
+    end
+
+    it 'runs none of the checks' do
+      write_site
+
+      refute_includes serve(checks: [flagging]).first, '[check]'
+    end
+
+    it 'builds the site into _site' do
+      write_site
+      serve
+
+      assert_equal tree(fixture('expected')), tree(File.join(@tmp, '_site'))
+    end
+
+    it 'writes a build whose problems are all warnings' do
+      write_site
+      warned = ->(_) { [[Bearings::OutputFile.new(path: 'a.txt', content: 'A')], [problem('output', level: :warning)]] }
+      serve(outputs: [warned])
+
+      assert_equal({ 'a.txt' => 'A' }, tree(File.join(@tmp, '_site')))
+    end
+
+    it 'leaves _site alone when the build has an error' do
+      write_site
+      write('_site/index.html', 'before')
+      delete('docs/reference/MANIFEST.md')
+      serve
+
+      assert_equal({ 'index.html' => 'before' }, tree(File.join(@tmp, '_site')))
+    end
+
+    it 'prints the problems from the build' do
+      write_site
+      delete('docs/reference/MANIFEST.md')
+
+      assert_includes serve.first, 'docs/reference/MANIFEST.md:1: [source] is listed in the manifest but was not found'
+    end
+
+    it 'prints no report for a clean build' do
+      write_site
+
+      assert_match %r{\ABuilt _site/\n}, serve.first
+    end
+
+    it 'says the build succeeded' do
+      write_site
+
+      assert_includes serve.first, 'Built _site/'
+    end
+
+    it 'says _site keeps the last good build when the build has an error' do
+      write_site
+      delete('docs/reference/MANIFEST.md')
+
+      assert_includes serve.first, 'Build failed; _site/ keeps the last good build'
+    end
+
+    it 'says _site keeps the last good build when the files cannot be written' do
+      write_site
+      twice = ->(_) { [Array.new(2) { Bearings::OutputFile.new(path: 'a.txt', content: 'A') }, []] }
+
+      assert_includes serve(outputs: [twice]).first, 'Build failed; _site/ keeps the last good build'
+    end
+
+    it 'prints the error a build raises' do
+      write_site
+
+      assert_includes serve(outputs: [raising(NameError)]).first, "NameError: undefined local variable or method 'nope'"
+    end
+
+    it 'says _site keeps the last good build when a build raises' do
+      write_site
+
+      assert_includes serve(outputs: [raising(NameError)]).first, 'Build failed; _site/ keeps the last good build'
+    end
+
+    it 'says _site keeps the last good build when a build has a syntax error' do
+      write_site
+
+      assert_includes serve(outputs: [raising(SyntaxError)]).first, 'Build failed; _site/ keeps the last good build'
+    end
+
+    it 'serves _site' do
+      write_site
+      serve
+
+      assert_equal ['_site'], @served
+    end
+
+    it 'serves _site after a build raises' do
+      write_site
+      serve(outputs: [raising(NameError)])
+
+      assert_equal ['_site'], @served
+    end
+
+    it 'prints where it serves the site' do
+      write_site
+
+      assert_includes serve.first, 'Serving _site/ at http://localhost:8000'
+    end
+
+    it 'prints the files that changed' do
+      write_site
+
+      assert_includes serve(watch: changing('docs/START.md')).first, 'docs/START.md changed; rebuilding'
+    end
+
+    it 'rebuilds when a file changes' do
+      write_site
+      serve(watch: changing('docs/START.md') { write('docs/START.md', "# Start\n\nEdited.\n") })
+
+      assert_includes File.read(File.join(@tmp, '_site/guides/start.md')), 'Edited.'
+    end
+
+    it 'keeps the last good build when a rebuild has an error' do
+      write_site
+      serve(watch: changing('docs/reference/MANIFEST.md') { delete('docs/reference/MANIFEST.md') })
+
+      assert_equal tree(fixture('expected')), tree(File.join(@tmp, '_site'))
+    end
+
+    it 'stops quietly when interrupted' do
+      write_site
+
+      assert_includes serve(watch: ->(_) { Enumerator.new { raise Interrupt } }).first, 'Stopped serving _site/'
+    end
+  end
+
   describe 'docs:check:external' do
     def write_external_site
       write_site

@@ -1,0 +1,19 @@
+# Generated from lib/bearings/watch.rb with RBS::Inline
+
+module Bearings::Watch
+  type listing = ^(Hash[String, Time?] before) -> Hash[String, Time?]
+
+  type pair = [ Hash[String, Time?], Hash[String, Time?] ]
+
+  # @rbs listing: listing
+  # @rbs wait: ^() -> void
+  # @rbs return: Enumerable[Array[String]]
+  def changes: (listing: listing, wait: ^() -> void) -> Enumerable[Array[String]]
+
+  private
+
+  # @rbs before: Hash[String, Time?]
+  # @rbs after: Hash[String, Time?]
+  # @rbs return: Array[String]
+  def changed: (Hash[String, Time?] before, Hash[String, Time?] after) -> Array[String]
+end
