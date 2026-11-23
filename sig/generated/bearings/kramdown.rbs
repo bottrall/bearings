@@ -65,6 +65,10 @@ module Bearings::Kramdown
   def code_blocks: (Array[located] elements) -> Array[Bearings::Document::CodeBlock]
 
   # @rbs elements: Array[located]
+  # @rbs return: Array[Bearings::Document::CodeSpan]
+  def code_spans: (Array[located] elements) -> Array[Bearings::Document::CodeSpan]
+
+  # @rbs elements: Array[located]
   # @rbs return: Array[Bearings::Document::Image]
   def images: (Array[located] elements) -> Array[Bearings::Document::Image]
 

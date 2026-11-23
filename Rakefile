@@ -112,12 +112,14 @@ task :build do
     # The empty GEM_HOME receives only the built gem; its dependencies resolve
     # from the bundle's gem path, so --local never reaches the network.
     env = { 'GEM_HOME' => gem_home, 'GEM_PATH' => [gem_home, *Gem.path].join(File::PATH_SEPARATOR) }
-    # Eager loading fails on a file that needs one the gem doesn't ship.
+    # Eager loading fails on a file that needs one the gem doesn't ship. It
+    # skips bearings/rbs, which Zeitwerk ignores, so that is required by name.
     check = <<~RUBY
       require 'bearings'
       spec = Gem.loaded_specs.fetch('bearings')
       abort "loaded \#{spec.full_gem_path}, not the built gem" unless spec.full_gem_path.start_with?(ENV['GEM_HOME'])
       Zeitwerk::Loader.eager_load_all
+      require 'bearings/rbs'
       puts "loaded bearings \#{Bearings::VERSION} from the built gem"
     RUBY
     Bundler.with_unbundled_env do

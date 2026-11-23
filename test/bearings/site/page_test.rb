@@ -5,7 +5,7 @@ require 'test_helper'
 describe Bearings::Site::Page do
   def page(diagrams)
     document = Bearings::Document.new(
-      title: 'Start', headings: [], links: [], code_blocks: [], images: [], diagrams:, body: ''
+      title: 'Start', headings: [], links: [], code_blocks: [], code_spans: [], images: [], diagrams:, body: ''
     )
     Bearings::Site::Page.new(
       title: 'Start',

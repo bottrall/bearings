@@ -19,7 +19,7 @@ describe Bearings::Sitemap do
       previous_slug: nil,
       next_slug: nil,
       document: Bearings::Document.new(
-        title: slug, headings: [], links: [], code_blocks: [], images: [], diagrams: [], body: ''
+        title: slug, headings: [], links: [], code_blocks: [], code_spans: [], images: [], diagrams: [], body: ''
       ),
       extras: {}
     )

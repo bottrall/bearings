@@ -1,0 +1,48 @@
+# Generated from lib/bearings/checks/constant_names.rb with RBS::Inline
+
+module Bearings::Checks::ConstantNames
+  type reference = [ String, Integer ]
+
+  type snippet = [ Prism::ProgramNode, Integer ]
+
+  CONSTANT_PATH: Regexp
+
+  # @rbs site: Bearings::Site
+  # @rbs declared: Set[String]
+  # @rbs return: Array[Bearings::Problem]
+  def call: (site: Bearings::Site, declared: Set[String]) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs document: Bearings::Document
+  # @rbs namespaces: Array[String]
+  # @rbs declared: Set[String]
+  # @rbs return: Array[reference]
+  def undeclared: (Bearings::Document document, Array[String] namespaces, Set[String] declared) -> Array[reference]
+
+  # @rbs node: Prism::node
+  # @rbs scope: String?
+  # @rbs return: Array[String]
+  def definitions: (Prism::node node, String? scope) -> Array[String]
+
+  # @rbs node: Prism::node
+  # @rbs scope: String?
+  # @rbs return: String?
+  def defined_name: (Prism::node node, String? scope) -> String?
+
+  # @rbs node: Prism::node
+  # @rbs first_line: Integer
+  # @rbs return: Array[reference]
+  def references: (Prism::node node, Integer first_line) -> Array[reference]
+
+  # @rbs node: Prism::node
+  # @rbs return: String?
+  def path: (Prism::node node) -> String?
+
+  # @rbs file: String
+  # @rbs name: String
+  # @rbs line: Integer
+  # @rbs closest: String?
+  # @rbs return: Bearings::Problem
+  def problem: (String file, String name, Integer line, String? closest) -> Bearings::Problem
+end
