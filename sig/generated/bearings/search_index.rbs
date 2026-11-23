@@ -1,0 +1,44 @@
+# Generated from lib/bearings/search_index.rb with RBS::Inline
+
+module Bearings::SearchIndex
+  class Entry < Data
+    attr_reader title(): String
+
+    attr_reader heading(): String?
+
+    attr_reader text(): String
+
+    attr_reader url(): String
+
+    def self.new: (String title, String? heading, String text, String url) -> instance
+                | (title: String, heading: String?, text: String, url: String) -> instance
+
+    def self.members: () -> [ :title, :heading, :text, :url ]
+
+    def members: () -> [ :title, :heading, :text, :url ]
+  end
+
+  PATH: String
+
+  URL: String
+
+  HEADING: Regexp
+
+  TAG: Regexp
+
+  SPACE: Regexp
+
+  # @rbs site: Bearings::Site
+  # @rbs return: Bearings::OutputFile
+  def call: (Bearings::Site site) -> Bearings::OutputFile
+
+  private
+
+  # @rbs page: Bearings::Site::Page
+  # @rbs return: Array[Entry]
+  def entries: (Bearings::Site::Page page) -> Array[Entry]
+
+  # @rbs html: String
+  # @rbs return: String
+  def plain: (String html) -> String
+end
