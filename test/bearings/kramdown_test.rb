@@ -128,6 +128,19 @@ describe Bearings::Kramdown do
       assert_nil document("# Title\n\n```\nplain\n```\n").code_blocks.first.language
     end
 
+    it 'lists the code spans with their code and line' do
+      assert_equal(
+        [
+          Bearings::Document::CodeSpan.new(code: 'bundle install', line: 11),
+          Bearings::Document::CodeSpan.new(code: 'manifest', line: 13),
+          Bearings::Document::CodeSpan.new(code: 'groups', line: 17),
+          Bearings::Document::CodeSpan.new(code: 'title', line: 18),
+          Bearings::Document::CodeSpan.new(code: '# ', line: 21)
+        ],
+        sample.code_spans
+      )
+    end
+
     it 'lists the images with their src, alt text and line' do
       assert_equal [Bearings::Document::Image.new(src: 'images/pipeline.png', alt: 'The build pipeline', line: 23)],
                    sample.images

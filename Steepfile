@@ -15,6 +15,10 @@ target :lib do
   library 'json'
   library 'fileutils'
   library 'psych'
+  library 'did_you_mean'
+  # The collection leaves out gems the Gemfile doesn't require, and these two ship their own signatures.
+  library 'prism'
+  library 'rbs'
 
   configure_code_diagnostics(D::Ruby.all_error)
 end
