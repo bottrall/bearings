@@ -102,8 +102,6 @@ describe Bearings::MarkdownCopies do
     describe 'links' do
       {
         'an external URL' => 'https://example.com/INSTALL.md',
-        'a mailto link' => 'mailto:team@example.com',
-        'an absolute path' => '/guides/install/',
         'a bare anchor' => '#start',
         'a markdown file that is not a page' => '../CONTRIBUTING.md',
         'a file that is not markdown' => '../bin/setup'
@@ -123,17 +121,7 @@ describe Bearings::MarkdownCopies do
                      start("[Gems](INSTALL.md#gems)\n", link('INSTALL.md#gems'))
       end
 
-      it 'resolves a link that starts with ./' do
-        assert_equal "# Start\n\n[Install](/guides/install.md)\n",
-                     start("[Install](./INSTALL.md)\n", link('./INSTALL.md'))
-      end
-
-      it 'resolves a link into a subfolder' do
-        assert_equal "# Start\n\n[Manifest](/guides/reference/manifest.md)\n",
-                     start("[Manifest](reference/MANIFEST.md)\n", link('reference/MANIFEST.md'))
-      end
-
-      it 'resolves a link that climbs out of its folder with ../' do
+      it "resolves a link from its guide's folder" do
         guide = "# Manifest\n\n[Start](../START.md)\n"
 
         assert_equal "# Manifest\n\n[Start](/guides/start.md)\n",
@@ -142,11 +130,6 @@ describe Bearings::MarkdownCopies do
     end
 
     describe 'images' do
-      it 'leaves a root-relative image as written' do
-        assert_equal "# Start\n\n![Logo](/images/logo.png)\n",
-                     start("![Logo](/images/logo.png)\n", image('/images/logo.png'))
-      end
-
       it 'leaves a remote image as written' do
         assert_equal "# Start\n\n![Logo](https://cdn.example/logo.png)\n",
                      start("![Logo](https://cdn.example/logo.png)\n", image('https://cdn.example/logo.png'))
@@ -155,11 +138,6 @@ describe Bearings::MarkdownCopies do
       it "points an image at its asset under the site's URL" do
         assert_equal "# Start\n\n![Logo](https://bearings.example/assets/docs/images/logo.png)\n",
                      start("![Logo](images/logo.png)\n", image('images/logo.png'))
-      end
-
-      it "resolves an image that climbs out of the guide's folder" do
-        assert_equal "# Start\n\n![Logo](https://bearings.example/assets/art/logo.png)\n",
-                     start("![Logo](../art/logo.png)\n", image('../art/logo.png'))
       end
     end
 
@@ -266,6 +244,24 @@ describe Bearings::MarkdownCopies do
           "# Start\n\n[Install](/guides/install.md) is a link;\n[Install](INSTALL.md) is not\n",
           start("[Install](INSTALL.md) is a link;\n[Install](INSTALL.md) is not\n", link('INSTALL.md'))
         )
+      end
+
+      it 'points the src of a raw <img> at its asset' do
+        assert_equal(
+          %(# Start\n\n<img src="https://bearings.example/assets/docs/logo.png" alt="Logo">\n),
+          start(%(<img src="logo.png" alt="Logo">\n), image('logo.png'))
+        )
+      end
+
+      it 'points each URL in a srcset at its asset, keeping its descriptor' do
+        assert_equal(
+          %(# Start\n\n<source srcset="/assets/docs/dark.png 1x, /assets/docs/dark@2x.png 2x">\n),
+          start(%(<source srcset="dark.png 1x, dark@2x.png 2x">\n), image('dark.png'), image('dark@2x.png'), url: nil)
+        )
+      end
+
+      it 'leaves a src as written when kramdown found no image there' do
+        assert_equal %(# Start\n\n    <img src="logo.png">\n), start(%(    <img src="logo.png">\n))
       end
     end
   end

@@ -18,14 +18,15 @@ module Bearings::HtmlPages
   # @rbs layout: String
   # @rbs landing: String
   # @rbs assets: Hash[String, Pathname]
+  # @rbs images: Hash[String, String]
   # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
-  def call(site, layout:, landing:, assets:)
+  def call(site, layout:, landing:, assets:, images:)
     by_source = site.pages.to_h { |page| [page.source_path, page] }
     by_slug = site.pages.to_h { |page| [page.slug, page] }
     template = ERB.new(layout, trim_mode: '-')
     files = [
       landing_file(site, landing),
-      *site.pages.map { |page| page_file(page, site, template, by_source, by_slug) },
+      *site.pages.map { |page| page_file(page, site, template, by_source, by_slug, images) },
       *assets.map { |path, source| Bearings::OutputFile.new(path:, content: source) }
     ]
     [files, site.pages.flat_map { |page| unknown_links(page, by_source) }]
@@ -52,9 +53,10 @@ module Bearings::HtmlPages
   # @rbs layout: ERB
   # @rbs by_source: Hash[String, Bearings::Site::Page]
   # @rbs by_slug: Hash[String, Bearings::Site::Page]
+  # @rbs images: Hash[String, String]
   # @rbs return: Bearings::OutputFile
-  def page_file(page, site, layout, by_source, by_slug)
-    body = rewrite_links(page, by_source)
+  def page_file(page, site, layout, by_source, by_slug, images)
+    body = Bearings::Images.html(rewrite_links(page, by_source), page.source_path, images)
     html = layout.result_with_hash(
       **shared(site),
       page:,

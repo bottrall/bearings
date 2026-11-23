@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
-require 'pathname'
-
 module Bearings::MarkdownCopies
   extend self
 
   # @rbs!
   #   type rewrite = [String, Integer, String]
 
-  SCHEME = /\A[a-z][a-z\d+.-]*:/i #: Regexp
   # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
-  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)/ #: Regexp
+  INLINE = /(?<code>(?<!`)(?<ticks>`+)(?!`).*?(?<!`)\k<ticks>(?!`))|(?<escaped>\\\[[^\]\n]*\]\()|(?<lead>\]\([ \t]*<?)(?<destination>[^\s<>()]+)|(?<attribute>\ssrc(?:set)?=["'])(?<value>[^"'\n]*)/ #: Regexp
   DEFINITION = /\A(?<lead> {0,3}\[(?!\^)[^\]\n]+\]:[ \t]*<?)(?<destination>[^\s<>]+)/ #: Regexp
 
   # @rbs site: Bearings::Site
@@ -18,11 +15,11 @@ module Bearings::MarkdownCopies
   # @rbs return: Array[Bearings::OutputFile]
   def call(site, files)
     copies = site.pages.to_h { |page| [page.source_path, page.markdown_url] }
-    assets = "#{site.details.url&.delete_suffix('/')}/assets/"
+    site_url = site.details.url&.delete_suffix('/')
     site.pages.map do |page|
       Bearings::OutputFile.new(
         path: page.markdown_url.delete_prefix('/'),
-        content: copy(files.fetch(page.source_path), page.document, rewrites(page, copies, assets))
+        content: copy(files.fetch(page.source_path), page.document, rewrites(page, copies, site_url))
       )
     end
   end
@@ -31,32 +28,19 @@ module Bearings::MarkdownCopies
 
   # @rbs page: Bearings::Site::Page
   # @rbs copies: Hash[String, String]
-  # @rbs assets: String
+  # @rbs site_url: String?
   # @rbs return: Array[rewrite]
-  def rewrites(page, copies, assets)
-    folder = File.dirname(page.source_path)
+  def rewrites(page, copies, site_url)
     links = page.document.links.filter_map do |link|
       path, hash, fragment = link.href.partition('#')
-      url = copies[in_repo(folder, path)] if relative?(link.href)
+      url = Bearings::RepoPath.resolve(page.source_path, path)&.then { |in_repo| copies[in_repo] }
       [link.href, link.line, "#{url}#{hash}#{fragment}"] if url
     end #: Array[rewrite]
     images = page.document.images.filter_map do |image|
-      [image.src, image.line, "#{assets}#{in_repo(folder, image.src)}"] if relative?(image.src)
+      path = Bearings::RepoPath.resolve(page.source_path, image.src)
+      [image.src, image.line, "#{site_url}#{Bearings::Images.url(path)}"] if path
     end #: Array[rewrite]
     links + images
-  end
-
-  # @rbs destination: String
-  # @rbs return: bool
-  def relative?(destination)
-    !destination.match?(SCHEME) && !destination.start_with?('/')
-  end
-
-  # @rbs folder: String
-  # @rbs path: String
-  # @rbs return: String
-  def in_repo(folder, path)
-    Pathname.new(File.join(folder, path)).cleanpath.to_s
   end
 
   # @rbs source: String
@@ -114,16 +98,31 @@ module Bearings::MarkdownCopies
     left = unused
     rewritten = line.gsub(INLINE) do
       match = Regexp.last_match #: MatchData
-      # Each link kramdown found in this paragraph rewrites one destination; a copy in plain text stays as written.
-      found = left.index do |destination, at, _|
-        destination == match[:destination] && same_paragraph?(at, number, breaks)
+      if match[:attribute]
+        urls = match[:value].to_s.gsub(Bearings::Images::SOURCE_URL) do |destination|
+          url, left = take(left, destination, number, breaks)
+          url || destination
+        end
+        next "#{match[:attribute]}#{urls}"
       end
-      next match.to_s unless found
 
-      url = left.fetch(found).last
-      left = left.reject.with_index { |_, index| index == found }
-      "#{match[:lead]}#{url}"
+      url, left = take(left, match[:destination], number, breaks)
+      url ? "#{match[:lead]}#{url}" : match.to_s
     end
     [rewritten, left]
+  end
+
+  # @rbs unused: Array[rewrite]
+  # @rbs destination: String?
+  # @rbs number: Integer
+  # @rbs breaks: Set[Integer]
+  # @rbs return: [String?, Array[rewrite]]
+  def take(unused, destination, number, breaks)
+    # Each link or image kramdown found in this paragraph rewrites one destination; a copy in plain text
+    # stays as written.
+    found = unused.index { |candidate, at, _| candidate == destination && same_paragraph?(at, number, breaks) }
+    return [nil, unused] unless found
+
+    [unused.fetch(found).last, unused.reject.with_index { |_, index| index == found }]
   end
 end

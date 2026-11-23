@@ -1,0 +1,45 @@
+# Generated from lib/bearings/images.rb with RBS::Inline
+
+module Bearings::Images
+  SOURCE_URL: Regexp
+
+  TAG: Regexp
+
+  ATTRIBUTE: Regexp
+
+  SOURCE_ATTRIBUTES: Array[String]
+
+  TAG_END: Regexp
+
+  # @rbs path: String
+  # @rbs return: String
+  def url: (String path) -> String
+
+  # @rbs site: Bearings::Site
+  # @rbs return: Array[String]
+  def paths: (Bearings::Site site) -> Array[String]
+
+  # @rbs site: Bearings::Site
+  # @rbs images: Hash[String, String]
+  # @rbs return: Array[Bearings::OutputFile]
+  def call: (Bearings::Site site, Hash[String, String] images) -> Array[Bearings::OutputFile]
+
+  # @rbs body: String
+  # @rbs from: String
+  # @rbs images: Hash[String, String]
+  # @rbs return: String
+  def html: (String body, String from, Hash[String, String] images) -> String
+
+  private
+
+  # @rbs tag: String
+  # @rbs from: String
+  # @rbs return: String
+  def sources: (String tag, String from) -> String
+
+  # @rbs tag: String
+  # @rbs attributes: Hash[String, String]
+  # @rbs bytes: String?
+  # @rbs return: String
+  def sized: (String tag, Hash[String, String] attributes, String? bytes) -> String
+end

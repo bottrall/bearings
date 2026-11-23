@@ -15,8 +15,9 @@ module Bearings::HtmlPages
   # @rbs layout: String
   # @rbs landing: String
   # @rbs assets: Hash[String, Pathname]
+  # @rbs images: Hash[String, String]
   # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
-  def call: (Bearings::Site site, layout: String, landing: String, assets: Hash[String, Pathname]) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
+  def call: (Bearings::Site site, layout: String, landing: String, assets: Hash[String, Pathname], images: Hash[String, String]) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
 
   private
 
@@ -34,8 +35,9 @@ module Bearings::HtmlPages
   # @rbs layout: ERB
   # @rbs by_source: Hash[String, Bearings::Site::Page]
   # @rbs by_slug: Hash[String, Bearings::Site::Page]
+  # @rbs images: Hash[String, String]
   # @rbs return: Bearings::OutputFile
-  def page_file: (Bearings::Site::Page page, Bearings::Site site, ERB layout, Hash[String, Bearings::Site::Page] by_source, Hash[String, Bearings::Site::Page] by_slug) -> Bearings::OutputFile
+  def page_file: (Bearings::Site::Page page, Bearings::Site site, ERB layout, Hash[String, Bearings::Site::Page] by_source, Hash[String, Bearings::Site::Page] by_slug, Hash[String, String] images) -> Bearings::OutputFile
 
   # @rbs page: Bearings::Site::Page
   # @rbs by_source: Hash[String, Bearings::Site::Page]

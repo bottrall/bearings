@@ -60,7 +60,7 @@ describe Bearings::HtmlPages do
       'Manifest',
       'reference/manifest',
       'docs/reference/MANIFEST.md',
-      body: %(<p><a href="../INSTALL.md">back</a></p>\n),
+      body: %(<p><a href="../INSTALL.md">back</a> <img src="../images/flow.gif" alt="Flow" /></p>\n),
       links: [link('../INSTALL.md', 3)],
       group_label: 'Reference',
       previous_slug: 'install'
@@ -87,8 +87,8 @@ describe Bearings::HtmlPages do
     )
   end
 
-  def build(layout: '', landing: '', assets: {})
-    Bearings::HtmlPages.call(site, layout:, landing:, assets:)
+  def build(layout: '', landing: '', assets: {}, images: {})
+    Bearings::HtmlPages.call(site, layout:, landing:, assets:, images:)
   end
 
   def files(...) = build(...).first
@@ -99,7 +99,9 @@ describe Bearings::HtmlPages do
 
   def guides(layout) = files(layout:).select { |file| file.path.start_with?('guides/') }.map(&:content)
 
-  def guide(slug, layout) = files(layout:).find { |file| file.path == "guides/#{slug}/index.html" }&.content
+  def guide(slug, layout, images: {})
+    files(layout:, images:).find { |file| file.path == "guides/#{slug}/index.html" }&.content
+  end
 
   describe '.call' do
     it 'writes the landing page, a page at each guide URL, then the assets' do
@@ -173,6 +175,13 @@ describe Bearings::HtmlPages do
 
     it 'leaves a link to a markdown file that is not a page as written' do
       assert_includes guide('install', '<%= body %>'), '<a href="NOPE.md#x">c</a>'
+    end
+
+    it "points an image at its asset, sized from the file, resolved from the guide's folder" do
+      images = { 'docs/images/flow.gif' => "GIF89a\x03\x00\x02\x00" }
+
+      assert_includes guide('reference/manifest', '<%= body %>', images:),
+                      '<img src="/assets/docs/images/flow.gif" alt="Flow" width="3" height="2" loading="lazy" />'
     end
 
     it "gives a page the ids of its guide's h2 headings" do

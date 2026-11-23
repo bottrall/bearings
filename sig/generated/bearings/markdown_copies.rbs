@@ -3,8 +3,6 @@
 module Bearings::MarkdownCopies
   type rewrite = [ String, Integer, String ]
 
-  SCHEME: Regexp
-
   # A code span or an escaped bracket comes first so a link-shaped string inside one is matched, and kept, as written.
   INLINE: Regexp
 
@@ -19,18 +17,9 @@ module Bearings::MarkdownCopies
 
   # @rbs page: Bearings::Site::Page
   # @rbs copies: Hash[String, String]
-  # @rbs assets: String
+  # @rbs site_url: String?
   # @rbs return: Array[rewrite]
-  def rewrites: (Bearings::Site::Page page, Hash[String, String] copies, String assets) -> Array[rewrite]
-
-  # @rbs destination: String
-  # @rbs return: bool
-  def relative?: (String destination) -> bool
-
-  # @rbs folder: String
-  # @rbs path: String
-  # @rbs return: String
-  def in_repo: (String folder, String path) -> String
+  def rewrites: (Bearings::Site::Page page, Hash[String, String] copies, String? site_url) -> Array[rewrite]
 
   # @rbs source: String
   # @rbs document: Bearings::Document
@@ -60,4 +49,11 @@ module Bearings::MarkdownCopies
   # @rbs breaks: Set[Integer]
   # @rbs return: [String, Array[rewrite]]
   def inline: (String line, Integer number, Array[rewrite] unused, Set[Integer] breaks) -> [ String, Array[rewrite] ]
+
+  # @rbs unused: Array[rewrite]
+  # @rbs destination: String?
+  # @rbs number: Integer
+  # @rbs breaks: Set[Integer]
+  # @rbs return: [String?, Array[rewrite]]
+  def take: (Array[rewrite] unused, String? destination, Integer number, Set[Integer] breaks) -> [ String?, Array[rewrite] ]
 end
