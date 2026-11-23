@@ -4,7 +4,16 @@ require 'test_helper'
 
 describe Bearings::Guide do
   def titled
-    Bearings::Document.new(title: 'Title', headings: [], links: [], code_blocks: [], images: [], diagrams: [], body: '')
+    Bearings::Document.new(
+      title: 'Title',
+      headings: [],
+      links: [],
+      code_blocks: [],
+      code_spans: [],
+      images: [],
+      diagrams: [],
+      body: ''
+    )
   end
 
   def markdown

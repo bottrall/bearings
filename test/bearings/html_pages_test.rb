@@ -24,7 +24,16 @@ describe Bearings::HtmlPages do
       edit_url: nil,
       previous_slug: nil,
       next_slug: nil,
-      document: Bearings::Document.new(title:, headings: [], links:, code_blocks: [], images: [], diagrams: [], body:),
+      document: Bearings::Document.new(
+        title:,
+        headings: [],
+        links:,
+        code_blocks: [],
+        code_spans: [],
+        images: [],
+        diagrams: [],
+        body:
+      ),
       extras: {},
       **fields
     )

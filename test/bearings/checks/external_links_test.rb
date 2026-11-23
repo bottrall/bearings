@@ -15,7 +15,7 @@ describe Bearings::Checks::ExternalLinks do
   def page(source_path, *hrefs)
     links = hrefs.map.with_index(3) { |href, line| Bearings::Document::Link.new(href:, line:) }
     document = Bearings::Document.new(
-      title: 'Guide', headings: [], links:, code_blocks: [], images: [], diagrams: [], body: ''
+      title: 'Guide', headings: [], links:, code_blocks: [], code_spans: [], images: [], diagrams: [], body: ''
     )
     Bearings::Site::Page.new(
       title: 'Guide',

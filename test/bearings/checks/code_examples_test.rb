@@ -23,7 +23,7 @@ describe Bearings::Checks::CodeExamples do
       previous_slug: nil,
       next_slug: nil,
       document: Bearings::Document.new(
-        title: 'Start', headings: [], links: [], code_blocks: blocks, images: [], diagrams: [], body: ''
+        title: 'Start', headings: [], links: [], code_blocks: blocks, code_spans: [], images: [], diagrams: [], body: ''
       ),
       extras: {}
     )

@@ -1,0 +1,13 @@
+module Riffer
+  class Agent
+    LIMIT: Integer
+  end
+
+  module Providers
+  end
+
+  class Model = Agent
+
+  interface _Tool
+  end
+end

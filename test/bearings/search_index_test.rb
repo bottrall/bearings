@@ -23,6 +23,7 @@ describe Bearings::SearchIndex do
         headings:,
         links: [],
         code_blocks: [],
+        code_spans: [],
         images: [],
         diagrams: [],
         body:
