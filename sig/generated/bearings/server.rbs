@@ -1,0 +1,55 @@
+# Generated from lib/bearings/server.rb with RBS::Inline
+
+module Bearings::Server
+  METHODS: Array[String]
+
+  NOT_FOUND: String
+
+  TYPES: Hash[String, String]
+
+  # @rbs server: TCPServer
+  # @rbs root: String
+  # @rbs return: bot
+  def call: (TCPServer server, String root) -> bot
+
+  # @rbs request: String
+  # @rbs root: String
+  # @rbs return: String
+  def response: (String request, String root) -> String
+
+  private
+
+  # @rbs client: TCPSocket
+  # @rbs root: String
+  # @rbs return: void
+  def answer: (TCPSocket client, String root) -> void
+
+  # @rbs raw: String
+  # @rbs return: String?
+  def decode: (String raw) -> String?
+
+  # @rbs root: String
+  # @rbs path: String
+  # @rbs raw: String
+  # @rbs head: bool
+  # @rbs return: String
+  def file: (String root, String path, String raw, head: bool) -> String
+
+  # @rbs root: String
+  # @rbs head: bool
+  # @rbs return: String
+  def not_found: (String root, head: bool) -> String
+
+  # @rbs status: String
+  # @rbs file: String
+  # @rbs head: bool
+  # @rbs return: String
+  def contents: (String status, String file, head: bool) -> String
+
+  # @rbs status: String
+  # @rbs headers: Hash[String, String]
+  # @rbs body: String
+  # @rbs head: bool
+  # @rbs return: String
+  def reply: (String status, ?headers: Hash[String, String], ?body: String, ?head: bool) -> String
+end

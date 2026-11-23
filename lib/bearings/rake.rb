@@ -4,6 +4,7 @@
 require 'bearings'
 require 'pathname'
 require 'rake'
+require 'socket'
 
 module Bearings::Rake
   extend self
@@ -13,20 +14,42 @@ module Bearings::Rake
   SIG = 'sig' #: String
   LAYOUT = 'layout.html.erb' #: String
   LANDING = 'index.html.erb' #: String
+  HOST = '127.0.0.1' #: String
+  PORT = 8000 #: Integer
+  URL = "http://localhost:#{PORT}".freeze #: String
+  INTERVAL = 0.5 #: Float
+  FAILED = "Build failed; #{SITE}/ keeps the last good build".freeze #: String
+
+  # @rbs!
+  #   type server = ^(String root) -> void
+  #   type watch = ^(Bearings::Watch::listing) -> Enumerable[Array[String]]
+
+  SERVER = lambda do |root|
+    server = TCPServer.new(HOST, PORT)
+    Thread.new { Bearings::Server.call(server, root) }
+  end #: server
+  WATCH = ->(listing) { Bearings::Watch.changes(listing:, wait: -> { sleep(INTERVAL) }) } #: watch
 
   # @rbs manifest: String
   # @rbs http: Bearings::_HttpClient
   # @rbs outputs: Array[Bearings::Pipeline::output]
   # @rbs checks: Array[Bearings::Pipeline::check]
+  # @rbs server: server
+  # @rbs watch: watch
   # @rbs return: void
   def install(
     manifest: MANIFEST,
     http: Bearings::NetHttp,
     outputs: Bearings::Pipeline::OUTPUTS,
-    checks: Bearings::Pipeline::CHECKS
+    checks: Bearings::Pipeline::CHECKS,
+    server: SERVER,
+    watch: WATCH
   )
     define('docs', "Build the docs site into #{SITE}/") { build(manifest, outputs, []) }
     define('docs:check', 'Build the docs site and check it, failing on any error') { build(manifest, outputs, checks) }
+    task('docs:serve', "Build the docs site, serve it at #{URL} and rebuild it when its files change") do
+      serve(manifest, outputs, server, watch)
+    end
     define('docs:check:external', 'Request every external link in the guides and report the ones that fail') do
       external(manifest, http)
     end
@@ -39,8 +62,16 @@ module Bearings::Rake
   # @rbs &problems: () -> Array[Bearings::Problem]
   # @rbs return: void
   def define(name, description, &)
+    task(name, description) { finish(yield, ENV.fetch('FORMAT', nil)) }
+  end
+
+  # @rbs name: String
+  # @rbs description: String
+  # @rbs &action: () -> void
+  # @rbs return: void
+  def task(name, description, &)
     ::Rake.application.last_description = description
-    ::Rake::Task.define_task(name) { finish(yield, ENV.fetch('FORMAT', nil)) }
+    ::Rake::Task.define_task(name, &)
   end
 
   # @rbs path: String
@@ -48,11 +79,84 @@ module Bearings::Rake
   # @rbs checks: Array[Bearings::Pipeline::check]
   # @rbs return: Array[Bearings::Problem]
   def build(path, outputs, checks)
+    files, problems = render(path, outputs, checks)
+    files ? [*problems, *Bearings::Writer.call(files, SITE)] : problems
+  end
+
+  # @rbs path: String
+  # @rbs outputs: Array[Bearings::Pipeline::output]
+  # @rbs server: server
+  # @rbs watch: watch
+  # @rbs return: void
+  def serve(path, outputs, server, watch)
+    # Each rebuild's report has to show as it happens, even when stdout is a pipe that would buffer it.
+    $stdout.sync = true
+    # Listed before the first build, so an edit saved while it runs still counts as a change.
+    changes = watch.call(->(before) { listing(path, before) })
+    rebuild(path, outputs)
+    server.call(SITE)
+    puts "Serving #{SITE}/ at #{URL}; press Ctrl-C to stop"
+    changes.each do |changed|
+      puts "#{changed.join(', ')} changed; rebuilding"
+      rebuild(path, outputs)
+    end
+  rescue Interrupt
+    puts "Stopped serving #{SITE}/"
+  end
+
+  # @rbs path: String
+  # @rbs outputs: Array[Bearings::Pipeline::output]
+  # @rbs return: void
+  def rebuild(path, outputs)
+    files, found = render(path, outputs, [])
+    problems = files && !Bearings::Report.failed?(found) ? [*found, *Bearings::Writer.call(files, SITE)] : found
+    puts Bearings::Report.text(problems) if problems.any?
+    puts Bearings::Report.failed?(problems) ? FAILED : "Built #{SITE}/"
+  # The layout and landing page are the repo's ERB, run as Ruby: a typo saved in one raises, as a SyntaxError (a
+  # ScriptError) for some, and the server has to outlive it.
+  rescue StandardError, ScriptError => e
+    puts "#{e.class}: #{e.message}", FAILED
+  end
+
+  # @rbs path: String
+  # @rbs outputs: Array[Bearings::Pipeline::output]
+  # @rbs checks: Array[Bearings::Pipeline::check]
+  # @rbs return: [Array[Bearings::OutputFile]?, Array[Bearings::Problem]]
+  def render(path, outputs, checks)
     input, problems = input(path)
-    return problems unless input
+    return [nil, problems] unless input
 
     files, found = Bearings::Pipeline.call(input, outputs:, checks:)
-    [*problems, *found, *Bearings::Writer.call(files, SITE)]
+    [files, [*problems, *found]]
+  end
+
+  # @rbs path: String
+  # @rbs before: Hash[String, Time?]
+  # @rbs return: Hash[String, Time?]
+  def listing(path, before)
+    manifest, = manifest(path)
+    named = manifest ? [*source_paths(manifest), *watched(manifest.watch)] : [] #: Array[String]
+    listed = [*named, *assets(File.dirname(path), []).values.map(&:to_s)]
+    # The last listing's paths carry the images the guides use, which only a render finds, and while the manifest does
+    # not parse they stand in for the paths it names; without them each would read as changed.
+    known = mtimes([*before.keys, *listed])
+    # Finding the images the guides use renders every guide, so it waits for a change to a listed file, the only
+    # thing that can change them.
+    return known if !manifest || known == before
+
+    site, = site(manifest, sources(manifest))
+    mtimes([*listed, *Bearings::Images.paths(site)])
+  # A guide that fails to render still reads as changed, so the rebuild runs and prints why; a file deleted between
+  # its stat calls falls back to the paths already stat'd.
+  rescue StandardError
+    known || before
+  end
+
+  # @rbs paths: Array[String]
+  # @rbs return: Hash[String, Time?]
+  def mtimes(paths)
+    files = paths.map { |file| Pathname(file).cleanpath.to_s }.uniq
+    files.to_h { |file| [file, (File.mtime(file) if File.file?(file))] }
   end
 
   # @rbs path: String
@@ -111,8 +215,13 @@ module Bearings::Rake
   # @rbs manifest: Bearings::Manifest
   # @rbs return: Hash[String, String]
   def sources(manifest)
-    paths = [*manifest.groups.flat_map(&:pages).map(&:source), manifest.site.version].compact
-    paths.select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }
+    source_paths(manifest).select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }
+  end
+
+  # @rbs manifest: Bearings::Manifest
+  # @rbs return: Array[String]
+  def source_paths(manifest)
+    [*manifest.groups.flat_map(&:pages).map(&:source), manifest.site.version].compact
   end
 
   # @rbs site: Bearings::Site

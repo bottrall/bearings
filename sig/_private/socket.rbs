@@ -1,0 +1,4 @@
+# rbs declares TCPServer#initialize as (?String host, Integer port), and Steep reads that as taking the port alone.
+class TCPServer
+  def self.new: (String host, Integer port) -> TCPServer
+end
