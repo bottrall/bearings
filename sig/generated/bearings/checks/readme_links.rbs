@@ -1,0 +1,46 @@
+# Generated from lib/bearings/checks/readme_links.rb with RBS::Inline
+
+module Bearings::Checks::ReadmeLinks
+  type anchors = [ String, Array[String] ]
+
+  FILE: String
+
+  # @rbs site: Bearings::Site
+  # @rbs files: Array[Bearings::OutputFile]
+  # @rbs readme: String
+  # @rbs paths: Array[String]
+  # @rbs markdown: singleton(Bearings::Kramdown)
+  # @rbs return: Array[Bearings::Problem]
+  def call: (Bearings::Site site, Array[Bearings::OutputFile] files, readme: String, paths: Array[String], markdown: singleton(Bearings::Kramdown)) -> Array[Bearings::Problem]
+
+  # @rbs readme: String
+  # @rbs markdown: singleton(Bearings::Kramdown)
+  # @rbs return: Array[String]
+  def paths: (String readme, markdown: singleton(Bearings::Kramdown)) -> Array[String]
+
+  private
+
+  # @rbs document: Bearings::Document
+  # @rbs readme: String
+  # @rbs return: Array[[String, Integer]]
+  def internal: (Bearings::Document document, String readme) -> Array[[ String, Integer ]]
+
+  # @rbs href: String
+  # @rbs return: String?
+  def repo_path: (String href) -> String?
+
+  # @rbs href: String
+  # @rbs line: Integer
+  # @rbs paths: Array[String]
+  # @rbs guides: Hash[String, anchors]
+  # @rbs own: anchors
+  # @rbs return: Bearings::Problem?
+  def problem: (String href, Integer line, Array[String] paths, Hash[String, anchors] guides, anchors own) -> Bearings::Problem?
+
+  # @rbs line: Integer
+  # @rbs check: String
+  # @rbs message: String
+  # @rbs hint: String
+  # @rbs return: Bearings::Problem
+  def failed: (Integer line, String check, String message, String hint) -> Bearings::Problem
+end

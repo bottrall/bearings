@@ -276,4 +276,18 @@ describe Bearings::MarkdownCopies do
       end
     end
   end
+
+  describe '.path' do
+    it "is the page's markdown URL without its leading slash" do
+      assert_equal 'guides/reference/manifest.md',
+                   Bearings::MarkdownCopies.path(page('reference/manifest', 'docs/reference/MANIFEST.md'))
+    end
+  end
+
+  describe '.fenced' do
+    it 'lists each line from the opening fence of a code block or diagram to its closing fence' do
+      assert_equal [3, 4, 5, 8, 9, 10, 11],
+                   Bearings::MarkdownCopies.fenced(document([code("a\n", 3), diagram("graph TD\nA\n", 8)]))
+    end
+  end
 end

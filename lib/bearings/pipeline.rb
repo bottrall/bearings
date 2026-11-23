@@ -17,8 +17,12 @@ module Bearings::Pipeline
     :watched, #: Array[String]
     :layout, #: String?
     :landing, #: String?
+    :layout_file, #: String
+    :landing_file, #: String
     :assets, #: Hash[String, Pathname]
-    :declared #: Set[String]
+    :declared, #: Set[String]
+    :readme, #: String?
+    :readme_paths #: Array[String]
   )
 
   OUTPUTS = [
@@ -55,6 +59,25 @@ module Bearings::Pipeline
       # Redirects.problems knows the stubs; passed in as pages, each would replace itself.
       pages = files - Bearings::Redirects.files(redirects, input.site.details.url)
       Bearings::Redirects.problems(redirects, input.site, paths: pages.map(&:path), file: input.manifest_file)
+    end,
+    lambda do |input, files|
+      Bearings::Checks::Links.call(
+        input.site,
+        files,
+        sources: input.sources,
+        markdown: Bearings::Kramdown,
+        layout_file: input.layout_file,
+        landing_file: input.landing_file,
+        manifest_file: input.manifest_file
+      )
+    end,
+    lambda do |input, files|
+      readme = input.readme
+      next [] unless readme
+
+      Bearings::Checks::ReadmeLinks.call(
+        input.site, files, readme:, paths: input.readme_paths, markdown: Bearings::Kramdown
+      )
     end
   ].freeze #: Array[check]
 

@@ -15,7 +15,17 @@ module Bearings::Kramdown
   # @rbs return: Bearings::Document?
   def document: (String source) -> Bearings::Document?
 
+  # @rbs source: String
+  # @rbs return: Bearings::Document
+  def whole: (String source) -> Bearings::Document
+
   private
+
+  # @rbs source: String
+  # @rbs title: String
+  # @rbs title_line: Integer?
+  # @rbs return: Bearings::Document
+  def parse: (String source, String title, Integer? title_line) -> Bearings::Document
 
   # @rbs parsed: ::Kramdown::Document
   # @rbs return: String

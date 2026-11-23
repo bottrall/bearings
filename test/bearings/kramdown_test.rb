@@ -277,4 +277,20 @@ describe Bearings::Kramdown do
       assert_includes body("- Item\n\n  ```mermaid\n  graph LR\n  ```\n"), %(<pre class="mermaid">graph LR\n</pre>)
     end
   end
+
+  describe '.whole' do
+    def whole(source) = Bearings::Kramdown.whole(source)
+
+    it 'renders the title line, with its id' do
+      assert_includes whole("# Bearings\n\nText\n").body, '<h1 id="bearings">Bearings</h1>'
+    end
+
+    it 'renders a source with no "# " title line' do
+      assert_includes whole("Bearings\n========\n").body, '<h1 id="bearings">Bearings</h1>'
+    end
+
+    it 'gives an item the line it has in the source' do
+      assert_equal [3], whole("# Bearings\n\n[Home](README.md)\n").links.map(&:line)
+    end
+  end
 end

@@ -75,8 +75,11 @@ module Bearings::Rake
     sources = sources(manifest)
     site, built = site(manifest, sources)
     dir = File.dirname(path)
-    templates = [LAYOUT, LANDING].map { |name| File.join(dir, name) }
+    layout_file = File.join(dir, LAYOUT)
+    landing_file = File.join(dir, LANDING)
+    templates = [layout_file, landing_file]
     layout, landing = templates.map { |template| File.read(template) if File.file?(template) }
+    readme = read_readme
     input = Bearings::Pipeline::Input.new(
       manifest:,
       manifest_file: path,
@@ -86,8 +89,12 @@ module Bearings::Rake
       watched: watched(manifest.watch),
       layout:,
       landing:,
+      layout_file:,
+      landing_file:,
       assets: assets(dir, [File.basename(path), LAYOUT, LANDING]),
-      declared: declared(manifest.site.namespaces)
+      declared: declared(manifest.site.namespaces),
+      readme:,
+      readme_paths: readme_paths(readme)
     )
     [input, [*built, *templates.reject { |template| File.file?(template) }.map { |template| no_template(template) }]]
   end
@@ -137,6 +144,20 @@ module Bearings::Rake
       File.file?(file) && !File.expand_path(file).start_with?(site)
     end
     files.to_h { |file| [file.delete_prefix("#{dir}/"), Pathname(file)] }
+  end
+
+  # @rbs return: String?
+  def read_readme
+    file = Bearings::Checks::ReadmeLinks::FILE
+    File.read(file) if File.file?(file)
+  end
+
+  # @rbs readme: String?
+  # @rbs return: Array[String]
+  def readme_paths(readme)
+    return [] unless readme
+
+    Bearings::Checks::ReadmeLinks.paths(readme, markdown: Bearings::Kramdown).select { |path| File.exist?(path) }
   end
 
   # @rbs namespaces: Array[String]

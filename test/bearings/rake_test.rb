@@ -256,6 +256,20 @@ describe Bearings::Rake do
       assert_equal 0, status('docs:check')
     end
 
+    it 'passes a repo with no README' do
+      write_site
+      delete('README.md')
+
+      assert_equal 0, status('docs:check')
+    end
+
+    it "checks the README's links against the repo" do
+      write_site
+      write('README.md', "# Bearings\n\nSee [the licence](LICENSE).\n")
+
+      assert_includes output('docs:check'), 'README.md:3: [link] links to `LICENSE`, which is not a file in the repo'
+    end
+
     it 'reports the problems from the checks' do
       write_site
 

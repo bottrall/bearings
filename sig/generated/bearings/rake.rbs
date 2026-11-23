@@ -67,6 +67,13 @@ module Bearings::Rake
   # @rbs return: Hash[String, Pathname]
   def assets: (String dir, Array[String] read) -> Hash[String, Pathname]
 
+  # @rbs return: String?
+  def read_readme: () -> String?
+
+  # @rbs readme: String?
+  # @rbs return: Array[String]
+  def readme_paths: (String? readme) -> Array[String]
+
   # @rbs namespaces: Array[String]
   # @rbs return: Set[String]
   def declared: (Array[String] namespaces) -> Set[String]
