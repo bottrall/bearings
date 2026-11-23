@@ -1,0 +1,21 @@
+site:
+  name: Bearings
+  summary: A themeless docs engine
+  url: https://bearings.example
+  repo: https://github.com/bottrall/bearings
+  version: lib/version.rb
+outputs:
+  llms_full: true
+watch:
+  - docs
+redirects:
+  /guides/begin/: /guides/start/
+groups:
+  - label: Start here
+    pages:
+      - source: docs/START.md
+        slug: start
+        description: Where to begin
+      - source: docs/reference/MANIFEST.md
+        slug: reference/manifest
+        description: Every manifest key

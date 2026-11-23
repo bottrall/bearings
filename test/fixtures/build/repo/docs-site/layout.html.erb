@@ -1,0 +1,5 @@
+<!doctype html>
+<title><%= page.title %> — <%= site.name %> v<%= version %></title>
+<nav><%- pages.each do |p| -%><a href="<%= p.url %>"><%= p.num %> <%= p.title %></a><%- end -%></nav>
+<main><%= body %></main>
+<%- if next_page -%><a rel="next" href="<%= next_page.url %>"><%= next_page.title %></a><%- end -%>

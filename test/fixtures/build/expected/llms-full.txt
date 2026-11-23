@@ -1,0 +1,15 @@
+# Start
+
+Read [the manifest guide](/guides/reference/manifest.md#keys) next.
+
+## Install
+
+```ruby
+gem 'bearings'
+```
+
+# Manifest
+
+## Keys
+
+Back to [the start](/guides/start.md).
