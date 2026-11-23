@@ -1,0 +1,44 @@
+# Generated from lib/bearings/redirects.rb with RBS::Inline
+
+module Bearings::Redirects
+  type issue = [ String, String ]
+
+  # @rbs redirects: Array[Bearings::Manifest::Redirect]
+  # @rbs url: String?
+  # @rbs return: Array[Bearings::OutputFile]
+  def files: (Array[Bearings::Manifest::Redirect] redirects, String? url) -> Array[Bearings::OutputFile]
+
+  # @rbs redirects: Array[Bearings::Manifest::Redirect]
+  # @rbs site: Bearings::Site
+  # @rbs paths: Array[String]
+  # @rbs file: String
+  # @rbs return: Array[Bearings::Problem]
+  def problems: (Array[Bearings::Manifest::Redirect] redirects, Bearings::Site site, paths: Array[String], file: String) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs from: String
+  # @rbs return: String
+  def stub_path: (String from) -> String
+
+  # @rbs base: String?
+  # @rbs to: String
+  # @rbs return: String
+  def canonical: (String? base, String to) -> String
+
+  # @rbs to: String
+  # @rbs canonical: String
+  # @rbs return: String
+  def stub: (String to, String canonical) -> String
+
+  # @rbs redirect: Bearings::Manifest::Redirect
+  # @rbs existing: Array[String]
+  # @rbs return: issue?
+  def replacing: (Bearings::Manifest::Redirect redirect, Array[String] existing) -> issue?
+
+  # @rbs redirect: Bearings::Manifest::Redirect
+  # @rbs existing: Array[String]
+  # @rbs stubs: Hash[String, Bearings::Manifest::Redirect]
+  # @rbs return: issue?
+  def targeting: (Bearings::Manifest::Redirect redirect, Array[String] existing, Hash[String, Bearings::Manifest::Redirect] stubs) -> issue?
+end

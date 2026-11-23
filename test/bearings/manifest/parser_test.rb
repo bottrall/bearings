@@ -72,7 +72,7 @@ describe Bearings::Manifest::Parser do
         )
       ],
       watch: ['docs'],
-      redirects: { '/old/' => '/guides/start/' },
+      redirects: [Bearings::Manifest::Redirect.new(from: '/old/', to: '/guides/start/', line: 24)],
       outputs: Bearings::Manifest::Outputs.new(llms_full: true),
       checks: Bearings::Manifest::Checks.new(image_limit_kb: 200, external_links: true)
     )
@@ -102,7 +102,7 @@ describe Bearings::Manifest::Parser do
       ),
       groups: [Bearings::Manifest::Group.new(label: 'Start here', pages: [page], extras: {})],
       watch: [],
-      redirects: {},
+      redirects: [],
       outputs: Bearings::Manifest::Outputs.new(llms_full: false),
       checks: Bearings::Manifest::Checks.new(image_limit_kb: 300, external_links: false)
     )
@@ -334,6 +334,16 @@ describe Bearings::Manifest::Parser do
 
     it 'keeps an unknown page key that has no value' do
       assert_equal({ 'badge' => nil }, parse("#{minimal}        badge:\n").groups.first.pages.first.extras)
+    end
+
+    it 'loads each redirect in order, with the line of its old path' do
+      assert_equal(
+        [
+          Bearings::Manifest::Redirect.new(from: '/old/', to: '/guides/start/', line: 9),
+          Bearings::Manifest::Redirect.new(from: '/api/', to: '/guides/reference/manifest/', line: 10)
+        ],
+        parse("#{minimal}redirects:\n  /old/: /guides/start/\n  /api/: /guides/reference/manifest/\n").redirects
+      )
     end
 
     it "loads riffer-rig's manifest with a site block added" do

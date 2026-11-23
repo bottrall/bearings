@@ -1,0 +1,20 @@
+# Generated from lib/bearings/checks/manifest_matches_disk.rb with RBS::Inline
+
+module Bearings::Checks::ManifestMatchesDisk
+  # @rbs manifest: Bearings::Manifest
+  # @rbs paths: Array[String]
+  # @rbs return: Array[Bearings::Problem]
+  def call: (manifest: Bearings::Manifest, paths: Array[String]) -> Array[Bearings::Problem]
+
+  private
+
+  # @rbs paths: Array[String]
+  # @rbs watch: Array[String]
+  # @rbs sources: Array[String]
+  # @rbs return: Array[Bearings::Problem]
+  def unlisted: (Array[String] paths, Array[String] watch, Array[String] sources) -> Array[Bearings::Problem]
+
+  # @rbs pages: Array[Bearings::Manifest::Page]
+  # @rbs return: Array[Bearings::Problem]
+  def undescribed: (Array[Bearings::Manifest::Page] pages) -> Array[Bearings::Problem]
+end

@@ -86,6 +86,10 @@ module Bearings::Manifest::Parser
   # @rbs return: Bearings::Manifest::Page
   def build_page: (Psych::Nodes::Node node) -> Bearings::Manifest::Page
 
+  # @rbs node: Psych::Nodes::Node?
+  # @rbs return: Array[Bearings::Manifest::Redirect]
+  def build_redirects: (Psych::Nodes::Node? node) -> Array[Bearings::Manifest::Redirect]
+
   # @rbs node: Psych::Nodes::Node
   # @rbs schema: schema
   # @rbs return: Hash[String, untyped]

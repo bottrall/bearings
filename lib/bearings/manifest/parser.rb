@@ -164,7 +164,7 @@ module Bearings::Manifest::Parser
       ),
       groups: items(top['groups']).map { |group| build_group(group) },
       watch: value(top['watch']) || [],
-      redirects: value(top['redirects']) || {},
+      redirects: build_redirects(top['redirects']),
       outputs: Bearings::Manifest::Outputs.new(llms_full: value(outputs['llms_full']) || false),
       checks: Bearings::Manifest::Checks.new(
         image_limit_kb: value(checks['image_limit_kb']) || IMAGE_LIMIT_KB,
@@ -195,6 +195,14 @@ module Bearings::Manifest::Parser
       featured: value(page['featured']) || false,
       extras: extras(node, PAGE)
     )
+  end
+
+  # @rbs node: Psych::Nodes::Node?
+  # @rbs return: Array[Bearings::Manifest::Redirect]
+  def build_redirects(node)
+    return [] unless node.is_a?(Psych::Nodes::Mapping)
+
+    pairs(node).map { |from, to| Bearings::Manifest::Redirect.new(from: value(from), to: value(to), line: line(from)) }
   end
 
   # @rbs node: Psych::Nodes::Node
