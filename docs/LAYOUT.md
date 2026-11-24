@@ -6,7 +6,7 @@ bearings has no theme and never will. The look of a site belongs to the repo tha
 | ------------------ | --------------------------------------------------------------------------------------------------------------- |
 | `layout.html.erb`  | The template every guide is rendered through. Required.                                                         |
 | `index.html.erb`   | The template for the landing page, `/index.html`. Required.                                                     |
-| anything else      | Copied into the site as it is, at the same path: stylesheets, scripts, fonts, icons, a `404.html`, a `CNAME`.  |
+| anything else      | Copied into the site as it is, at the same path, hidden files (names starting with `.`) excepted: stylesheets, scripts, fonts, icons, a `404.html`, a `CNAME`.  |
 
 If either template is missing, the build reports a `layout` problem, `was not found`, and writes no HTML pages and none of the files beside the templates; the other outputs are still written.
 
@@ -64,7 +64,7 @@ The body is kramdown's HTML for the guide, read as GitHub-flavoured markdown, wi
 
 - A link to another guide, such as `[the checks](CHECKS.md#redirect)`, points at that guide's page, `/guides/checks/#redirect`. A link to a markdown file that is not a page is reported as a [`link` problem](CHECKS.md#problems-in-every-build).
 - Every heading has an `id`, made the way GitHub makes them, so a link to a heading works in both places.
-- Code blocks are highlighted by Rouge: each is a `div` with the class `language-<name>` around a `pre class="highlight"`, and the tokens are `span`s with Rouge's short class names. The layout's stylesheet colours them; `rougify style github` prints one such stylesheet.
+- Code blocks in a language Rouge highlights are a `div` with the classes `language-<name> highlighter-rouge`, holding a `div class="highlight"` and then a `pre class="highlight"`; a block with no language, a `text` or `plaintext` one, or one Rouge doesn't know is a bare `pre` holding a `code` (with the class `language-<name>` when it names a language), so a layout styles both shapes. The tokens are `span`s with Rouge's short class names. The layout's stylesheet colours them; `rougify style github` prints one such stylesheet.
 - An alert block, a quote that starts with `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` or `[!CAUTION]`, becomes a `div` with the classes `alert alert-note` (or `-tip`, and so on), holding a `p class="alert-title"` with the kind's name and then the quote's text.
 - A Mermaid diagram becomes a `pre class="mermaid"` holding its source, and an image points at its copy under `/assets/`; [Diagrams and images](DIAGRAMS_AND_IMAGES.md) covers both.
 
@@ -76,7 +76,7 @@ The body holds only structure and class names. How an alert or a code block look
 
 ## The files beside them
 
-Every other file in the manifest's folder, in any subfolder, is copied into the site at the same path: `docs-site/site.css` is served at `/site.css`, `docs-site/fonts/body.woff2` at `/fonts/body.woff2`. Point at them from the templates by those paths.
+Every other file in the manifest's folder, in any subfolder, except hidden files (names starting with `.`), is copied into the site at the same path: `docs-site/site.css` is served at `/site.css`, `docs-site/fonts/body.woff2` at `/fonts/body.woff2`. Point at them from the templates by those paths.
 
 A `404.html` is worth adding: `rake docs:serve` answers a path the site doesn't have with it, and GitHub Pages does the same.
 

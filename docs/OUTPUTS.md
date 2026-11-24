@@ -8,7 +8,7 @@ Every build writes the whole site into `_site/` at the repo root. Each output is
 | `guides/<slug>/index.html`   | Each guide, through `layout.html.erb`                          | both templates are there                        |
 | `guides/<slug>.md`           | Each guide's markdown copy                                     | always                                          |
 | `assets/<path>`              | Each image a guide shows, at its path from the repo root       | always                                          |
-| any other path               | Each other file beside the manifest, at the same path          | both templates are there                        |
+| any other path               | Each other file beside the manifest, except hidden ones, at the same path          | both templates are there                        |
 | `llms.txt`                   | The index of the guides for agents                             | `site.url` is set                               |
 | `llms-full.txt`              | Every guide's markdown copy in one file                        | `outputs.llms_full` is true                     |
 | `sitemap.xml` and `robots.txt` | The page list for search engines                             | `site.url` is set                               |
