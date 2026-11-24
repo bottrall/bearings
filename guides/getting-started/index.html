@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Getting started · bearings</title>
+    <meta name="description" content="Install bearings, add the two Rakefile lines and build a first site">
+    <link rel="canonical" href="https://bearings.bottrall.dev/guides/getting-started/">
+    <link rel="alternate" type="text/markdown" href="/guides/getting-started.md">
+    <link rel="stylesheet" href="/site.css">
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/">bearings</a>
+      <span class="version">v0.1.0</span>
+      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    </header>
+
+    <div class="columns">
+      <nav class="contents" aria-label="Guides">
+        <h2>Start here</h2>
+        <ol>
+          <li><a href="/guides/getting-started/" aria-current="page">Getting started</a></li>
+        </ol>
+        <h2>Building a site</h2>
+        <ol>
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ol>
+        <h2>Reference</h2>
+        <ol>
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ol>
+      </nav>
+
+      <main>
+        <article>
+          <p class="kicker">Start here · 01</p>
+          <h1>Getting started</h1>
+          <nav class="toc" aria-label="On this page">
+            <ul>
+              <li><a href="#install">Install</a></li>
+              <li><a href="#the-two-rakefile-lines">The two Rakefile lines</a></li>
+              <li><a href="#a-first-site">A first site</a></li>
+              <li><a href="#how-a-build-runs">How a build runs</a></li>
+              <li><a href="#where-to-next">Where to next</a></li>
+            </ul>
+          </nav>
+          
+<p>bearings turns a folder of plain markdown guides into a static site. You write the guides, list them in a manifest, and write a layout that gives the site its look. bearings builds the pages, a markdown copy of every guide, <code>llms.txt</code>, a search index and a sitemap, and checks that the links, anchors, code examples, constant names, images and diagrams in them are all sound.</p>
+
+<p>It has no theme. The layout is yours: an ERB template your repo keeps beside the manifest.</p>
+
+<h2 id="install">Install</h2>
+
+<p>bearings needs Ruby 3.3 or later. Add it to your <code>Gemfile</code>, with <code>rake</code>, which runs its tasks:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">group</span> <span class="ss">:development</span> <span class="k">do</span>
+  <span class="n">gem</span> <span class="s1">'bearings'</span>
+  <span class="n">gem</span> <span class="s1">'rake'</span>
+  <span class="c1"># Only for the constant check, which compares the guides with your RBS signatures.</span>
+  <span class="n">gem</span> <span class="s1">'rbs'</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>bearings’ own dependencies are kramdown, kramdown-parser-gfm, rouge and zeitwerk. It never needs Node or another program.</p>
+
+<h2 id="the-two-rakefile-lines">The two Rakefile lines</h2>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'bearings/rake'</span>
+<span class="no">Bearings</span><span class="o">::</span><span class="no">Rake</span><span class="p">.</span><span class="nf">install</span>
+</code></pre></div></div>
+
+<p>That adds four tasks:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>rake docs</code></td>
+      <td>Builds the site into <code>_site/</code></td>
+    </tr>
+    <tr>
+      <td><code>rake docs:check</code></td>
+      <td>Builds the site and runs every check, failing on any error</td>
+    </tr>
+    <tr>
+      <td><code>rake docs:serve</code></td>
+      <td>Builds the site, serves it at <code>http://localhost:8000</code> and rebuilds it when its files change</td>
+    </tr>
+    <tr>
+      <td><code>rake docs:check:external</code></td>
+      <td>Requests every external link in the guides and reports the ones that fail</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>docs</code>, <code>docs:check</code> and <code>docs:check:external</code> print the problems they found, and exit with status 1 if any is an error. Set <code>FORMAT=json</code> to print them as JSON instead; <a href="/guides/checks/#reading-a-report">The checks</a> shows both forms.</p>
+
+<p>The manifest is <code>docs-site/manifest.yml</code> unless you pass another path. The layout, the landing page and the site’s other files are read from the manifest’s folder, whatever it is called:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bearings</span><span class="o">::</span><span class="no">Rake</span><span class="p">.</span><span class="nf">install</span><span class="p">(</span><span class="ss">manifest: </span><span class="s1">'site/manifest.yml'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Every task runs from the repo root, and the ones that build write to <code>_site/</code> there, so add <code>_site/</code> to your <code>.gitignore</code>.</p>
+
+<h2 id="a-first-site">A first site</h2>
+
+<p>A site needs a guide, a manifest that lists it, a layout and a landing page:</p>
+
+<pre><code class="language-text">docs/GETTING_STARTED.md
+docs-site/manifest.yml
+docs-site/layout.html.erb
+docs-site/index.html.erb
+</code></pre>
+
+<p>The guide is plain markdown. Its first <code># </code> line is the page title:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh"># Getting started</span>
+
+Install the gem, then run it.
+</code></pre></div></div>
+
+<p>The manifest names the site and lists every page, each with the guide it comes from, the slug its URL is built from, and a one-line description:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">site</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">My gem</span>
+  <span class="na">url</span><span class="pi">:</span> <span class="s">https://docs.example.com</span>
+
+<span class="na">watch</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">docs</span>
+
+<span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">label</span><span class="pi">:</span> <span class="s">Start here</span>
+    <span class="na">pages</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">source</span><span class="pi">:</span> <span class="s">docs/GETTING_STARTED.md</span>
+        <span class="na">slug</span><span class="pi">:</span> <span class="s">getting-started</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s">Install the gem and run it</span>
+</code></pre></div></div>
+
+<p>The layout renders each guide. This one is about as small as a layout can be:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span><span class="cp">&lt;%=</span> <span class="n">page</span><span class="p">.</span><span class="nf">title</span> <span class="cp">%&gt;</span> · <span class="cp">&lt;%=</span> <span class="n">site</span><span class="p">.</span><span class="nf">name</span> <span class="cp">%&gt;</span><span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;main&gt;</span><span class="cp">&lt;%=</span> <span class="n">body</span> <span class="cp">%&gt;</span><span class="nt">&lt;/main&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>The landing page becomes <code>/index.html</code>. It gets the site and its pages, but no single page:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span><span class="cp">&lt;%=</span> <span class="n">site</span><span class="p">.</span><span class="nf">name</span> <span class="cp">%&gt;</span><span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="cp">&lt;%-</span> <span class="n">pages</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">page</span><span class="o">|</span> <span class="cp">-%&gt;</span>
+    <span class="nt">&lt;p&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">&lt;%=</span> <span class="n">page</span><span class="p">.</span><span class="nf">url</span> <span class="cp">%&gt;</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">&lt;%=</span> <span class="n">page</span><span class="p">.</span><span class="nf">title</span> <span class="cp">%&gt;</span><span class="nt">&lt;/a&gt;</span>: <span class="cp">&lt;%=</span> <span class="n">page</span><span class="p">.</span><span class="nf">description</span> <span class="cp">%&gt;</span><span class="nt">&lt;/p&gt;</span>
+    <span class="cp">&lt;%-</span> <span class="k">end</span> <span class="cp">-%&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>Then build and check it:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle <span class="nb">exec </span>rake docs:check
+</code></pre></div></div>
+
+<p>The guide is now at <code>_site/guides/getting-started/index.html</code>, with its markdown copy at <code>_site/guides/getting-started.md</code>. Run <code>bundle exec rake docs:serve</code> and open <code>http://localhost:8000</code> to read it.</p>
+
+<div class="alert alert-note">
+  <p class="alert-title">Note</p>
+  <p>The guide is still a plain markdown file that GitHub renders on its own. Nothing in it is written for bearings: no front matter, no shortcodes, no syntax GitHub would show as text. Relative links between guides, relative image paths, alert blocks like this one and Mermaid diagrams all read the same in both places.</p>
+</div>
+
+<h2 id="how-a-build-runs">How a build runs</h2>
+
+<p>Each build starts the same way. The manifest and the guides it lists become one site model; each output turns that model into files, and each check turns it into problems.</p>
+
+<pre class="mermaid">flowchart LR
+  accTitle: How a build runs
+  accDescr: The manifest, guides and images become a site model. Outputs turn it into files, which are written to _site. Checks turn it into problems, which go into one report.
+  sources[&quot;manifest, guides and images&quot;] --&gt; model[&quot;site model&quot;]
+  model --&gt; outputs[&quot;outputs&quot;] --&gt; writer[&quot;_site/&quot;]
+  model --&gt; checks[&quot;checks&quot;] --&gt; report[&quot;report&quot;]
+</pre>
+
+<p>A run reports every problem it finds, not only the first. <code>rake docs</code> and <code>rake docs:check</code> write <code>_site/</code> even when they report errors, so you can look at what is wrong; they write nothing only when the manifest itself can’t be read, or two outputs would write the same file. <code>rake docs:serve</code> is the exception: a rebuild with an error keeps serving the last good site.</p>
+
+<p>Each build replaces <code>_site/</code>: a file the build no longer writes is deleted, so keep nothing of your own in it.</p>
+
+<h2 id="where-to-next">Where to next</h2>
+
+<ul>
+  <li><a href="/guides/manifest/">The manifest</a>: every key it takes</li>
+  <li><a href="/guides/layout/">The layout</a>: what your templates are given</li>
+  <li><a href="/guides/diagrams-and-images/">Diagrams and images</a>: drawing and showing things in a guide</li>
+  <li><a href="/guides/outputs/">The outputs</a> and <a href="/guides/checks/">The checks</a>: everything a build writes and reports</li>
+</ul>
+
+        </article>
+
+        <p class="source">
+          <a href="/guides/getting-started.md">Read this page as markdown</a> ·
+          <a href="https://github.com/bottrall/bearings/edit/main/docs/GETTING_STARTED.md">Edit it on GitHub</a>
+        </p>
+
+        <nav class="pager" aria-label="Previous and next">
+          <a rel="next" href="/guides/manifest/">The manifest →</a>
+        </nav>
+      </main>
+    </div>
+  </body>
+</html>

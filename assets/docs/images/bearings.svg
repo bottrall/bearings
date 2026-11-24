@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="The bearings mark: a compass needle inside a ring">
+  <circle cx="48" cy="48" r="42" fill="none" stroke="#1f2937" stroke-width="4"/>
+  <circle cx="48" cy="48" r="32" fill="none" stroke="#1f2937" stroke-width="1.5" stroke-dasharray="2 6"/>
+  <polygon points="48,14 56,48 48,82 40,48" fill="#1f2937"/>
+  <polygon points="48,14 56,48 40,48" fill="#c2410c"/>
+  <circle cx="48" cy="48" r="4" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+</svg>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Diagrams and images · bearings</title>
+    <meta name="description" content="Mermaid diagrams and images in a guide, on GitHub and on the site">
+    <link rel="canonical" href="https://bearings.bottrall.dev/guides/diagrams-and-images/">
+    <link rel="alternate" type="text/markdown" href="/guides/diagrams-and-images.md">
+    <link rel="stylesheet" href="/site.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/">bearings</a>
+      <span class="version">v0.1.0</span>
+      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    </header>
+
+    <div class="columns">
+      <nav class="contents" aria-label="Guides">
+        <h2>Start here</h2>
+        <ol>
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ol>
+        <h2>Building a site</h2>
+        <ol>
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/" aria-current="page">Diagrams and images</a></li>
+        </ol>
+        <h2>Reference</h2>
+        <ol>
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ol>
+      </nav>
+
+      <main>
+        <article>
+          <p class="kicker">Building a site · 04</p>
+          <h1>Diagrams and images</h1>
+          <nav class="toc" aria-label="On this page">
+            <ul>
+              <li><a href="#mermaid-diagrams">Mermaid diagrams</a></li>
+              <li><a href="#images">Images</a></li>
+            </ul>
+          </nav>
+          
+<p>A guide shows a diagram or an image the way GitHub expects: a Mermaid fence, or an image with a path relative to the guide. bearings keeps both working on the site, and checks them.</p>
+
+<h2 id="mermaid-diagrams">Mermaid diagrams</h2>
+
+<p>Write a diagram as a fenced code block with the language <code>mermaid</code>. Mermaid is text, so an agent can write it and read it back, a change to it is an ordinary diff, and GitHub draws it in place:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">```</span><span class="nl">mermaid
+</span><span class="sb">flowchart LR
+  accTitle: From guide to site
+  guide["a guide"] --&gt; site["the site"]</span>
+<span class="p">```</span>
+</code></pre></div></div>
+
+<p>On the site, the fence becomes a <code>pre</code> with the class <code>mermaid</code>, holding the diagram’s source, escaped as HTML:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">"mermaid"</span><span class="nt">&gt;</span>flowchart LR
+  accTitle: From guide to site
+  guide[<span class="ni">&amp;quot;</span>a guide<span class="ni">&amp;quot;</span>] --<span class="ni">&amp;gt;</span> site[<span class="ni">&amp;quot;</span>the site<span class="ni">&amp;quot;</span>]
+<span class="nt">&lt;/pre&gt;</span>
+</code></pre></div></div>
+
+<p>The markdown copy keeps the fence as written, so an agent reads the source.</p>
+
+<h3 id="drawing-them-in-the-browser">Drawing them in the browser</h3>
+
+<p>Turning the source into a picture is the layout’s job, which keeps bearings free of Node and of any one Mermaid version. A layout loads Mermaid on the pages that need it, which <code>page.diagrams?</code> tells it:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%-</span> <span class="k">if</span> <span class="n">page</span><span class="p">.</span><span class="nf">diagrams?</span> <span class="cp">-%&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"module"</span><span class="nt">&gt;</span>
+  <span class="k">import</span> <span class="nx">mermaid</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nx">mermaid</span><span class="p">.</span><span class="nf">initialize</span><span class="p">({</span> <span class="na">startOnLoad</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="cp">&lt;%-</span> <span class="k">end</span> <span class="cp">-%&gt;</span>
+</code></pre></div></div>
+
+<p>Mermaid finds every <code>pre class="mermaid"</code> on the page and draws it. <a href="/guides/getting-started/#how-a-build-runs">Getting started</a> has a diagram drawn this way.</p>
+
+<h3 id="what-is-checked">What is checked</h3>
+
+<p><code>rake docs:check</code> reports a diagram that is empty, one whose first line names no Mermaid diagram type, and one with no <code>accTitle:</code> line. The <code>accTitle</code> is the diagram’s alt text: what a screen reader announces in place of the picture. Add an <code>accDescr:</code> line too when the title alone doesn’t say what the diagram shows.</p>
+
+<p>The check doesn’t run Mermaid, so a mistake further into a diagram is not reported: look at the page in <code>rake docs:serve</code> after changing one.</p>
+
+<h2 id="images">Images</h2>
+
+<p>Show an image with markdown, or with an HTML <code>img</code>, or a <code>picture</code> whose <code>source</code>s give other versions. Its path is relative to the guide, as GitHub reads it:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">![</span><span class="nv">The bearings mark: a compass needle inside a ring</span><span class="p">](</span><span class="sx">images/bearings.svg</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>That line, in this guide, shows this:</p>
+
+<p><img src="/assets/docs/images/bearings.svg" alt="The bearings mark: a compass needle inside a ring" width="96" height="96" loading="lazy" /></p>
+
+<p>For every image a guide shows, bearings:</p>
+
+<ul>
+  <li>copies the file into the site under <code>/assets/</code>, at its path from the repo root, so <code>docs/images/bearings.svg</code> is served at <code>/assets/docs/images/bearings.svg</code>;</li>
+  <li>points the page’s <code>src</code> or <code>srcset</code> at that copy;</li>
+  <li>adds <code>width</code> and <code>height</code>, read from the file, to an <code>img</code> that sets neither, so the page doesn’t shift as it loads (it reads them from PNG, GIF and JPEG files, and from an SVG’s <code>width</code> and <code>height</code> or its <code>viewBox</code>);</li>
+  <li>adds <code>loading="lazy"</code> to an <code>img</code> that doesn’t set <code>loading</code>;</li>
+  <li>points the markdown copy at the image’s full URL under <code>site.url</code>, so the copy shows it when read on its own.</li>
+</ul>
+
+<p>An image path that starts with <code>/</code> or names another site is left as it is.</p>
+
+<p>Keep images next to the guides, in a folder the manifest <a href="/guides/manifest/#watch">watches</a>, so the check can tell you when one is no longer used.</p>
+
+<h3 id="what-is-checked-1">What is checked</h3>
+
+<p><code>rake docs:check</code> reports an image with no alt text, one that is not there, one larger than the manifest’s <code>checks.image_limit_kb</code> (300 KB unless you set it), and one in a watched folder that no guide shows. Alt text is all an agent or a screen reader gets, so write it as a description of what the image shows, not as its name.</p>
+
+<p>An image loaded from another site is a warning: it breaks when you read the guides offline, and it can change or vanish without a diff. <a href="/guides/checks/#image">The checks</a> lists every image problem.</p>
+
+        </article>
+
+        <p class="source">
+          <a href="/guides/diagrams-and-images.md">Read this page as markdown</a> ·
+          <a href="https://github.com/bottrall/bearings/edit/main/docs/DIAGRAMS_AND_IMAGES.md">Edit it on GitHub</a>
+        </p>
+
+        <nav class="pager" aria-label="Previous and next">
+          <a rel="prev" href="/guides/layout/">← The layout</a>
+          <a rel="next" href="/guides/outputs/">The outputs →</a>
+        </nav>
+      </main>
+    </div>
+  </body>
+</html>

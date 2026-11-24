@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The checks · bearings</title>
+    <meta name="description" content="Every problem a build or a check reports, and how to fix it">
+    <link rel="canonical" href="https://bearings.bottrall.dev/guides/checks/">
+    <link rel="alternate" type="text/markdown" href="/guides/checks.md">
+    <link rel="stylesheet" href="/site.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/">bearings</a>
+      <span class="version">v0.1.0</span>
+      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    </header>
+
+    <div class="columns">
+      <nav class="contents" aria-label="Guides">
+        <h2>Start here</h2>
+        <ol>
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ol>
+        <h2>Building a site</h2>
+        <ol>
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ol>
+        <h2>Reference</h2>
+        <ol>
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/" aria-current="page">The checks</a></li>
+        </ol>
+      </nav>
+
+      <main>
+        <article>
+          <p class="kicker">Reference · 06</p>
+          <h1>The checks</h1>
+          <nav class="toc" aria-label="On this page">
+            <ul>
+              <li><a href="#reading-a-report">Reading a report</a></li>
+              <li><a href="#problems-in-every-build">Problems in every build</a></li>
+              <li><a href="#unlisted-and-description">unlisted and description</a></li>
+              <li><a href="#code">code</a></li>
+              <li><a href="#constant">constant</a></li>
+              <li><a href="#diagram">diagram</a></li>
+              <li><a href="#image">image</a></li>
+              <li><a href="#redirect">redirect</a></li>
+              <li><a href="#link-and-anchor">link and anchor</a></li>
+              <li><a href="#the-readmes-links">The README’s links</a></li>
+              <li><a href="#external-links">External links</a></li>
+            </ul>
+          </nav>
+          
+<p>If <code>rake docs:check</code> passes, the site is correct: every guide is listed, every link and anchor resolves in every output, every example parses, every constant a guide names exists, and every image and diagram is there and described. When it fails, each problem names the markdown source and line to fix.</p>
+
+<p>A run reports every problem it finds, from every step it could reach, and exits with status 1 if any of them is an error. A warning is printed but doesn’t fail the run.</p>
+
+<div class="alert alert-important">
+  <p class="alert-title">Important</p>
+  <p>No check can be turned off. A check that raises a false alarm is a bug in bearings: <a href="https://github.com/bottrall/bearings/issues">report it</a>, rather than working around it in the guide.</p>
+</div>
+
+<h2 id="reading-a-report">Reading a report</h2>
+
+<p>Each problem is printed with its file, its line, the check that found it, what is wrong, and a hint on the line below. They are sorted by file, then line:</p>
+
+<pre><code class="language-text">docs/GUIDE.md:12: [image] shows an image with no alt text
+  describe the image in its alt text; it is all an agent or a screen reader gets
+docs/GUIDE.md:30: [anchor] links to `#instal`, but guides/guide/index.html has no id `instal`
+  point the fragment at an id on that page, such as a heading's
+</code></pre>
+
+<p>With <code>FORMAT=json</code>, the same problems are printed as one JSON array, <code>[]</code> when there are none:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"check"</span><span class="p">:</span><span class="w"> </span><span class="s2">"image"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"docs/GUIDE.md"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"line"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"shows an image with no alt text"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"hint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"describe the image in its alt text; it is all an agent or a screen reader gets"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<p><code>level</code> is <code>error</code> or <code>warning</code>, and <code>hint</code> may be <code>null</code>.</p>
+
+<h2 id="problems-in-every-build">Problems in every build</h2>
+
+<p>These come from building the site, so <code>rake docs</code> and <code>rake docs:serve</code> report them too:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+      <th>What to do</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>manifest</code></td>
+      <td>error</td>
+      <td>was not found, or a problem in the manifest</td>
+      <td><a href="/guides/manifest/#when-the-manifest-is-wrong">When the manifest is wrong</a> lists them all</td>
+    </tr>
+    <tr>
+      <td><code>layout</code></td>
+      <td>error</td>
+      <td>was not found</td>
+      <td>Add <code>layout.html.erb</code> and <code>index.html.erb</code> beside the manifest</td>
+    </tr>
+    <tr>
+      <td><code>source</code></td>
+      <td>error</td>
+      <td>is listed in the manifest but was not found</td>
+      <td>Add the guide, or remove its page from the manifest</td>
+    </tr>
+    <tr>
+      <td><code>title</code></td>
+      <td>error</td>
+      <td>has no “# “ title line</td>
+      <td>Start the guide with a <code># Title</code> line</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td>error</td>
+      <td>has no version</td>
+      <td>Set <code>VERSION = '…'</code> in the file, or point <code>site.version</code> at the one that does</td>
+    </tr>
+    <tr>
+      <td><code>link</code></td>
+      <td>error</td>
+      <td>links to <code>FILE.md</code>, which is not a page</td>
+      <td>Point the link at a guide the manifest lists, or list that guide</td>
+    </tr>
+    <tr>
+      <td><code>llms</code></td>
+      <td>warning</td>
+      <td>has no <code>site.url</code>, so llms.txt was not written</td>
+      <td>Set <code>site.url</code></td>
+    </tr>
+    <tr>
+      <td><code>sitemap</code></td>
+      <td>warning</td>
+      <td>has no <code>site.url</code>, so sitemap.xml and robots.txt were not written</td>
+      <td>Set <code>site.url</code></td>
+    </tr>
+    <tr>
+      <td><code>output</code></td>
+      <td>error</td>
+      <td>n output files have this path</td>
+      <td>Give each output its own path</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A guide may link to any markdown file GitHub can show, but on the site only a guide the manifest lists has a page, so a link to any other markdown file is a <code>link</code> problem. Link to a file outside the guides by its full URL on GitHub instead.</p>
+
+<p>The rest of this guide covers the checks only <code>rake docs:check</code> runs.</p>
+
+<h2 id="unlisted-and-description">unlisted and description</h2>
+
+<p>Every markdown file in a folder the manifest <a href="/guides/manifest/#watch">watches</a> must be a page, and every page needs a description.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>unlisted</code></td>
+      <td>error</td>
+      <td>is in a watched folder but no page in the manifest lists it</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td>error</td>
+      <td>has no description in the manifest</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="code">code</h2>
+
+<p>Every fenced <code>ruby</code>, <code>json</code> and <code>yaml</code> block in a guide must parse: Ruby with Prism, JSON with Ruby’s JSON parser, and YAML with Psych, which accepts any valid YAML, aliases and dates included. A block in any other language is not checked, nor is an indented one.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>code</code></td>
+      <td>error</td>
+      <td>the ruby example does not parse: what the parser reported</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The line is the line of the error, not of the fence. Show code you left out as a comment, not as <code>...</code>, which is seldom valid where it stands.</p>
+
+<h2 id="constant">constant</h2>
+
+<p>With <code>site.namespaces</code> set, every constant under those namespaces that a guide names must be declared in the repo’s RBS signatures, in <code>sig/</code>. A renamed or deleted class is then a failing check rather than a stale guide.</p>
+
+<p>The check reads every fenced <code>ruby</code> block and every inline code span, as Ruby, so <code>`MyGem::Client.new`</code> in a sentence counts as naming <code>MyGem::Client</code>. Only names under a listed namespace are checked, the namespace itself included; a constant a <code>ruby</code> block on the same page defines counts as declared. It needs the <code>rbs</code> gem, and without <code>site.namespaces</code> it doesn’t run.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>constant</code></td>
+      <td>error</td>
+      <td>names <code>MyGem::Clinet</code>, which the RBS signatures do not declare</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The hint suggests the closest declared name, if one is close.</p>
+
+<h2 id="diagram">diagram</h2>
+
+<p>Every Mermaid diagram must have a type and a title. <a href="/guides/diagrams-and-images/#mermaid-diagrams">Diagrams and images</a> explains why.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>diagram</code></td>
+      <td>error</td>
+      <td>has an empty diagram</td>
+    </tr>
+    <tr>
+      <td><code>diagram</code></td>
+      <td>error</td>
+      <td>has a diagram whose first line names no Mermaid diagram type</td>
+    </tr>
+    <tr>
+      <td><code>diagram</code></td>
+      <td>warning</td>
+      <td>has a diagram with no accTitle line, the alt text that describes it</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The first line may come after Mermaid front matter and <code>%%</code> comment lines, as Mermaid allows.</p>
+
+<h2 id="image">image</h2>
+
+<p>Every image a guide shows must be there, described and small enough, and every image in a watched folder must be shown.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>image</code></td>
+      <td>error</td>
+      <td>shows an image with no alt text</td>
+    </tr>
+    <tr>
+      <td><code>image</code></td>
+      <td>error</td>
+      <td>shows <code>images/flow.png</code>, which was not found</td>
+    </tr>
+    <tr>
+      <td><code>image</code></td>
+      <td>error</td>
+      <td>shows <code>images/flow.png</code>, which is 412 KB, over the 300 KB limit</td>
+    </tr>
+    <tr>
+      <td><code>image</code></td>
+      <td>warning</td>
+      <td>loads <code>https://example.com/flow.png</code> from another site</td>
+    </tr>
+    <tr>
+      <td><code>image</code></td>
+      <td>error</td>
+      <td>is in a watched folder but no guide shows it</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The limit is the manifest’s <code>checks.image_limit_kb</code>. In a watched folder, a file is an image if it ends in <code>.avif</code>, <code>.gif</code>, <code>.jpeg</code>, <code>.jpg</code>, <code>.png</code>, <code>.svg</code> or <code>.webp</code>.</p>
+
+<h2 id="redirect">redirect</h2>
+
+<p>Each of the manifest’s <code>redirects</code> must lead somewhere. Each problem is reported on the redirect’s line in the manifest.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>redirect</code></td>
+      <td>error</td>
+      <td>redirect from <code>/old/</code> would replace a page of the site</td>
+    </tr>
+    <tr>
+      <td><code>redirect</code></td>
+      <td>error</td>
+      <td>redirect from <code>/old/</code> points to <code>/new/</code>, another redirect</td>
+    </tr>
+    <tr>
+      <td><code>redirect</code></td>
+      <td>error</td>
+      <td>redirect from <code>/old/</code> points to <code>/new/</code>, which is not a page or file in the site</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For a redirect to another redirect, the hint names the path to point at instead.</p>
+
+<h2 id="link-and-anchor">link and anchor</h2>
+
+<p>Every internal link in every output must lead to a file the site writes, and every <code>#fragment</code> in an HTML page must name an <code>id</code> on the page it points at. The check reads:</p>
+
+<ul>
+  <li>each guide’s HTML page, including the links the layout adds;</li>
+  <li>each guide’s markdown copy;</li>
+  <li>the landing page;</li>
+  <li><code>llms.txt</code>.</li>
+</ul>
+
+<p>A link with a scheme, such as <code>https:</code> or <code>mailto:</code>, or one starting with <code>//</code>, is external and not checked here. A full URL under <code>site.url</code> is internal and checked like any other. A link shown as code is text, not a link.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>link</code></td>
+      <td>error</td>
+      <td>links to <code>/guides/gone/</code>, which is not a file in the site</td>
+    </tr>
+    <tr>
+      <td><code>link</code></td>
+      <td>error</td>
+      <td>its copy guides/start.md links to <code>/gone.md</code>, which is not a file in the site</td>
+    </tr>
+    <tr>
+      <td><code>anchor</code></td>
+      <td>error</td>
+      <td>links to <code>/guides/start/#instal</code>, but guides/start/index.html has no id <code>instal</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Each problem points at the line it was written on: the guide’s line for a link in a guide, line 1 of <code>layout.html.erb</code> for a link the layout adds, of <code>index.html.erb</code> for one on the landing page, and of the manifest for one in <code>llms.txt</code>.</p>
+
+<h2 id="the-readmes-links">The README’s links</h2>
+
+<p>When the repo has a <code>README.md</code>, its relative links must lead to files in the repo, and its anchors to headings that exist: one of its own, or one on the page of a guide it links to. These are reported in <code>README.md</code> as <code>link</code> and <code>anchor</code> problems:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>link</code></td>
+      <td>error</td>
+      <td>links to <code>docs/GONE.md</code>, which is not a file in the repo</td>
+    </tr>
+    <tr>
+      <td><code>anchor</code></td>
+      <td>error</td>
+      <td>links to <code>LICENSE#terms</code>, an anchor in a file that is not a guide</td>
+    </tr>
+    <tr>
+      <td><code>anchor</code></td>
+      <td>error</td>
+      <td>links to <code>docs/START.md#instal</code>, but guides/start/index.html has no id <code>instal</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="external-links">External links</h2>
+
+<p><code>rake docs:check</code> never makes a network request. <code>rake docs:check:external</code> is the check that does: it requests every <code>http</code> and <code>https</code> link in the guides, each distinct URL once, following up to five redirects and waiting up to ten seconds for each.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Level</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>external-links</code></td>
+      <td>error</td>
+      <td>https://example.com/gone returned HTTP 404</td>
+    </tr>
+    <tr>
+      <td><code>external-links</code></td>
+      <td>error</td>
+      <td>https://example.com/ could not be fetched: why it failed</td>
+    </tr>
+    <tr>
+      <td><code>external-links</code></td>
+      <td>warning</td>
+      <td>https://example.com/ could not be fetched: timed out after 10s</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A timeout is only a warning, since the site may just be slow. Run it now and then, or on a schedule, rather than on every change: a site that is down for a minute shouldn’t fail a build.</p>
+
+        </article>
+
+        <p class="source">
+          <a href="/guides/checks.md">Read this page as markdown</a> ·
+          <a href="https://github.com/bottrall/bearings/edit/main/docs/CHECKS.md">Edit it on GitHub</a>
+        </p>
+
+        <nav class="pager" aria-label="Previous and next">
+          <a rel="prev" href="/guides/outputs/">← The outputs</a>
+        </nav>
+      </main>
+    </div>
+  </body>
+</html>

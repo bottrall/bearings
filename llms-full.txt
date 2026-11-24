@@ -1,0 +1,714 @@
+# Getting started
+
+bearings turns a folder of plain markdown guides into a static site. You write the guides, list them in a manifest, and write a layout that gives the site its look. bearings builds the pages, a markdown copy of every guide, `llms.txt`, a search index and a sitemap, and checks that the links, anchors, code examples, constant names, images and diagrams in them are all sound.
+
+It has no theme. The layout is yours: an ERB template your repo keeps beside the manifest.
+
+## Install
+
+bearings needs Ruby 3.3 or later. Add it to your `Gemfile`, with `rake`, which runs its tasks:
+
+```ruby
+group :development do
+  gem 'bearings'
+  gem 'rake'
+  # Only for the constant check, which compares the guides with your RBS signatures.
+  gem 'rbs'
+end
+```
+
+bearings' own dependencies are kramdown, kramdown-parser-gfm, rouge and zeitwerk. It never needs Node or another program.
+
+## The two Rakefile lines
+
+```ruby
+require 'bearings/rake'
+Bearings::Rake.install
+```
+
+That adds four tasks:
+
+| Task                       | What it does                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| `rake docs`                | Builds the site into `_site/`                                                               |
+| `rake docs:check`          | Builds the site and runs every check, failing on any error                                  |
+| `rake docs:serve`          | Builds the site, serves it at `http://localhost:8000` and rebuilds it when its files change |
+| `rake docs:check:external` | Requests every external link in the guides and reports the ones that fail                   |
+
+`docs`, `docs:check` and `docs:check:external` print the problems they found, and exit with status 1 if any is an error. Set `FORMAT=json` to print them as JSON instead; [The checks](/guides/checks.md#reading-a-report) shows both forms.
+
+The manifest is `docs-site/manifest.yml` unless you pass another path. The layout, the landing page and the site's other files are read from the manifest's folder, whatever it is called:
+
+```ruby
+Bearings::Rake.install(manifest: 'site/manifest.yml')
+```
+
+Every task runs from the repo root, and the ones that build write to `_site/` there, so add `_site/` to your `.gitignore`.
+
+## A first site
+
+A site needs a guide, a manifest that lists it, a layout and a landing page:
+
+```text
+docs/GETTING_STARTED.md
+docs-site/manifest.yml
+docs-site/layout.html.erb
+docs-site/index.html.erb
+```
+
+The guide is plain markdown. Its first `# ` line is the page title:
+
+```markdown
+# Getting started
+
+Install the gem, then run it.
+```
+
+The manifest names the site and lists every page, each with the guide it comes from, the slug its URL is built from, and a one-line description:
+
+```yaml
+site:
+  name: My gem
+  url: https://docs.example.com
+
+watch:
+  - docs
+
+groups:
+  - label: Start here
+    pages:
+      - source: docs/GETTING_STARTED.md
+        slug: getting-started
+        description: Install the gem and run it
+```
+
+The layout renders each guide. This one is about as small as a layout can be:
+
+```erb
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title><%= page.title %> · <%= site.name %></title>
+  </head>
+  <body>
+    <main><%= body %></main>
+  </body>
+</html>
+```
+
+The landing page becomes `/index.html`. It gets the site and its pages, but no single page:
+
+```erb
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title><%= site.name %></title>
+  </head>
+  <body>
+    <%- pages.each do |page| -%>
+    <p><a href="<%= page.url %>"><%= page.title %></a>: <%= page.description %></p>
+    <%- end -%>
+  </body>
+</html>
+```
+
+Then build and check it:
+
+```sh
+bundle exec rake docs:check
+```
+
+The guide is now at `_site/guides/getting-started/index.html`, with its markdown copy at `_site/guides/getting-started.md`. Run `bundle exec rake docs:serve` and open `http://localhost:8000` to read it.
+
+> [!NOTE]
+> The guide is still a plain markdown file that GitHub renders on its own. Nothing in it is written for bearings: no front matter, no shortcodes, no syntax GitHub would show as text. Relative links between guides, relative image paths, alert blocks like this one and Mermaid diagrams all read the same in both places.
+
+## How a build runs
+
+Each build starts the same way. The manifest and the guides it lists become one site model; each output turns that model into files, and each check turns it into problems.
+
+```mermaid
+flowchart LR
+  accTitle: How a build runs
+  accDescr: The manifest, guides and images become a site model. Outputs turn it into files, which are written to _site. Checks turn it into problems, which go into one report.
+  sources["manifest, guides and images"] --> model["site model"]
+  model --> outputs["outputs"] --> writer["_site/"]
+  model --> checks["checks"] --> report["report"]
+```
+
+A run reports every problem it finds, not only the first. `rake docs` and `rake docs:check` write `_site/` even when they report errors, so you can look at what is wrong; they write nothing only when the manifest itself can't be read, or two outputs would write the same file. `rake docs:serve` is the exception: a rebuild with an error keeps serving the last good site.
+
+Each build replaces `_site/`: a file the build no longer writes is deleted, so keep nothing of your own in it.
+
+## Where to next
+
+- [The manifest](/guides/manifest.md): every key it takes
+- [The layout](/guides/layout.md): what your templates are given
+- [Diagrams and images](/guides/diagrams-and-images.md): drawing and showing things in a guide
+- [The outputs](/guides/outputs.md) and [The checks](/guides/checks.md): everything a build writes and reports
+
+# The manifest
+
+The manifest is the only list of what the site holds. A guide is on the site because a page in the manifest names it, never because of the folder it is in, and guides carry no front matter: everything bearings knows about a page that is not in the guide itself is here.
+
+It lives at `docs-site/manifest.yml` unless you pass another path to `Bearings::Rake.install(manifest:)`. Every file path in it is relative to the repo root.
+
+## A full manifest
+
+This one uses every key:
+
+```yaml
+site:
+  name: My gem
+  summary: What my gem does, in one line.
+  url: https://docs.example.com
+  repo: https://github.com/me/my_gem
+  version: lib/my_gem/version.rb
+  namespaces:
+    - MyGem
+
+watch:
+  - docs
+
+redirects:
+  /guides/setup/: /guides/getting-started/
+
+outputs:
+  llms_full: true
+
+checks:
+  image_limit_kb: 200
+  external_links: false
+
+groups:
+  - label: Start here
+    tone: teal
+    pages:
+      - source: docs/GETTING_STARTED.md
+        slug: getting-started
+        featured: true
+        description: Install the gem and run it
+      - source: docs/reference/CONFIGURATION.md
+        slug: reference/configuration
+        description: Every setting and its default
+```
+
+Only `site.name` and `groups` are required. bearings' own manifest is [docs-site/manifest.yml](https://github.com/bottrall/bearings/blob/main/docs-site/manifest.yml) in its repo.
+
+## site
+
+| Key          | Value        | Default | What it does                                                                                                                         |
+| ------------ | ------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`       | text         |         | The site's name: the title of `llms.txt`, and `site.name` in the layout. Required.                                                    |
+| `summary`    | text         | none    | One line about the site, quoted under the title of `llms.txt`.                                                                       |
+| `url`        | text         | none    | The address the site is published at. Without it there is no `llms.txt`, `sitemap.xml` or `robots.txt`, and pages have no canonical URL. |
+| `repo`       | text         | none    | The repo's web address. Each page's `edit_url` is `<repo>/edit/main/<source>`.                                                        |
+| `version`    | text         | none    | The path of a file that sets `VERSION = '…'`. Its value is `version` in the layout; a file that sets none is a `version` problem.   |
+| `namespaces` | list of text | none    | The constants the [constant check](/guides/checks.md#constant) looks for. Without any, it doesn't run.                                       |
+
+The `url` also changes the markdown copies: an image in a copy points at its full URL on the site, so the copy still shows it when read on its own.
+
+## groups
+
+The site's pages, in reading order, in labelled groups. The order here is the order of the layout's navigation, of the previous and next links, of `llms.txt` and of `llms-full.txt`.
+
+A group takes:
+
+| Key     | Value         | What it does                       |
+| ------- | ------------- | ---------------------------------- |
+| `label` | text          | The group's heading. Required.     |
+| `pages` | list of pages | The group's pages, in order. Required. |
+
+A page takes:
+
+| Key           | Value         | Default | What it does                                                                                                     |
+| ------------- | ------------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `source`      | text          |         | The guide's path from the repo root, in any folder. Required, and unique.                                        |
+| `slug`        | text          |         | The page's URL is `/guides/<slug>/`. Lowercase letters, digits and hyphens, with `/` between segments. Required, and unique. |
+| `description` | text          | none    | One line about the page, for the layout and `llms.txt`. The [description check](/guides/checks.md#unlisted-and-description) requires it. |
+| `featured`    | true or false | false   | A flag for the layout, which might show the page first or larger. bearings does nothing else with it.            |
+
+The page's title is not in the manifest: it is the guide's first `# ` line.
+
+Pages are numbered `01`, `02` and so on, in manifest order, counting separately for each folder their guides are in. The layout gets the number as `page.num`.
+
+Any other key on a group or a page is kept as it is and handed to the layout in `extras`, so a site can carry details of its own: the `tone: teal` above is `group.extras['tone']`.
+
+## watch
+
+A list of folders. Every markdown file in them must be a page in the manifest, and every image in them must be shown by a guide; `rake docs:check` reports the ones that aren't. Without `watch`, a guide nobody listed goes unnoticed.
+
+## redirects
+
+A mapping of old path to new path, for a URL the site no longer has:
+
+```yaml
+redirects:
+  /guides/setup/: /guides/getting-started/
+  /guides/old-name/: /guides/new-name/#a-heading
+```
+
+Each one writes a page at the old path that sends the browser to the new one. The new path must be a page or a file the site writes, and the old one must not be; [The checks](/guides/checks.md#redirect) lists what is reported when they are wrong.
+
+## outputs
+
+| Key         | Value         | Default | What it does                                                                     |
+| ----------- | ------------- | ------- | -------------------------------------------------------------------------------- |
+| `llms_full` | true or false | false   | Also writes `/llms-full.txt`, every guide's markdown copy in one file.           |
+
+## checks
+
+| Key              | Value          | Default | What it does                                                                                       |
+| ---------------- | -------------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `image_limit_kb` | a whole number | 300     | The largest an image a guide shows may be, in KB.                                                  |
+| `external_links` | true or false  | false   | Accepted, but bearings 0.1 does not read it: external links are checked only when you run `rake docs:check:external`. |
+
+## When the manifest is wrong
+
+A manifest that can't be read stops the build before anything is written. Every problem in it is reported at once, as a `manifest` problem on the line it is on:
+
+| Message                                                                   | What it means                                                                                         |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| was not found                                                             | There is no file at the manifest's path.                                                              |
+| the manifest is empty                                                     | The file has no YAML in it.                                                                           |
+| the manifest is not valid YAML                                            | The YAML parser's own message follows.                                                                |
+| the manifest holds only text, numbers, true or false, lists and mappings | A date, a `:symbol`, a YAML tag or an alias. Quote a date or a symbol to make it text.                |
+| … must be a mapping                                                       | The manifest, `site`, `outputs`, `checks`, a group or a page is not a mapping.                       |
+| … is missing `key`                                                        | A required key is missing, or has no value.                                                           |
+| … has an unknown key `key`                                                | A key the manifest, `site`, `outputs` or `checks` doesn't take. The hint lists the ones it does.     |
+| `key` must be …                                                           | A value of the wrong kind, such as a list where text belongs.                                         |
+| slug `slug` is not URL-safe                                               | A slug with a capital, a space, a leading `/` or another character outside the allowed ones.         |
+| duplicate slug `slug`, first used on line n                               | Two pages share a slug.                                                                               |
+| duplicate source `source`, first used on line n                           | Two pages share a guide.                                                                              |
+
+# The layout
+
+bearings has no theme and never will. The look of a site belongs to the repo that builds it, in a few files beside the manifest:
+
+| File               | What it is                                                                                                      |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `layout.html.erb`  | The template every guide is rendered through. Required.                                                         |
+| `index.html.erb`   | The template for the landing page, `/index.html`. Required.                                                     |
+| anything else      | Copied into the site as it is, at the same path, hidden files (names starting with `.`) excepted: stylesheets, scripts, fonts, icons, a `404.html`, a `CNAME`.  |
+
+If either template is missing, the build reports a `layout` problem, `was not found`, and writes no HTML pages and none of the files beside the templates; the other outputs are still written.
+
+## How the templates run
+
+Both are ERB, with `-` trimming: a line that starts with `<%-` and ends with `-%>` leaves nothing behind, so a loop leaves no blank lines.
+
+Nothing is escaped for you. `<%= %>` writes a value exactly as it is, which is what `body` needs, since it is HTML. Titles and descriptions come from your own guides and manifest; if one may hold a `<` or an `&`, escape it with `ERB::Util.h`.
+
+A template is Ruby, so a mistake in one raises when it runs. `rake docs:serve` prints the error and keeps serving the last good site.
+
+## What both templates get
+
+| Name      | What it is                                                                                                        |
+| --------- | ----------------------------------------------------------------------------------------------------------------- |
+| `site`    | The manifest's `site` block: `site.name`, `site.summary`, `site.url`, `site.repo`, `site.version` (the version file's path) and `site.namespaces`. A key the manifest leaves out is `nil`, or an empty list for `namespaces`. |
+| `version` | The version read from the file `site.version` names, such as `'1.2.0'`, or `nil` without one.                     |
+| `groups`  | The groups, in manifest order. Each has a `label`, its `pages` in order, and `extras`.                            |
+| `pages`   | Every page, in reading order.                                                                                     |
+
+## What the layout gets as well
+
+| Name               | What it is                                                                                                |
+| ------------------ | --------------------------------------------------------------------------------------------------------- |
+| `page`             | The page being rendered.                                                                                  |
+| `body`             | The guide as HTML, without its `# ` title line, which the layout shows from `page.title`.                 |
+| `toc`              | One `{ id:, title: }` hash for each `##` heading in the body, in order. The title is the heading's HTML with its tags removed. |
+| `prev_page`        | The page before this one in reading order, or `nil` on the first.                                         |
+| `next_page`        | The page after this one, or `nil` on the last.                                                            |
+| `search_index_url` | `/search.json`, the [search index](/guides/outputs.md#searchjson), for a layout that offers search.               |
+
+## A page
+
+| Field           | What it is                                                                                         |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| `title`         | The text of the guide's first `# ` line.                                                           |
+| `description`   | The page's description from the manifest.                                                         |
+| `slug`          | The page's slug from the manifest.                                                                 |
+| `url`           | `/guides/<slug>/`.                                                                                 |
+| `markdown_url`  | `/guides/<slug>.md`, the page's [markdown copy](/guides/outputs.md#markdown-copies).                       |
+| `canonical_url` | The page's full URL under `site.url`, or `nil` without one.                                        |
+| `edit_url`      | The guide's edit link under `site.repo`, or `nil` without one.                                     |
+| `source_path`   | The guide's path from the repo root.                                                               |
+| `group_label`   | The label of the page's group.                                                                     |
+| `num`           | The page's two-digit number, such as `'03'`; [The manifest](/guides/manifest.md#groups) says how it counts. |
+| `featured`      | The page's `featured` flag from the manifest.                                                      |
+| `extras`        | The page's other keys from the manifest, as a hash with string keys.                               |
+| `diagrams?`     | Whether the guide has a Mermaid diagram, so the layout loads Mermaid only where it is needed.     |
+
+Pages are compared by value, so `p == page` picks out the current page in a loop over `pages`.
+
+## What the body holds
+
+The body is kramdown's HTML for the guide, read as GitHub-flavoured markdown, with these changes:
+
+- A link to another guide, such as `[the checks](CHECKS.md#redirect)`, points at that guide's page, `/guides/checks/#redirect`. A link to a markdown file that is not a page is reported as a [`link` problem](/guides/checks.md#problems-in-every-build).
+- Every heading has an `id`, made the way GitHub makes them, so a link to a heading works in both places.
+- Code blocks in a language Rouge highlights are a `div` with the classes `language-<name> highlighter-rouge`, holding a `div class="highlight"` and then a `pre class="highlight"`; a block with no language, a `text` or `plaintext` one, or one Rouge doesn't know is a bare `pre` holding a `code` (with the class `language-<name>` when it names a language), so a layout styles both shapes. The tokens are `span`s with Rouge's short class names. The layout's stylesheet colours them; `rougify style github` prints one such stylesheet.
+- An alert block, a quote that starts with `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` or `[!CAUTION]`, becomes a `div` with the classes `alert alert-note` (or `-tip`, and so on), holding a `p class="alert-title"` with the kind's name and then the quote's text.
+- A Mermaid diagram becomes a `pre class="mermaid"` holding its source, and an image points at its copy under `/assets/`; [Diagrams and images](/guides/diagrams-and-images.md) covers both.
+
+The body holds only structure and class names. How an alert or a code block looks is the stylesheet's job.
+
+## The landing page
+
+`index.html.erb` becomes `/index.html`. It gets `site`, `version`, `groups` and `pages`, but no `page` or `body`: it is not a guide. A landing page usually says what the project is and lists the guides with their descriptions.
+
+## The files beside them
+
+Every other file in the manifest's folder, in any subfolder, except hidden files (names starting with `.`), is copied into the site at the same path: `docs-site/site.css` is served at `/site.css`, `docs-site/fonts/body.woff2` at `/fonts/body.woff2`. Point at them from the templates by those paths.
+
+A `404.html` is worth adding: `rake docs:serve` answers a path the site doesn't have with it, and GitHub Pages does the same.
+
+## bearings' own layout
+
+bearings builds its own site from these guides, with a plain layout written as a working example: [layout.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb), [index.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb) and [site.css](https://github.com/bottrall/bearings/blob/main/docs-site/site.css). It is not a theme, and the gem does not ship it: copy what is useful.
+
+# Diagrams and images
+
+A guide shows a diagram or an image the way GitHub expects: a Mermaid fence, or an image with a path relative to the guide. bearings keeps both working on the site, and checks them.
+
+## Mermaid diagrams
+
+Write a diagram as a fenced code block with the language `mermaid`. Mermaid is text, so an agent can write it and read it back, a change to it is an ordinary diff, and GitHub draws it in place:
+
+````markdown
+```mermaid
+flowchart LR
+  accTitle: From guide to site
+  guide["a guide"] --> site["the site"]
+```
+````
+
+On the site, the fence becomes a `pre` with the class `mermaid`, holding the diagram's source, escaped as HTML:
+
+```html
+<pre class="mermaid">flowchart LR
+  accTitle: From guide to site
+  guide[&quot;a guide&quot;] --&gt; site[&quot;the site&quot;]
+</pre>
+```
+
+The markdown copy keeps the fence as written, so an agent reads the source.
+
+### Drawing them in the browser
+
+Turning the source into a picture is the layout's job, which keeps bearings free of Node and of any one Mermaid version. A layout loads Mermaid on the pages that need it, which `page.diagrams?` tells it:
+
+```erb
+<%- if page.diagrams? -%>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true });
+</script>
+<%- end -%>
+```
+
+Mermaid finds every `pre class="mermaid"` on the page and draws it. [Getting started](/guides/getting-started.md#how-a-build-runs) has a diagram drawn this way.
+
+### What is checked
+
+`rake docs:check` reports a diagram that is empty, one whose first line names no Mermaid diagram type, and one with no `accTitle:` line. The `accTitle` is the diagram's alt text: what a screen reader announces in place of the picture. Add an `accDescr:` line too when the title alone doesn't say what the diagram shows.
+
+The check doesn't run Mermaid, so a mistake further into a diagram is not reported: look at the page in `rake docs:serve` after changing one.
+
+## Images
+
+Show an image with markdown, or with an HTML `img`, or a `picture` whose `source`s give other versions. Its path is relative to the guide, as GitHub reads it:
+
+```markdown
+![The bearings mark: a compass needle inside a ring](images/bearings.svg)
+```
+
+That line, in this guide, shows this:
+
+![The bearings mark: a compass needle inside a ring](https://bearings.bottrall.dev/assets/docs/images/bearings.svg)
+
+For every image a guide shows, bearings:
+
+- copies the file into the site under `/assets/`, at its path from the repo root, so `docs/images/bearings.svg` is served at `/assets/docs/images/bearings.svg`;
+- points the page's `src` or `srcset` at that copy;
+- adds `width` and `height`, read from the file, to an `img` that sets neither, so the page doesn't shift as it loads (it reads them from PNG, GIF and JPEG files, and from an SVG's `width` and `height` or its `viewBox`);
+- adds `loading="lazy"` to an `img` that doesn't set `loading`;
+- points the markdown copy at the image's full URL under `site.url`, so the copy shows it when read on its own.
+
+An image path that starts with `/` or names another site is left as it is.
+
+Keep images next to the guides, in a folder the manifest [watches](/guides/manifest.md#watch), so the check can tell you when one is no longer used.
+
+### What is checked
+
+`rake docs:check` reports an image with no alt text, one that is not there, one larger than the manifest's `checks.image_limit_kb` (300 KB unless you set it), and one in a watched folder that no guide shows. Alt text is all an agent or a screen reader gets, so write it as a description of what the image shows, not as its name.
+
+An image loaded from another site is a warning: it breaks when you read the guides offline, and it can change or vanish without a diff. [The checks](/guides/checks.md#image) lists every image problem.
+
+# The outputs
+
+Every build writes the whole site into `_site/` at the repo root. Each output is made from the manifest, the guides and the images they show, the templates and the files beside them, and nothing else, so the same sources always build the same site.
+
+| Path                         | What it is                                                     | Written when                                    |
+| ---------------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
+| `index.html`                 | The landing page, from `index.html.erb`                        | both templates are there                        |
+| `guides/<slug>/index.html`   | Each guide, through `layout.html.erb`                          | both templates are there                        |
+| `guides/<slug>.md`           | Each guide's markdown copy                                     | always                                          |
+| `assets/<path>`              | Each image a guide shows, at its path from the repo root       | always                                          |
+| any other path               | Each other file beside the manifest, except hidden ones, at the same path          | both templates are there                        |
+| `llms.txt`                   | The index of the guides for agents                             | `site.url` is set                               |
+| `llms-full.txt`              | Every guide's markdown copy in one file                        | `outputs.llms_full` is true                     |
+| `sitemap.xml` and `robots.txt` | The page list for search engines                             | `site.url` is set                               |
+| `<old path>/index.html`      | A redirect stub for each of the manifest's `redirects`         | always                                          |
+| `search.json`                | The search index                                               | always                                          |
+
+A build deletes any file in `_site/` it did not write this time, and any folder left empty, so `_site/` always holds exactly one build. If two outputs would write the same path, such as a redirect stub and a file copied from beside the manifest, the build reports an `output` problem and writes nothing.
+
+## HTML pages
+
+Each guide is rendered through the layout at `/guides/<slug>/`, and the landing page at `/`. [The layout](/guides/layout.md) is the contract for both: what each template is given and what the body holds.
+
+## Markdown copies
+
+Each guide is also written as markdown, at `/guides/<slug>.md`, for agents and for anyone who would rather read the source. A copy is the guide as written, with two kinds of change:
+
+- A link to another guide points at that guide's copy, keeping its `#fragment`: `[the checks](CHECKS.md#image)` becomes `[the checks](/guides/checks.md#image)`.
+- An image points at its copy on the site: its full URL under `site.url`, or its `/assets/` path without one.
+
+Everything else is kept byte for byte, including code blocks, code spans, alert blocks and Mermaid fences. A link-shaped string inside a code span or a code block is left alone.
+
+## llms.txt
+
+`/llms.txt` tells an agent what documentation exists and where to read it as markdown. It is generated from the manifest, so it can't drift from the guides:
+
+```text
+# bearings
+
+> A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out.
+
+## Start here
+
+- [Getting started](https://bearings.bottrall.dev/guides/getting-started.md): Install bearings, add the two Rakefile lines and build a first site
+```
+
+It has `site.name` as its title, `site.summary` quoted beneath, and a section for each group, listing each page's title, the full URL of its markdown copy and its description. Without a `site.url` it can't give full URLs, so it is not written, and the build reports an `llms` warning.
+
+With `outputs.llms_full: true`, `/llms-full.txt` holds every guide's markdown copy, in reading order, each ending in a newline and separated from the next by a blank line. It needs no `site.url`.
+
+## search.json
+
+`/search.json` is the data for a search box in the layout. bearings writes the index and nothing else: the search box and its script are the layout's.
+
+It is a JSON array with an entry for each section of each page, in reading order. Here is one entry, with its text cut short:
+
+```json
+[
+  {
+    "title": "The outputs",
+    "heading": "search.json",
+    "text": "/search.json is the data for a search box in the layout.",
+    "url": "/guides/outputs/#searchjson"
+  }
+]
+```
+
+| Field     | What it is                                                                                          |
+| --------- | --------------------------------------------------------------------------------------------------- |
+| `title`   | The page's title.                                                                                   |
+| `heading` | The section's heading, or `null` for the text before a page's first heading.                        |
+| `text`    | The section's text, with the markup removed and the whitespace collapsed. Code blocks are included. |
+| `url`     | The section's URL, with the heading's `id` as its fragment; the page's URL for the text before it.  |
+
+Any heading, of any level, starts a new section. The layout is given the index's path as `search_index_url`.
+
+## sitemap.xml and robots.txt
+
+`/sitemap.xml` lists the site's root URL and each page's canonical URL, in reading order. `/robots.txt` allows everything and points at the sitemap:
+
+```text
+User-agent: *
+Allow: /
+
+Sitemap: https://bearings.bottrall.dev/sitemap.xml
+```
+
+Both need full URLs, so without a `site.url` neither is written, and the build reports a `sitemap` warning.
+
+## Redirect stubs
+
+Each of the manifest's `redirects` writes a small HTML page at the old path, `/guides/setup/` writing `guides/setup/index.html`. The page sends the browser on to the new path at once, with a refresh `meta` tag, names the new path's full URL under `site.url` (or the path itself, without one) as its canonical link, and links to it for anyone whose browser doesn't follow the refresh.
+
+`rake docs:check` reports a redirect that points nowhere, one that points at another redirect, and one that would replace a page; [The checks](/guides/checks.md#redirect) has the details.
+
+## Images
+
+Each image a guide shows is copied to `/assets/<path>`, where `<path>` is its path from the repo root. [Diagrams and images](/guides/diagrams-and-images.md#images) covers what else is done to an image on its way into a page.
+
+# The checks
+
+If `rake docs:check` passes, the site is correct: every guide is listed, every link and anchor resolves in every output, every example parses, every constant a guide names exists, and every image and diagram is there and described. When it fails, each problem names the markdown source and line to fix.
+
+A run reports every problem it finds, from every step it could reach, and exits with status 1 if any of them is an error. A warning is printed but doesn't fail the run.
+
+> [!IMPORTANT]
+> No check can be turned off. A check that raises a false alarm is a bug in bearings: [report it](https://github.com/bottrall/bearings/issues), rather than working around it in the guide.
+
+## Reading a report
+
+Each problem is printed with its file, its line, the check that found it, what is wrong, and a hint on the line below. They are sorted by file, then line:
+
+```text
+docs/GUIDE.md:12: [image] shows an image with no alt text
+  describe the image in its alt text; it is all an agent or a screen reader gets
+docs/GUIDE.md:30: [anchor] links to `#instal`, but guides/guide/index.html has no id `instal`
+  point the fragment at an id on that page, such as a heading's
+```
+
+With `FORMAT=json`, the same problems are printed as one JSON array, `[]` when there are none:
+
+```json
+[
+  {
+    "check": "image",
+    "level": "error",
+    "file": "docs/GUIDE.md",
+    "line": 12,
+    "message": "shows an image with no alt text",
+    "hint": "describe the image in its alt text; it is all an agent or a screen reader gets"
+  }
+]
+```
+
+`level` is `error` or `warning`, and `hint` may be `null`.
+
+## Problems in every build
+
+These come from building the site, so `rake docs` and `rake docs:serve` report them too:
+
+| Check      | Level   | Message                                                                     | What to do                                                                  |
+| ---------- | ------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `manifest` | error   | was not found, or a problem in the manifest                                 | [When the manifest is wrong](/guides/manifest.md#when-the-manifest-is-wrong) lists them all |
+| `layout`   | error   | was not found                                                               | Add `layout.html.erb` and `index.html.erb` beside the manifest              |
+| `source`   | error   | is listed in the manifest but was not found                                 | Add the guide, or remove its page from the manifest                         |
+| `title`    | error   | has no "# " title line                                                      | Start the guide with a `# Title` line                                       |
+| `version`  | error   | has no version                                                              | Set `VERSION = '…'` in the file, or point `site.version` at the one that does |
+| `link`     | error   | links to `FILE.md`, which is not a page                                     | Point the link at a guide the manifest lists, or list that guide            |
+| `llms`     | warning | has no `site.url`, so llms.txt was not written                              | Set `site.url`                                                              |
+| `sitemap`  | warning | has no `site.url`, so sitemap.xml and robots.txt were not written           | Set `site.url`                                                              |
+| `output`   | error   | n output files have this path                                               | Give each output its own path                                               |
+
+A guide may link to any markdown file GitHub can show, but on the site only a guide the manifest lists has a page, so a link to any other markdown file is a `link` problem. Link to a file outside the guides by its full URL on GitHub instead.
+
+The rest of this guide covers the checks only `rake docs:check` runs.
+
+## unlisted and description
+
+Every markdown file in a folder the manifest [watches](/guides/manifest.md#watch) must be a page, and every page needs a description.
+
+| Check         | Level | Message                                                       |
+| ------------- | ----- | ------------------------------------------------------------- |
+| `unlisted`    | error | is in a watched folder but no page in the manifest lists it   |
+| `description` | error | has no description in the manifest                            |
+
+## code
+
+Every fenced `ruby`, `json` and `yaml` block in a guide must parse: Ruby with Prism, JSON with Ruby's JSON parser, and YAML with Psych, which accepts any valid YAML, aliases and dates included. A block in any other language is not checked, nor is an indented one.
+
+| Check  | Level | Message                                                   |
+| ------ | ----- | --------------------------------------------------------- |
+| `code` | error | the ruby example does not parse: what the parser reported |
+
+The line is the line of the error, not of the fence. Show code you left out as a comment, not as `...`, which is seldom valid where it stands.
+
+## constant
+
+With `site.namespaces` set, every constant under those namespaces that a guide names must be declared in the repo's RBS signatures, in `sig/`. A renamed or deleted class is then a failing check rather than a stale guide.
+
+The check reads every fenced `ruby` block and every inline code span, as Ruby, so `` `MyGem::Client.new` `` in a sentence counts as naming `MyGem::Client`. Only names under a listed namespace are checked, the namespace itself included; a constant a `ruby` block on the same page defines counts as declared. It needs the `rbs` gem, and without `site.namespaces` it doesn't run.
+
+| Check      | Level | Message                                                          |
+| ---------- | ----- | ---------------------------------------------------------------- |
+| `constant` | error | names `MyGem::Clinet`, which the RBS signatures do not declare   |
+
+The hint suggests the closest declared name, if one is close.
+
+## diagram
+
+Every Mermaid diagram must have a type and a title. [Diagrams and images](/guides/diagrams-and-images.md#mermaid-diagrams) explains why.
+
+| Check     | Level   | Message                                                                |
+| --------- | ------- | ---------------------------------------------------------------------- |
+| `diagram` | error   | has an empty diagram                                                   |
+| `diagram` | error   | has a diagram whose first line names no Mermaid diagram type           |
+| `diagram` | warning | has a diagram with no accTitle line, the alt text that describes it    |
+
+The first line may come after Mermaid front matter and `%%` comment lines, as Mermaid allows.
+
+## image
+
+Every image a guide shows must be there, described and small enough, and every image in a watched folder must be shown.
+
+| Check   | Level   | Message                                                          |
+| ------- | ------- | ---------------------------------------------------------------- |
+| `image` | error   | shows an image with no alt text                                  |
+| `image` | error   | shows `images/flow.png`, which was not found                     |
+| `image` | error   | shows `images/flow.png`, which is 412 KB, over the 300 KB limit  |
+| `image` | warning | loads `https://example.com/flow.png` from another site           |
+| `image` | error   | is in a watched folder but no guide shows it                     |
+
+The limit is the manifest's `checks.image_limit_kb`. In a watched folder, a file is an image if it ends in `.avif`, `.gif`, `.jpeg`, `.jpg`, `.png`, `.svg` or `.webp`.
+
+## redirect
+
+Each of the manifest's `redirects` must lead somewhere. Each problem is reported on the redirect's line in the manifest.
+
+| Check      | Level | Message                                                                                            |
+| ---------- | ----- | -------------------------------------------------------------------------------------------------- |
+| `redirect` | error | redirect from `/old/` would replace a page of the site                                             |
+| `redirect` | error | redirect from `/old/` points to `/new/`, another redirect                                          |
+| `redirect` | error | redirect from `/old/` points to `/new/`, which is not a page or file in the site                   |
+
+For a redirect to another redirect, the hint names the path to point at instead.
+
+## link and anchor
+
+Every internal link in every output must lead to a file the site writes, and every `#fragment` in an HTML page must name an `id` on the page it points at. The check reads:
+
+- each guide's HTML page, including the links the layout adds;
+- each guide's markdown copy;
+- the landing page;
+- `llms.txt`.
+
+A link with a scheme, such as `https:` or `mailto:`, or one starting with `//`, is external and not checked here. A full URL under `site.url` is internal and checked like any other. A link shown as code is text, not a link.
+
+| Check    | Level | Message                                                                    |
+| -------- | ----- | -------------------------------------------------------------------------- |
+| `link`   | error | links to `/guides/gone/`, which is not a file in the site                  |
+| `link`   | error | its copy guides/start.md links to `/gone.md`, which is not a file in the site |
+| `anchor` | error | links to `/guides/start/#instal`, but guides/start/index.html has no id `instal` |
+
+Each problem points at the line it was written on: the guide's line for a link in a guide, line 1 of `layout.html.erb` for a link the layout adds, of `index.html.erb` for one on the landing page, and of the manifest for one in `llms.txt`.
+
+## The README's links
+
+When the repo has a `README.md`, its relative links must lead to files in the repo, and its anchors to headings that exist: one of its own, or one on the page of a guide it links to. These are reported in `README.md` as `link` and `anchor` problems:
+
+| Check    | Level | Message                                                                   |
+| -------- | ----- | ------------------------------------------------------------------------- |
+| `link`   | error | links to `docs/GONE.md`, which is not a file in the repo                  |
+| `anchor` | error | links to `LICENSE#terms`, an anchor in a file that is not a guide         |
+| `anchor` | error | links to `docs/START.md#instal`, but guides/start/index.html has no id `instal` |
+
+## External links
+
+`rake docs:check` never makes a network request. `rake docs:check:external` is the check that does: it requests every `http` and `https` link in the guides, each distinct URL once, following up to five redirects and waiting up to ten seconds for each.
+
+| Check            | Level   | Message                                                       |
+| ---------------- | ------- | ------------------------------------------------------------- |
+| `external-links` | error   | https://example.com/gone returned HTTP 404                    |
+| `external-links` | error   | https://example.com/ could not be fetched: why it failed      |
+| `external-links` | warning | https://example.com/ could not be fetched: timed out after 10s |
+
+A timeout is only a warning, since the site may just be slow. Run it now and then, or on a schedule, rather than on every change: a site that is down for a minute shouldn't fail a build.

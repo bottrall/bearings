@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The outputs · bearings</title>
+    <meta name="description" content="Every file a build writes into _site/">
+    <link rel="canonical" href="https://bearings.bottrall.dev/guides/outputs/">
+    <link rel="alternate" type="text/markdown" href="/guides/outputs.md">
+    <link rel="stylesheet" href="/site.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/">bearings</a>
+      <span class="version">v0.1.0</span>
+      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    </header>
+
+    <div class="columns">
+      <nav class="contents" aria-label="Guides">
+        <h2>Start here</h2>
+        <ol>
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ol>
+        <h2>Building a site</h2>
+        <ol>
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ol>
+        <h2>Reference</h2>
+        <ol>
+          <li><a href="/guides/outputs/" aria-current="page">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ol>
+      </nav>
+
+      <main>
+        <article>
+          <p class="kicker">Reference · 05</p>
+          <h1>The outputs</h1>
+          <nav class="toc" aria-label="On this page">
+            <ul>
+              <li><a href="#html-pages">HTML pages</a></li>
+              <li><a href="#markdown-copies">Markdown copies</a></li>
+              <li><a href="#llmstxt">llms.txt</a></li>
+              <li><a href="#searchjson">search.json</a></li>
+              <li><a href="#sitemapxml-and-robotstxt">sitemap.xml and robots.txt</a></li>
+              <li><a href="#redirect-stubs">Redirect stubs</a></li>
+              <li><a href="#images">Images</a></li>
+            </ul>
+          </nav>
+          
+<p>Every build writes the whole site into <code>_site/</code> at the repo root. Each output is made from the manifest, the guides and the images they show, the templates and the files beside them, and nothing else, so the same sources always build the same site.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Path</th>
+      <th>What it is</th>
+      <th>Written when</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>index.html</code></td>
+      <td>The landing page, from <code>index.html.erb</code></td>
+      <td>both templates are there</td>
+    </tr>
+    <tr>
+      <td><code>guides/&lt;slug&gt;/index.html</code></td>
+      <td>Each guide, through <code>layout.html.erb</code></td>
+      <td>both templates are there</td>
+    </tr>
+    <tr>
+      <td><code>guides/&lt;slug&gt;.md</code></td>
+      <td>Each guide’s markdown copy</td>
+      <td>always</td>
+    </tr>
+    <tr>
+      <td><code>assets/&lt;path&gt;</code></td>
+      <td>Each image a guide shows, at its path from the repo root</td>
+      <td>always</td>
+    </tr>
+    <tr>
+      <td>any other path</td>
+      <td>Each other file beside the manifest, except hidden ones, at the same path</td>
+      <td>both templates are there</td>
+    </tr>
+    <tr>
+      <td><code>llms.txt</code></td>
+      <td>The index of the guides for agents</td>
+      <td><code>site.url</code> is set</td>
+    </tr>
+    <tr>
+      <td><code>llms-full.txt</code></td>
+      <td>Every guide’s markdown copy in one file</td>
+      <td><code>outputs.llms_full</code> is true</td>
+    </tr>
+    <tr>
+      <td><code>sitemap.xml</code> and <code>robots.txt</code></td>
+      <td>The page list for search engines</td>
+      <td><code>site.url</code> is set</td>
+    </tr>
+    <tr>
+      <td><code>&lt;old path&gt;/index.html</code></td>
+      <td>A redirect stub for each of the manifest’s <code>redirects</code></td>
+      <td>always</td>
+    </tr>
+    <tr>
+      <td><code>search.json</code></td>
+      <td>The search index</td>
+      <td>always</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A build deletes any file in <code>_site/</code> it did not write this time, and any folder left empty, so <code>_site/</code> always holds exactly one build. If two outputs would write the same path, such as a redirect stub and a file copied from beside the manifest, the build reports an <code>output</code> problem and writes nothing.</p>
+
+<h2 id="html-pages">HTML pages</h2>
+
+<p>Each guide is rendered through the layout at <code>/guides/&lt;slug&gt;/</code>, and the landing page at <code>/</code>. <a href="/guides/layout/">The layout</a> is the contract for both: what each template is given and what the body holds.</p>
+
+<h2 id="markdown-copies">Markdown copies</h2>
+
+<p>Each guide is also written as markdown, at <code>/guides/&lt;slug&gt;.md</code>, for agents and for anyone who would rather read the source. A copy is the guide as written, with two kinds of change:</p>
+
+<ul>
+  <li>A link to another guide points at that guide’s copy, keeping its <code>#fragment</code>: <code>[the checks](CHECKS.md#image)</code> becomes <code>[the checks](/guides/checks.md#image)</code>.</li>
+  <li>An image points at its copy on the site: its full URL under <code>site.url</code>, or its <code>/assets/</code> path without one.</li>
+</ul>
+
+<p>Everything else is kept byte for byte, including code blocks, code spans, alert blocks and Mermaid fences. A link-shaped string inside a code span or a code block is left alone.</p>
+
+<h2 id="llmstxt">llms.txt</h2>
+
+<p><code>/llms.txt</code> tells an agent what documentation exists and where to read it as markdown. It is generated from the manifest, so it can’t drift from the guides:</p>
+
+<pre><code class="language-text"># bearings
+
+&gt; A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out.
+
+## Start here
+
+- [Getting started](https://bearings.bottrall.dev/guides/getting-started.md): Install bearings, add the two Rakefile lines and build a first site
+</code></pre>
+
+<p>It has <code>site.name</code> as its title, <code>site.summary</code> quoted beneath, and a section for each group, listing each page’s title, the full URL of its markdown copy and its description. Without a <code>site.url</code> it can’t give full URLs, so it is not written, and the build reports an <code>llms</code> warning.</p>
+
+<p>With <code>outputs.llms_full: true</code>, <code>/llms-full.txt</code> holds every guide’s markdown copy, in reading order, each ending in a newline and separated from the next by a blank line. It needs no <code>site.url</code>.</p>
+
+<h2 id="searchjson">search.json</h2>
+
+<p><code>/search.json</code> is the data for a search box in the layout. bearings writes the index and nothing else: the search box and its script are the layout’s.</p>
+
+<p>It is a JSON array with an entry for each section of each page, in reading order. Here is one entry, with its text cut short:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The outputs"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"heading"</span><span class="p">:</span><span class="w"> </span><span class="s2">"search.json"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/search.json is the data for a search box in the layout."</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/guides/outputs/#searchjson"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>What it is</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>title</code></td>
+      <td>The page’s title.</td>
+    </tr>
+    <tr>
+      <td><code>heading</code></td>
+      <td>The section’s heading, or <code>null</code> for the text before a page’s first heading.</td>
+    </tr>
+    <tr>
+      <td><code>text</code></td>
+      <td>The section’s text, with the markup removed and the whitespace collapsed. Code blocks are included.</td>
+    </tr>
+    <tr>
+      <td><code>url</code></td>
+      <td>The section’s URL, with the heading’s <code>id</code> as its fragment; the page’s URL for the text before it.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Any heading, of any level, starts a new section. The layout is given the index’s path as <code>search_index_url</code>.</p>
+
+<h2 id="sitemapxml-and-robotstxt">sitemap.xml and robots.txt</h2>
+
+<p><code>/sitemap.xml</code> lists the site’s root URL and each page’s canonical URL, in reading order. <code>/robots.txt</code> allows everything and points at the sitemap:</p>
+
+<pre><code class="language-text">User-agent: *
+Allow: /
+
+Sitemap: https://bearings.bottrall.dev/sitemap.xml
+</code></pre>
+
+<p>Both need full URLs, so without a <code>site.url</code> neither is written, and the build reports a <code>sitemap</code> warning.</p>
+
+<h2 id="redirect-stubs">Redirect stubs</h2>
+
+<p>Each of the manifest’s <code>redirects</code> writes a small HTML page at the old path, <code>/guides/setup/</code> writing <code>guides/setup/index.html</code>. The page sends the browser on to the new path at once, with a refresh <code>meta</code> tag, names the new path’s full URL under <code>site.url</code> (or the path itself, without one) as its canonical link, and links to it for anyone whose browser doesn’t follow the refresh.</p>
+
+<p><code>rake docs:check</code> reports a redirect that points nowhere, one that points at another redirect, and one that would replace a page; <a href="/guides/checks/#redirect">The checks</a> has the details.</p>
+
+<h2 id="images">Images</h2>
+
+<p>Each image a guide shows is copied to <code>/assets/&lt;path&gt;</code>, where <code>&lt;path&gt;</code> is its path from the repo root. <a href="/guides/diagrams-and-images/#images">Diagrams and images</a> covers what else is done to an image on its way into a page.</p>
+
+        </article>
+
+        <p class="source">
+          <a href="/guides/outputs.md">Read this page as markdown</a> ·
+          <a href="https://github.com/bottrall/bearings/edit/main/docs/OUTPUTS.md">Edit it on GitHub</a>
+        </p>
+
+        <nav class="pager" aria-label="Previous and next">
+          <a rel="prev" href="/guides/diagrams-and-images/">← Diagrams and images</a>
+          <a rel="next" href="/guides/checks/">The checks →</a>
+        </nav>
+      </main>
+    </div>
+  </body>
+</html>

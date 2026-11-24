@@ -1,0 +1,18 @@
+# bearings
+
+> A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out.
+
+## Start here
+
+- [Getting started](https://bearings.bottrall.dev/guides/getting-started.md): Install bearings, add the two Rakefile lines and build a first site
+
+## Building a site
+
+- [The manifest](https://bearings.bottrall.dev/guides/manifest.md): Every manifest key, its default, and the problems a wrong one reports
+- [The layout](https://bearings.bottrall.dev/guides/layout.md): The layout contract, what each template is given, and the files beside it
+- [Diagrams and images](https://bearings.bottrall.dev/guides/diagrams-and-images.md): Mermaid diagrams and images in a guide, on GitHub and on the site
+
+## Reference
+
+- [The outputs](https://bearings.bottrall.dev/guides/outputs.md): Every file a build writes into _site/
+- [The checks](https://bearings.bottrall.dev/guides/checks.md): Every problem a build or a check reports, and how to fix it

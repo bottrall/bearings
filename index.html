@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bearings</title>
+    <meta name="description" content="A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out.">
+    <link rel="canonical" href="https://bearings.bottrall.dev/">
+    <link rel="stylesheet" href="/site.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/">bearings</a>
+      <span class="version">v0.1.0</span>
+      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    </header>
+
+    <main class="landing">
+      <h1>bearings</h1>
+      <p class="summary">A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out.</p>
+
+      <ul class="promises">
+        <li>Guides are plain markdown that reads the same on GitHub.</li>
+        <li>The manifest is the only list of what exists.</li>
+        <li>If the check passes, the site is correct.</li>
+      </ul>
+
+      <p>bearings has no theme. Your repo writes the layout; bearings builds the pages, a markdown copy of each, <a href="/llms.txt">llms.txt</a> and a search index, and checks every link, anchor, example, constant, image and diagram in them. This site is built by bearings from its own repo.</p>
+
+      <p><a class="start" href="/guides/getting-started/">Getting started →</a></p>
+
+      <h2>Start here</h2>
+      <dl>
+        <dt><a href="/guides/getting-started/">Getting started</a></dt>
+        <dd>Install bearings, add the two Rakefile lines and build a first site</dd>
+      </dl>
+      <h2>Building a site</h2>
+      <dl>
+        <dt><a href="/guides/manifest/">The manifest</a></dt>
+        <dd>Every manifest key, its default, and the problems a wrong one reports</dd>
+        <dt><a href="/guides/layout/">The layout</a></dt>
+        <dd>The layout contract, what each template is given, and the files beside it</dd>
+        <dt><a href="/guides/diagrams-and-images/">Diagrams and images</a></dt>
+        <dd>Mermaid diagrams and images in a guide, on GitHub and on the site</dd>
+      </dl>
+      <h2>Reference</h2>
+      <dl>
+        <dt><a href="/guides/outputs/">The outputs</a></dt>
+        <dd>Every file a build writes into _site/</dd>
+        <dt><a href="/guides/checks/">The checks</a></dt>
+        <dd>Every problem a build or a check reports, and how to fix it</dd>
+      </dl>
+    </main>
+  </body>
+</html>

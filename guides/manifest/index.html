@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The manifest · bearings</title>
+    <meta name="description" content="Every manifest key, its default, and the problems a wrong one reports">
+    <link rel="canonical" href="https://bearings.bottrall.dev/guides/manifest/">
+    <link rel="alternate" type="text/markdown" href="/guides/manifest.md">
+    <link rel="stylesheet" href="/site.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/">bearings</a>
+      <span class="version">v0.1.0</span>
+      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    </header>
+
+    <div class="columns">
+      <nav class="contents" aria-label="Guides">
+        <h2>Start here</h2>
+        <ol>
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ol>
+        <h2>Building a site</h2>
+        <ol>
+          <li><a href="/guides/manifest/" aria-current="page">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ol>
+        <h2>Reference</h2>
+        <ol>
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ol>
+      </nav>
+
+      <main>
+        <article>
+          <p class="kicker">Building a site · 02</p>
+          <h1>The manifest</h1>
+          <nav class="toc" aria-label="On this page">
+            <ul>
+              <li><a href="#a-full-manifest">A full manifest</a></li>
+              <li><a href="#site">site</a></li>
+              <li><a href="#groups">groups</a></li>
+              <li><a href="#watch">watch</a></li>
+              <li><a href="#redirects">redirects</a></li>
+              <li><a href="#outputs">outputs</a></li>
+              <li><a href="#checks">checks</a></li>
+              <li><a href="#when-the-manifest-is-wrong">When the manifest is wrong</a></li>
+            </ul>
+          </nav>
+          
+<p>The manifest is the only list of what the site holds. A guide is on the site because a page in the manifest names it, never because of the folder it is in, and guides carry no front matter: everything bearings knows about a page that is not in the guide itself is here.</p>
+
+<p>It lives at <code>docs-site/manifest.yml</code> unless you pass another path to <code>Bearings::Rake.install(manifest:)</code>. Every file path in it is relative to the repo root.</p>
+
+<h2 id="a-full-manifest">A full manifest</h2>
+
+<p>This one uses every key:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">site</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">My gem</span>
+  <span class="na">summary</span><span class="pi">:</span> <span class="s">What my gem does, in one line.</span>
+  <span class="na">url</span><span class="pi">:</span> <span class="s">https://docs.example.com</span>
+  <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/me/my_gem</span>
+  <span class="na">version</span><span class="pi">:</span> <span class="s">lib/my_gem/version.rb</span>
+  <span class="na">namespaces</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">MyGem</span>
+
+<span class="na">watch</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">docs</span>
+
+<span class="na">redirects</span><span class="pi">:</span>
+  <span class="na">/guides/setup/</span><span class="pi">:</span> <span class="s">/guides/getting-started/</span>
+
+<span class="na">outputs</span><span class="pi">:</span>
+  <span class="na">llms_full</span><span class="pi">:</span> <span class="kc">true</span>
+
+<span class="na">checks</span><span class="pi">:</span>
+  <span class="na">image_limit_kb</span><span class="pi">:</span> <span class="m">200</span>
+  <span class="na">external_links</span><span class="pi">:</span> <span class="kc">false</span>
+
+<span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">label</span><span class="pi">:</span> <span class="s">Start here</span>
+    <span class="na">tone</span><span class="pi">:</span> <span class="s">teal</span>
+    <span class="na">pages</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">source</span><span class="pi">:</span> <span class="s">docs/GETTING_STARTED.md</span>
+        <span class="na">slug</span><span class="pi">:</span> <span class="s">getting-started</span>
+        <span class="na">featured</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s">Install the gem and run it</span>
+      <span class="pi">-</span> <span class="na">source</span><span class="pi">:</span> <span class="s">docs/reference/CONFIGURATION.md</span>
+        <span class="na">slug</span><span class="pi">:</span> <span class="s">reference/configuration</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s">Every setting and its default</span>
+</code></pre></div></div>
+
+<p>Only <code>site.name</code> and <code>groups</code> are required. bearings’ own manifest is <a href="https://github.com/bottrall/bearings/blob/main/docs-site/manifest.yml">docs-site/manifest.yml</a> in its repo.</p>
+
+<h2 id="site">site</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Value</th>
+      <th>Default</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td>text</td>
+      <td> </td>
+      <td>The site’s name: the title of <code>llms.txt</code>, and <code>site.name</code> in the layout. Required.</td>
+    </tr>
+    <tr>
+      <td><code>summary</code></td>
+      <td>text</td>
+      <td>none</td>
+      <td>One line about the site, quoted under the title of <code>llms.txt</code>.</td>
+    </tr>
+    <tr>
+      <td><code>url</code></td>
+      <td>text</td>
+      <td>none</td>
+      <td>The address the site is published at. Without it there is no <code>llms.txt</code>, <code>sitemap.xml</code> or <code>robots.txt</code>, and pages have no canonical URL.</td>
+    </tr>
+    <tr>
+      <td><code>repo</code></td>
+      <td>text</td>
+      <td>none</td>
+      <td>The repo’s web address. Each page’s <code>edit_url</code> is <code>&lt;repo&gt;/edit/main/&lt;source&gt;</code>.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td>text</td>
+      <td>none</td>
+      <td>The path of a file that sets <code>VERSION = '…'</code>. Its value is <code>version</code> in the layout; a file that sets none is a <code>version</code> problem.</td>
+    </tr>
+    <tr>
+      <td><code>namespaces</code></td>
+      <td>list of text</td>
+      <td>none</td>
+      <td>The constants the <a href="/guides/checks/#constant">constant check</a> looks for. Without any, it doesn’t run.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code>url</code> also changes the markdown copies: an image in a copy points at its full URL on the site, so the copy still shows it when read on its own.</p>
+
+<h2 id="groups">groups</h2>
+
+<p>The site’s pages, in reading order, in labelled groups. The order here is the order of the layout’s navigation, of the previous and next links, of <code>llms.txt</code> and of <code>llms-full.txt</code>.</p>
+
+<p>A group takes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Value</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>label</code></td>
+      <td>text</td>
+      <td>The group’s heading. Required.</td>
+    </tr>
+    <tr>
+      <td><code>pages</code></td>
+      <td>list of pages</td>
+      <td>The group’s pages, in order. Required.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A page takes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Value</th>
+      <th>Default</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>source</code></td>
+      <td>text</td>
+      <td> </td>
+      <td>The guide’s path from the repo root, in any folder. Required, and unique.</td>
+    </tr>
+    <tr>
+      <td><code>slug</code></td>
+      <td>text</td>
+      <td> </td>
+      <td>The page’s URL is <code>/guides/&lt;slug&gt;/</code>. Lowercase letters, digits and hyphens, with <code>/</code> between segments. Required, and unique.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td>text</td>
+      <td>none</td>
+      <td>One line about the page, for the layout and <code>llms.txt</code>. The <a href="/guides/checks/#unlisted-and-description">description check</a> requires it.</td>
+    </tr>
+    <tr>
+      <td><code>featured</code></td>
+      <td>true or false</td>
+      <td>false</td>
+      <td>A flag for the layout, which might show the page first or larger. bearings does nothing else with it.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The page’s title is not in the manifest: it is the guide’s first <code># </code> line.</p>
+
+<p>Pages are numbered <code>01</code>, <code>02</code> and so on, in manifest order, counting separately for each folder their guides are in. The layout gets the number as <code>page.num</code>.</p>
+
+<p>Any other key on a group or a page is kept as it is and handed to the layout in <code>extras</code>, so a site can carry details of its own: the <code>tone: teal</code> above is <code>group.extras['tone']</code>.</p>
+
+<h2 id="watch">watch</h2>
+
+<p>A list of folders. Every markdown file in them must be a page in the manifest, and every image in them must be shown by a guide; <code>rake docs:check</code> reports the ones that aren’t. Without <code>watch</code>, a guide nobody listed goes unnoticed.</p>
+
+<h2 id="redirects">redirects</h2>
+
+<p>A mapping of old path to new path, for a URL the site no longer has:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">redirects</span><span class="pi">:</span>
+  <span class="na">/guides/setup/</span><span class="pi">:</span> <span class="s">/guides/getting-started/</span>
+  <span class="na">/guides/old-name/</span><span class="pi">:</span> <span class="s">/guides/new-name/#a-heading</span>
+</code></pre></div></div>
+
+<p>Each one writes a page at the old path that sends the browser to the new one. The new path must be a page or a file the site writes, and the old one must not be; <a href="/guides/checks/#redirect">The checks</a> lists what is reported when they are wrong.</p>
+
+<h2 id="outputs">outputs</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Value</th>
+      <th>Default</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>llms_full</code></td>
+      <td>true or false</td>
+      <td>false</td>
+      <td>Also writes <code>/llms-full.txt</code>, every guide’s markdown copy in one file.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="checks">checks</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Value</th>
+      <th>Default</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>image_limit_kb</code></td>
+      <td>a whole number</td>
+      <td>300</td>
+      <td>The largest an image a guide shows may be, in KB.</td>
+    </tr>
+    <tr>
+      <td><code>external_links</code></td>
+      <td>true or false</td>
+      <td>false</td>
+      <td>Accepted, but bearings 0.1 does not read it: external links are checked only when you run <code>rake docs:check:external</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="when-the-manifest-is-wrong">When the manifest is wrong</h2>
+
+<p>A manifest that can’t be read stops the build before anything is written. Every problem in it is reported at once, as a <code>manifest</code> problem on the line it is on:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Message</th>
+      <th>What it means</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>was not found</td>
+      <td>There is no file at the manifest’s path.</td>
+    </tr>
+    <tr>
+      <td>the manifest is empty</td>
+      <td>The file has no YAML in it.</td>
+    </tr>
+    <tr>
+      <td>the manifest is not valid YAML</td>
+      <td>The YAML parser’s own message follows.</td>
+    </tr>
+    <tr>
+      <td>the manifest holds only text, numbers, true or false, lists and mappings</td>
+      <td>A date, a <code>:symbol</code>, a YAML tag or an alias. Quote a date or a symbol to make it text.</td>
+    </tr>
+    <tr>
+      <td>… must be a mapping</td>
+      <td>The manifest, <code>site</code>, <code>outputs</code>, <code>checks</code>, a group or a page is not a mapping.</td>
+    </tr>
+    <tr>
+      <td>… is missing <code>key</code></td>
+      <td>A required key is missing, or has no value.</td>
+    </tr>
+    <tr>
+      <td>… has an unknown key <code>key</code></td>
+      <td>A key the manifest, <code>site</code>, <code>outputs</code> or <code>checks</code> doesn’t take. The hint lists the ones it does.</td>
+    </tr>
+    <tr>
+      <td><code>key</code> must be …</td>
+      <td>A value of the wrong kind, such as a list where text belongs.</td>
+    </tr>
+    <tr>
+      <td>slug <code>slug</code> is not URL-safe</td>
+      <td>A slug with a capital, a space, a leading <code>/</code> or another character outside the allowed ones.</td>
+    </tr>
+    <tr>
+      <td>duplicate slug <code>slug</code>, first used on line n</td>
+      <td>Two pages share a slug.</td>
+    </tr>
+    <tr>
+      <td>duplicate source <code>source</code>, first used on line n</td>
+      <td>Two pages share a guide.</td>
+    </tr>
+  </tbody>
+</table>
+
+        </article>
+
+        <p class="source">
+          <a href="/guides/manifest.md">Read this page as markdown</a> ·
+          <a href="https://github.com/bottrall/bearings/edit/main/docs/MANIFEST.md">Edit it on GitHub</a>
+        </p>
+
+        <nav class="pager" aria-label="Previous and next">
+          <a rel="prev" href="/guides/getting-started/">← Getting started</a>
+          <a rel="next" href="/guides/layout/">The layout →</a>
+        </nav>
+      </main>
+    </div>
+  </body>
+</html>

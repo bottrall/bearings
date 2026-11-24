@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The layout · bearings</title>
+    <meta name="description" content="The layout contract, what each template is given, and the files beside it">
+    <link rel="canonical" href="https://bearings.bottrall.dev/guides/layout/">
+    <link rel="alternate" type="text/markdown" href="/guides/layout.md">
+    <link rel="stylesheet" href="/site.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="name" href="/">bearings</a>
+      <span class="version">v0.1.0</span>
+      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    </header>
+
+    <div class="columns">
+      <nav class="contents" aria-label="Guides">
+        <h2>Start here</h2>
+        <ol>
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ol>
+        <h2>Building a site</h2>
+        <ol>
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/" aria-current="page">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ol>
+        <h2>Reference</h2>
+        <ol>
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ol>
+      </nav>
+
+      <main>
+        <article>
+          <p class="kicker">Building a site · 03</p>
+          <h1>The layout</h1>
+          <nav class="toc" aria-label="On this page">
+            <ul>
+              <li><a href="#how-the-templates-run">How the templates run</a></li>
+              <li><a href="#what-both-templates-get">What both templates get</a></li>
+              <li><a href="#what-the-layout-gets-as-well">What the layout gets as well</a></li>
+              <li><a href="#a-page">A page</a></li>
+              <li><a href="#what-the-body-holds">What the body holds</a></li>
+              <li><a href="#the-landing-page">The landing page</a></li>
+              <li><a href="#the-files-beside-them">The files beside them</a></li>
+              <li><a href="#bearings-own-layout">bearings’ own layout</a></li>
+            </ul>
+          </nav>
+          
+<p>bearings has no theme and never will. The look of a site belongs to the repo that builds it, in a few files beside the manifest:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>What it is</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>layout.html.erb</code></td>
+      <td>The template every guide is rendered through. Required.</td>
+    </tr>
+    <tr>
+      <td><code>index.html.erb</code></td>
+      <td>The template for the landing page, <code>/index.html</code>. Required.</td>
+    </tr>
+    <tr>
+      <td>anything else</td>
+      <td>Copied into the site as it is, at the same path, hidden files (names starting with <code>.</code>) excepted: stylesheets, scripts, fonts, icons, a <code>404.html</code>, a <code>CNAME</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>If either template is missing, the build reports a <code>layout</code> problem, <code>was not found</code>, and writes no HTML pages and none of the files beside the templates; the other outputs are still written.</p>
+
+<h2 id="how-the-templates-run">How the templates run</h2>
+
+<p>Both are ERB, with <code>-</code> trimming: a line that starts with <code>&lt;%-</code> and ends with <code>-%&gt;</code> leaves nothing behind, so a loop leaves no blank lines.</p>
+
+<p>Nothing is escaped for you. <code>&lt;%= %&gt;</code> writes a value exactly as it is, which is what <code>body</code> needs, since it is HTML. Titles and descriptions come from your own guides and manifest; if one may hold a <code>&lt;</code> or an <code>&amp;</code>, escape it with <code>ERB::Util.h</code>.</p>
+
+<p>A template is Ruby, so a mistake in one raises when it runs. <code>rake docs:serve</code> prints the error and keeps serving the last good site.</p>
+
+<h2 id="what-both-templates-get">What both templates get</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>What it is</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>site</code></td>
+      <td>The manifest’s <code>site</code> block: <code>site.name</code>, <code>site.summary</code>, <code>site.url</code>, <code>site.repo</code>, <code>site.version</code> (the version file’s path) and <code>site.namespaces</code>. A key the manifest leaves out is <code>nil</code>, or an empty list for <code>namespaces</code>.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td>The version read from the file <code>site.version</code> names, such as <code>'1.2.0'</code>, or <code>nil</code> without one.</td>
+    </tr>
+    <tr>
+      <td><code>groups</code></td>
+      <td>The groups, in manifest order. Each has a <code>label</code>, its <code>pages</code> in order, and <code>extras</code>.</td>
+    </tr>
+    <tr>
+      <td><code>pages</code></td>
+      <td>Every page, in reading order.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="what-the-layout-gets-as-well">What the layout gets as well</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>What it is</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>page</code></td>
+      <td>The page being rendered.</td>
+    </tr>
+    <tr>
+      <td><code>body</code></td>
+      <td>The guide as HTML, without its <code># </code> title line, which the layout shows from <code>page.title</code>.</td>
+    </tr>
+    <tr>
+      <td><code>toc</code></td>
+      <td>One <code>{ id:, title: }</code> hash for each <code>##</code> heading in the body, in order. The title is the heading’s HTML with its tags removed.</td>
+    </tr>
+    <tr>
+      <td><code>prev_page</code></td>
+      <td>The page before this one in reading order, or <code>nil</code> on the first.</td>
+    </tr>
+    <tr>
+      <td><code>next_page</code></td>
+      <td>The page after this one, or <code>nil</code> on the last.</td>
+    </tr>
+    <tr>
+      <td><code>search_index_url</code></td>
+      <td><code>/search.json</code>, the <a href="/guides/outputs/#searchjson">search index</a>, for a layout that offers search.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="a-page">A page</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>What it is</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>title</code></td>
+      <td>The text of the guide’s first <code># </code> line.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td>The page’s description from the manifest.</td>
+    </tr>
+    <tr>
+      <td><code>slug</code></td>
+      <td>The page’s slug from the manifest.</td>
+    </tr>
+    <tr>
+      <td><code>url</code></td>
+      <td><code>/guides/&lt;slug&gt;/</code>.</td>
+    </tr>
+    <tr>
+      <td><code>markdown_url</code></td>
+      <td><code>/guides/&lt;slug&gt;.md</code>, the page’s <a href="/guides/outputs/#markdown-copies">markdown copy</a>.</td>
+    </tr>
+    <tr>
+      <td><code>canonical_url</code></td>
+      <td>The page’s full URL under <code>site.url</code>, or <code>nil</code> without one.</td>
+    </tr>
+    <tr>
+      <td><code>edit_url</code></td>
+      <td>The guide’s edit link under <code>site.repo</code>, or <code>nil</code> without one.</td>
+    </tr>
+    <tr>
+      <td><code>source_path</code></td>
+      <td>The guide’s path from the repo root.</td>
+    </tr>
+    <tr>
+      <td><code>group_label</code></td>
+      <td>The label of the page’s group.</td>
+    </tr>
+    <tr>
+      <td><code>num</code></td>
+      <td>The page’s two-digit number, such as <code>'03'</code>; <a href="/guides/manifest/#groups">The manifest</a> says how it counts.</td>
+    </tr>
+    <tr>
+      <td><code>featured</code></td>
+      <td>The page’s <code>featured</code> flag from the manifest.</td>
+    </tr>
+    <tr>
+      <td><code>extras</code></td>
+      <td>The page’s other keys from the manifest, as a hash with string keys.</td>
+    </tr>
+    <tr>
+      <td><code>diagrams?</code></td>
+      <td>Whether the guide has a Mermaid diagram, so the layout loads Mermaid only where it is needed.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Pages are compared by value, so <code>p == page</code> picks out the current page in a loop over <code>pages</code>.</p>
+
+<h2 id="what-the-body-holds">What the body holds</h2>
+
+<p>The body is kramdown’s HTML for the guide, read as GitHub-flavoured markdown, with these changes:</p>
+
+<ul>
+  <li>A link to another guide, such as <code>[the checks](CHECKS.md#redirect)</code>, points at that guide’s page, <code>/guides/checks/#redirect</code>. A link to a markdown file that is not a page is reported as a <a href="/guides/checks/#problems-in-every-build"><code>link</code> problem</a>.</li>
+  <li>Every heading has an <code>id</code>, made the way GitHub makes them, so a link to a heading works in both places.</li>
+  <li>Code blocks in a language Rouge highlights are a <code>div</code> with the classes <code>language-&lt;name&gt; highlighter-rouge</code>, holding a <code>div class="highlight"</code> and then a <code>pre class="highlight"</code>; a block with no language, a <code>text</code> or <code>plaintext</code> one, or one Rouge doesn’t know is a bare <code>pre</code> holding a <code>code</code> (with the class <code>language-&lt;name&gt;</code> when it names a language), so a layout styles both shapes. The tokens are <code>span</code>s with Rouge’s short class names. The layout’s stylesheet colours them; <code>rougify style github</code> prints one such stylesheet.</li>
+  <li>An alert block, a quote that starts with <code>[!NOTE]</code>, <code>[!TIP]</code>, <code>[!IMPORTANT]</code>, <code>[!WARNING]</code> or <code>[!CAUTION]</code>, becomes a <code>div</code> with the classes <code>alert alert-note</code> (or <code>-tip</code>, and so on), holding a <code>p class="alert-title"</code> with the kind’s name and then the quote’s text.</li>
+  <li>A Mermaid diagram becomes a <code>pre class="mermaid"</code> holding its source, and an image points at its copy under <code>/assets/</code>; <a href="/guides/diagrams-and-images/">Diagrams and images</a> covers both.</li>
+</ul>
+
+<p>The body holds only structure and class names. How an alert or a code block looks is the stylesheet’s job.</p>
+
+<h2 id="the-landing-page">The landing page</h2>
+
+<p><code>index.html.erb</code> becomes <code>/index.html</code>. It gets <code>site</code>, <code>version</code>, <code>groups</code> and <code>pages</code>, but no <code>page</code> or <code>body</code>: it is not a guide. A landing page usually says what the project is and lists the guides with their descriptions.</p>
+
+<h2 id="the-files-beside-them">The files beside them</h2>
+
+<p>Every other file in the manifest’s folder, in any subfolder, except hidden files (names starting with <code>.</code>), is copied into the site at the same path: <code>docs-site/site.css</code> is served at <code>/site.css</code>, <code>docs-site/fonts/body.woff2</code> at <code>/fonts/body.woff2</code>. Point at them from the templates by those paths.</p>
+
+<p>A <code>404.html</code> is worth adding: <code>rake docs:serve</code> answers a path the site doesn’t have with it, and GitHub Pages does the same.</p>
+
+<h2 id="bearings-own-layout">bearings’ own layout</h2>
+
+<p>bearings builds its own site from these guides, with a plain layout written as a working example: <a href="https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb">layout.html.erb</a>, <a href="https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb">index.html.erb</a> and <a href="https://github.com/bottrall/bearings/blob/main/docs-site/site.css">site.css</a>. It is not a theme, and the gem does not ship it: copy what is useful.</p>
+
+        </article>
+
+        <p class="source">
+          <a href="/guides/layout.md">Read this page as markdown</a> ·
+          <a href="https://github.com/bottrall/bearings/edit/main/docs/LAYOUT.md">Edit it on GitHub</a>
+        </p>
+
+        <nav class="pager" aria-label="Previous and next">
+          <a rel="prev" href="/guides/manifest/">← The manifest</a>
+          <a rel="next" href="/guides/diagrams-and-images/">Diagrams and images →</a>
+        </nav>
+      </main>
+    </div>
+  </body>
+</html>
