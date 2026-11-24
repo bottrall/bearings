@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bearings (0.0.0)
+    bearings (0.1.0)
       kramdown (~> 2.6)
       kramdown-parser-gfm (~> 1.1)
       rouge (~> 5.1)
