@@ -2,6 +2,8 @@
 
 A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out.
 
+You write the guides as plain markdown that reads the same on GitHub, list them in one manifest, and write the layout that gives the site its look. bearings builds the pages, a markdown copy of each, `llms.txt`, a search index and a sitemap, and checks every link, anchor, code example, constant name, image and diagram in them. If the check passes, the site is correct.
+
 ## Installation
 
 Add the gem to your `Gemfile`:
@@ -10,18 +12,21 @@ Add the gem to your `Gemfile`:
 gem 'bearings'
 ```
 
-Or install it directly:
-
-```sh
-gem install bearings
-```
-
 Requires Ruby 3.3 or later.
 
-## Contributing
+## Usage
 
-Bug reports and pull requests are welcome at https://github.com/bottrall/bearings. [CONTRIBUTING.md](CONTRIBUTING.md) explains the setup and the `bin/` scripts.
+Add two lines to your `Rakefile`:
 
-## License
+```ruby
+require 'bearings/rake'
+Bearings::Rake.install
+```
 
-Released under the [MIT License](LICENSE).
+Then `bundle exec rake docs` builds the site into `_site/`, and `bundle exec rake docs:check` builds and checks it.
+
+## Guides
+
+The guides are at [bearings.bottrall.dev](https://bearings.bottrall.dev), built by bearings from the markdown in this repo's `docs/` folder. Start with [Getting started](docs/GETTING_STARTED.md).
+
+[CONTRIBUTING.md](CONTRIBUTING.md) explains the setup and the `bin/` scripts. Released under the [MIT License](LICENSE).

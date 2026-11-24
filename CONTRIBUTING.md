@@ -22,6 +22,7 @@ Everything runs through `bin/`, never a tool directly.
 | `bin/typecheck`               | type-checks the code                                                                         |
 | `bin/generate [--watch]`      | regenerates the generated files; `--watch` keeps them current                                |
 | `bin/build`                   | builds what the repo ships                                                                   |
+| `bin/docs [--serve\|--check]` | builds the docs; `--serve` serves them, `--check` checks them                                |
 | `bin/check`                   | `bin/lint --fix`, then `bin/typecheck`, then `bin/test`: run it before calling a change done |
 | `bin/ci`                      | runs exactly what CI runs, without fixing anything: run it before you push                   |
 

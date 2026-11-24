@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'bearings/rake'
 require 'fileutils'
 require 'rake/testtask'
 require 'rbconfig'
@@ -7,6 +8,8 @@ require 'rubocop/rake_task'
 require 'tmpdir'
 
 GEMSPEC = 'bearings.gemspec'
+
+Bearings::Rake.install
 
 # bin/test passes TEST as a comma-separated list of files and globs, and
 # Rake::TestTask would read it as one glob, so it's taken out of ENV and split.

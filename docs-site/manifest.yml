@@ -1,0 +1,46 @@
+site:
+  name: bearings
+  summary: "A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out."
+  url: https://bearings.bottrall.dev
+  repo: https://github.com/bottrall/bearings
+  version: lib/bearings/version.rb
+  namespaces:
+    - Bearings
+
+watch:
+  - docs
+
+redirects:
+  /guides/: /guides/getting-started/
+
+outputs:
+  llms_full: true
+
+groups:
+  - label: Start here
+    pages:
+      - source: docs/GETTING_STARTED.md
+        slug: getting-started
+        featured: true
+        description: Install bearings, add the two Rakefile lines and build a first site
+
+  - label: Building a site
+    pages:
+      - source: docs/MANIFEST.md
+        slug: manifest
+        description: Every manifest key, its default, and the problems a wrong one reports
+      - source: docs/LAYOUT.md
+        slug: layout
+        description: The layout contract, what each template is given, and the files beside it
+      - source: docs/DIAGRAMS_AND_IMAGES.md
+        slug: diagrams-and-images
+        description: Mermaid diagrams and images in a guide, on GitHub and on the site
+
+  - label: Reference
+    pages:
+      - source: docs/OUTPUTS.md
+        slug: outputs
+        description: Every file a build writes into _site/
+      - source: docs/CHECKS.md
+        slug: checks
+        description: Every problem a build or a check reports, and how to fix it
