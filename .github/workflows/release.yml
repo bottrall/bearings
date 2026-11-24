@@ -25,9 +25,32 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
+      pr: ${{ steps.release.outputs.pr }}
     steps:
       - uses: googleapis/release-please-action@v5
         id: release
+
+  # release-please bumps version.rb and the gem's entry in Gemfile.lock, but not
+  # the lockfile's CHECKSUMS section, and CI installs the bundle in frozen mode,
+  # so the release PR needs `bundle lock` run on it to pass.
+  lockfile:
+    needs: release-please
+    if: needs.release-please.outputs.pr != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ fromJSON(needs.release-please.outputs.pr).headBranchName }}
+      - uses: ruby/setup-ruby@v1
+      - run: bundle lock
+      - run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: update Gemfile.lock to the new version"
+          git push
 
   # The publish job can mint a RubyGems API key, so it runs none of the dev
   # bundle's gems: everything CI checks runs here, unprivileged, and publish
