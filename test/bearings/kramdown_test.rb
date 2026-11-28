@@ -262,6 +262,27 @@ describe Bearings::Kramdown do
                    body("```mermaid\nA[\"x &amp; &#35;\"] --> B\n```\n")
     end
 
+    it 'wraps a highlighted code block in a code-block div that names its language' do
+      assert_match(
+        /\A\n<div class="code-block" data-language="ruby">\n  <div class="language-ruby highlighter-rouge">/,
+        body("```ruby\nx = 1\n```\n")
+      )
+    end
+
+    it 'wraps a code block Rouge leaves plain in a code-block div that names its language' do
+      plain = %(<pre><code class="language-text">hi\n</code></pre>)
+
+      assert_equal %(\n<div class="code-block" data-language="text">\n  #{plain}\n</div>\n), body("```text\nhi\n```\n")
+    end
+
+    it 'wraps a code block with no language in a code-block div with no language' do
+      assert_equal %(\n<div class="code-block">\n  <pre><code>plain\n</code></pre>\n</div>\n), body("    plain\n")
+    end
+
+    it 'names the language without the options after a ?' do
+      assert_includes body("```ruby?start_inline=1\nputs 1\n```\n"), '<div class="code-block" data-language="ruby">'
+    end
+
     it 'renders a mermaid fence in a footnote as a pre for the browser to draw' do
       assert_includes body("See[^f]\n\n[^f]: The flow:\n\n    ```mermaid\n    graph LR\n    ```\n"),
                       %(<pre class="mermaid">graph LR\n</pre>)
@@ -275,6 +296,10 @@ describe Bearings::Kramdown do
 
     it 'renders a mermaid fence nested in another block as a pre for the browser to draw' do
       assert_includes body("- Item\n\n  ```mermaid\n  graph LR\n  ```\n"), %(<pre class="mermaid">graph LR\n</pre>)
+    end
+
+    it 'wraps a code block nested in another block' do
+      assert_includes body("- Item\n\n  ```sh\n  ls\n  ```\n"), '<div class="code-block" data-language="sh">'
     end
   end
 

@@ -152,9 +152,10 @@ describe Bearings::SearchIndex do
     end
 
     it 'includes a highlighted code block as its code' do
-      html = '<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>' \
+      html = %(<div class="code-block" data-language="ruby">\n  ) \
+             '<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>' \
              '<span class="n">y</span> <span class="o">&amp;&amp;</span> <span class="s2">"x"</span>' \
-             "\n</code></pre></div></div>"
+             "\n</code></pre></div>  </div>\n</div>"
 
       assert_equal 'y && "x"', section(html)['text']
     end

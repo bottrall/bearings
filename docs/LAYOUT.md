@@ -64,11 +64,11 @@ The body is kramdown's HTML for the guide, read as GitHub-flavoured markdown, wi
 
 - A link to another guide, such as `[the checks](CHECKS.md#redirect)`, points at that guide's page, `/guides/checks/#redirect`. A link to a markdown file that is not a page is reported as a [`link` problem](CHECKS.md#problems-in-every-build).
 - Every heading has an `id`, made the way GitHub makes them, so a link to a heading works in both places.
-- Code blocks in a language Rouge highlights are a `div` with the classes `language-<name> highlighter-rouge`, holding a `div class="highlight"` and then a `pre class="highlight"`; a block with no language, a `text` or `plaintext` one, or one Rouge doesn't know is a bare `pre` holding a `code` (with the class `language-<name>` when it names a language), so a layout styles both shapes. The tokens are `span`s with Rouge's short class names. The layout's stylesheet colours them; `rougify style github` prints one such stylesheet.
+- Every code block is a `div class="code-block"`, with a `data-language` attribute naming its language when it has one, so a stylesheet labels any block with `content: attr(data-language)`. Inside it, a block in a language Rouge highlights is a `div` with the classes `language-<name> highlighter-rouge`, holding a `div class="highlight"` and then a `pre class="highlight"`; a block with no language, a `text` or `plaintext` one, or one Rouge doesn't know is a `pre` holding a `code` (with the class `language-<name>` when it names a language). The tokens are `span`s with Rouge's short class names. The layout's stylesheet colours them; `rougify style github` prints one such stylesheet.
 - An alert block, a quote that starts with `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` or `[!CAUTION]`, becomes a `div` with the classes `alert alert-note` (or `-tip`, and so on), holding a `p class="alert-title"` with the kind's name and then the quote's text.
 - A Mermaid diagram becomes a `pre class="mermaid"` holding its source, and an image points at its copy under `/assets/`; [Diagrams and images](DIAGRAMS_AND_IMAGES.md) covers both.
 
-The body holds only structure and class names. How an alert or a code block looks is the stylesheet's job.
+The body holds only structure, class names and a code block's `data-language`. How an alert or a code block looks is the stylesheet's job.
 
 ## The landing page
 
