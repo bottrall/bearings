@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/bottrall/bearings/compare/v0.2.0...v0.3.0) (2026-11-28)
+
+
+### Features
+
+* let a site add and override Rouge lexers for its build ([#72](https://github.com/bottrall/bearings/issues/72)) ([9690f43](https://github.com/bottrall/bearings/commit/9690f4313dd72bc7ae813023fee99c46a76c932b))
+
 ## [0.2.0](https://github.com/bottrall/bearings/compare/v0.1.0...v0.2.0) (2026-11-28)
 
 
