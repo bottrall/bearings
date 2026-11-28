@@ -41,7 +41,6 @@ describe Bearings::Manifest::Parser do
         llms_full: true
       checks:
         image_limit_kb: 200
-        external_links: true
     YAML
   end
 
@@ -74,7 +73,7 @@ describe Bearings::Manifest::Parser do
       watch: ['docs'],
       redirects: [Bearings::Manifest::Redirect.new(from: '/old/', to: '/guides/start/', line: 24)],
       outputs: Bearings::Manifest::Outputs.new(llms_full: true),
-      checks: Bearings::Manifest::Checks.new(image_limit_kb: 200, external_links: true)
+      checks: Bearings::Manifest::Checks.new(image_limit_kb: 200)
     )
   end
 
@@ -104,7 +103,7 @@ describe Bearings::Manifest::Parser do
       watch: [],
       redirects: [],
       outputs: Bearings::Manifest::Outputs.new(llms_full: false),
-      checks: Bearings::Manifest::Checks.new(image_limit_kb: 300, external_links: false)
+      checks: Bearings::Manifest::Checks.new(image_limit_kb: 300)
     )
   end
 

@@ -25,7 +25,7 @@ module Bearings::Manifest::Parser
     'name' => TEXT, 'summary' => TEXT, 'url' => TEXT, 'repo' => TEXT, 'version' => TEXT, 'namespaces' => TEXTS
   }.freeze #: schema
   OUTPUTS = { 'llms_full' => FLAG }.freeze #: schema
-  CHECKS = { 'image_limit_kb' => NUMBER, 'external_links' => FLAG }.freeze #: schema
+  CHECKS = { 'image_limit_kb' => NUMBER }.freeze #: schema
   GROUP = { 'label' => TEXT, 'pages' => LIST }.freeze #: schema
   PAGE = { 'source' => TEXT, 'slug' => TEXT, 'description' => TEXT, 'featured' => FLAG }.freeze #: schema
 
@@ -166,10 +166,7 @@ module Bearings::Manifest::Parser
       watch: value(top['watch']) || [],
       redirects: build_redirects(top['redirects']),
       outputs: Bearings::Manifest::Outputs.new(llms_full: value(outputs['llms_full']) || false),
-      checks: Bearings::Manifest::Checks.new(
-        image_limit_kb: value(checks['image_limit_kb']) || IMAGE_LIMIT_KB,
-        external_links: value(checks['external_links']) || false
-      )
+      checks: Bearings::Manifest::Checks.new(image_limit_kb: value(checks['image_limit_kb']) || IMAGE_LIMIT_KB)
     )
   end
 
