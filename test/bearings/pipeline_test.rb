@@ -25,6 +25,7 @@ describe Bearings::Pipeline do
   def input(
     source: "# Start\n\nBegin.\n\n![Flow](flow.gif)\n",
     layout: '<%= body %>',
+    partials: {},
     watched: [],
     declared: Set.new,
     readme: nil,
@@ -46,6 +47,7 @@ describe Bearings::Pipeline do
       layout_file: 'docs-site/layout.html.erb',
       landing_file: 'docs-site/index.html.erb',
       not_found_file: 'docs-site/404.html.erb',
+      partials:,
       assets: {},
       declared:,
       readme:,
@@ -78,6 +80,12 @@ describe Bearings::Pipeline do
 
     it 'writes no HTML pages without a layout' do
       refute_includes run_defaults(layout: nil).first.map(&:path), 'index.html'
+    end
+
+    it 'renders the partials in the HTML pages' do
+      files, = run_defaults(layout: '<%= render.call("mast") %>', partials: { '_mast.html.erb' => 'Mast' })
+
+      assert_equal 'Mast', files.find { |file| file.path == 'guides/start/index.html' }.content
     end
 
     it 'sizes the images in the HTML pages from their files' do

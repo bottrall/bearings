@@ -13,6 +13,8 @@ module Bearings::Rake
 
   NOT_FOUND: String
 
+  PARTIALS: String
+
   HOST: String
 
   PORT: Integer
@@ -120,6 +122,10 @@ module Bearings::Rake
   # @rbs folders: Array[String]
   # @rbs return: Array[String]
   def watched: (Array[String] folders) -> Array[String]
+
+  # @rbs dir: String
+  # @rbs return: Hash[String, String]
+  def partials: (String dir) -> Hash[String, String]
 
   # @rbs dir: String
   # @rbs read: Array[String]

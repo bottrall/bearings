@@ -19,11 +19,12 @@ module Bearings::HtmlPages
   # @rbs layout: String
   # @rbs landing: String
   # @rbs not_found: String?
+  # @rbs partials: Hash[String, String]
   # @rbs assets: Hash[String, Pathname]
   # @rbs images: Hash[String, String]
   # @rbs diagram_renderer: Bearings::_DiagramRenderer?
   # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
-  def call: (Bearings::Site site, layout: String, landing: String, not_found: String?, assets: Hash[String, Pathname], images: Hash[String, String], ?diagram_renderer: Bearings::_DiagramRenderer?) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
+  def call: (Bearings::Site site, layout: String, landing: String, not_found: String?, partials: Hash[String, String], assets: Hash[String, Pathname], images: Hash[String, String], ?diagram_renderer: Bearings::_DiagramRenderer?) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
 
   # @rbs page: Bearings::Site::Page
   # @rbs return: String
@@ -43,18 +44,28 @@ module Bearings::HtmlPages
   # @rbs site: Bearings::Site
   # @rbs template: String
   # @rbs path: String
+  # @rbs partials: Hash[String, ERB]
   # @rbs return: Bearings::OutputFile
-  def site_file: (Bearings::Site site, String template, String path) -> Bearings::OutputFile
+  def site_file: (Bearings::Site site, String template, String path, Hash[String, ERB] partials) -> Bearings::OutputFile
 
   # @rbs page: Bearings::Site::Page
   # @rbs site: Bearings::Site
-  # @rbs layout: ERB
   # @rbs by_source: Hash[String, Bearings::Site::Page]
   # @rbs by_slug: Hash[String, Bearings::Site::Page]
   # @rbs images: Hash[String, String]
   # @rbs drawn: Hash[String, drawing]
-  # @rbs return: Bearings::OutputFile
-  def page_file: (Bearings::Site::Page page, Bearings::Site site, ERB layout, Hash[String, Bearings::Site::Page] by_source, Hash[String, Bearings::Site::Page] by_slug, Hash[String, String] images, Hash[String, drawing] drawn) -> Bearings::OutputFile
+  # @rbs return: Hash[Symbol, untyped]
+  def page_values: (Bearings::Site::Page page, Bearings::Site site, Hash[String, Bearings::Site::Page] by_source, Hash[String, Bearings::Site::Page] by_slug, Hash[String, String] images, Hash[String, drawing] drawn) -> Hash[Symbol, untyped]
+
+  # @rbs template: String
+  # @rbs return: ERB
+  def compile: (String template) -> ERB
+
+  # @rbs template: ERB
+  # @rbs values: Hash[Symbol, untyped]
+  # @rbs partials: Hash[String, ERB]
+  # @rbs return: String
+  def render: (ERB template, Hash[Symbol, untyped] values, Hash[String, ERB] partials) -> String
 
   # @rbs page: Bearings::Site::Page
   # @rbs by_source: Hash[String, Bearings::Site::Page]

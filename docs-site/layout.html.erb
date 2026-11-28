@@ -1,13 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= ERB::Util.h(page.title) %> · <%= site.name %></title>
-    <meta name="description" content="<%= ERB::Util.h(page.description) %>">
-    <link rel="canonical" href="<%= page.canonical_url %>">
+    <%= render.call('head', title: "#{page.title} · #{site.name}", description: page.description, canonical: page.canonical_url) -%>
     <link rel="alternate" type="text/markdown" href="<%= page.markdown_url %>">
-    <link rel="stylesheet" href="/site.css">
     <%- if page.diagrams? -%>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
@@ -59,14 +54,7 @@
       <%- end -%>
     </ul>
     <%- end -%>
-    <header class="mast">
-      <a class="brand" href="/"><%= site.name %></a>
-      <span class="ver"><%= version %></span>
-      <nav class="links" aria-label="Site">
-        <a href="/llms.txt">llms.txt</a>
-        <a href="<%= site.repo %>">GitHub</a>
-      </nav>
-    </header>
+    <%= render.call('masthead') -%>
 
     <div class="cols">
       <nav class="tree" aria-label="Guides">
