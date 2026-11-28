@@ -8,6 +8,7 @@ module Bearings::Kramdown
 
   # @rbs!
   #   type located = [::Kramdown::Element, Integer]
+  #   type lexers = Hash[String, singleton(::Rouge::Lexer)]
 
   OPTIONS = { input: 'GFM', syntax_highlighter: :rouge, hard_wrap: false }.freeze #: Hash[Symbol, untyped]
   TITLE = /^# .+\n?/ #: Regexp
@@ -16,18 +17,19 @@ module Bearings::Kramdown
   LANGUAGE = /\blanguage-(\S+)/ #: Regexp
 
   # @rbs source: String
+  # @rbs lexers: lexers
   # @rbs return: Bearings::Document?
-  def document(source)
+  def document(source, lexers: {})
     before, heading, after = source.partition(TITLE)
     return if heading.empty?
 
-    parse(before + after, heading.delete_prefix('# ').chomp, before.count("\n") + 1)
+    parse(before + after, heading.delete_prefix('# ').chomp, before.count("\n") + 1, lexers)
   end
 
   # @rbs source: String
   # @rbs return: Bearings::Document
   def whole(source)
-    parse(source, '', nil)
+    parse(source, '', nil, {})
   end
 
   private
@@ -35,8 +37,9 @@ module Bearings::Kramdown
   # @rbs source: String
   # @rbs title: String
   # @rbs title_line: Integer?
+  # @rbs lexers: lexers
   # @rbs return: Bearings::Document
-  def parse(source, title, title_line)
+  def parse(source, title, title_line, lexers)
     parsed = ::Kramdown::Document.new(source, OPTIONS)
     notes = footnotes(parsed.root).flat_map { |definition| located(definition) }
     # GFM gives ids only to headings in the main tree, so one in a footnote would have none.
@@ -50,16 +53,17 @@ module Bearings::Kramdown
       code_spans: code_spans(elements),
       images: images(elements),
       diagrams: diagrams(elements),
-      body: html(parsed)
+      body: html(parsed, lexers)
     )
   end
 
   # @rbs parsed: ::Kramdown::Document
+  # @rbs lexers: lexers
   # @rbs return: String
-  def html(parsed)
+  def html(parsed, lexers)
     # GitHub renders an alert only at the top level, never nested in another block.
     root = with_children(parsed.root, parsed.root.children.map { |child| alert(child) })
-    ::Kramdown::Converter::Html.convert(mark_code(root), parsed.options).first
+    Bearings::Kramdown::Html.convert(mark_code(root), { **parsed.options, lexers: }).first
   end
 
   # @rbs element: ::Kramdown::Element

@@ -28,6 +28,20 @@ module Kramdown
   module Converter
     class Html
       def self.convert: (Kramdown::Element tree, ?Hash[Symbol, untyped] options) -> [String, Array[String]]
+
+      def options: () -> Hash[Symbol, untyped]
+
+      def highlight_code: (String text, String? lang, Symbol type, ?Hash[Symbol, untyped] opts) -> String?
+    end
+
+    module SyntaxHighlighter
+      module Rouge
+        def self.options: (Kramdown::Converter::Html converter, Symbol type) -> Hash[Symbol, untyped]
+
+        class HTMLLegacy < ::Rouge::Formatter
+          def initialize: (?Hash[Symbol, untyped] opts) -> void
+        end
+      end
     end
   end
 end

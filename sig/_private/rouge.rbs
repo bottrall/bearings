@@ -1,0 +1,19 @@
+# Rouge ships no signatures, and gem_rbs_collection has none for it.
+module Rouge
+  class Token
+  end
+
+  class Lexer
+    def self.lookup_fancy: (String str, ?String? code, ?Hash[String, untyped] default_options) -> [singleton(Rouge::Lexer)?, Hash[String, untyped]]
+
+    def self.tag: () -> String?
+
+    def initialize: (?Hash[String, untyped] opts) -> void
+
+    def lex: (String string) -> Enumerator[[singleton(Rouge::Token), String], void]
+  end
+
+  class Formatter
+    def format: (Enumerator[[singleton(Rouge::Token), String], void] tokens) -> String
+  end
+end

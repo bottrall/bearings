@@ -3,6 +3,8 @@
 module Bearings::Kramdown
   type located = [ ::Kramdown::Element, Integer ]
 
+  type lexers = Hash[String, singleton(::Rouge::Lexer)]
+
   OPTIONS: Hash[Symbol, untyped]
 
   TITLE: Regexp
@@ -14,8 +16,9 @@ module Bearings::Kramdown
   LANGUAGE: Regexp
 
   # @rbs source: String
+  # @rbs lexers: lexers
   # @rbs return: Bearings::Document?
-  def document: (String source) -> Bearings::Document?
+  def document: (String source, ?lexers: lexers) -> Bearings::Document?
 
   # @rbs source: String
   # @rbs return: Bearings::Document
@@ -26,12 +29,14 @@ module Bearings::Kramdown
   # @rbs source: String
   # @rbs title: String
   # @rbs title_line: Integer?
+  # @rbs lexers: lexers
   # @rbs return: Bearings::Document
-  def parse: (String source, String title, Integer? title_line) -> Bearings::Document
+  def parse: (String source, String title, Integer? title_line, lexers lexers) -> Bearings::Document
 
   # @rbs parsed: ::Kramdown::Document
+  # @rbs lexers: lexers
   # @rbs return: String
-  def html: (::Kramdown::Document parsed) -> String
+  def html: (::Kramdown::Document parsed, lexers lexers) -> String
 
   # @rbs element: ::Kramdown::Element
   # @rbs return: ::Kramdown::Element
