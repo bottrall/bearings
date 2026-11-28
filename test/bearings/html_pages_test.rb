@@ -118,18 +118,29 @@ describe Bearings::HtmlPages do
   end
 
   def build(
-    layout: '', landing: '', not_found: nil, assets: {}, images: {}, pages: guide_pages, diagram_renderer: nil
+    layout: '',
+    landing: '',
+    not_found: nil,
+    partials: {},
+    assets: {},
+    images: {},
+    pages: guide_pages,
+    diagram_renderer: nil
   )
-    Bearings::HtmlPages.call(site(pages), layout:, landing:, not_found:, assets:, images:, diagram_renderer:)
+    Bearings::HtmlPages.call(
+      site(pages), layout:, landing:, not_found:, partials:, assets:, images:, diagram_renderer:
+    )
   end
 
   def files(...) = build(...).first
 
   def problems(...) = build(...).last
 
-  def landing(template) = files(landing: template).first.content
+  def landing(template, **options) = files(landing: template, **options).first.content
 
-  def not_found(template) = files(not_found: template).find { |file| file.path == '404.html' }.content
+  def not_found(template, **options)
+    files(not_found: template, **options).find { |file| file.path == '404.html' }.content
+  end
 
   def guides(layout) = files(layout:).select { |file| file.path.start_with?('guides/') }.map(&:content)
 
@@ -174,6 +185,41 @@ describe Bearings::HtmlPages do
       )
     end
 
+    it 'raises when a template renders a partial that is not there' do
+      assert_raises(KeyError) { landing('<%= render.call("nope") %>') }
+    end
+
+    it "renders a partial for the landing page with the landing page's values" do
+      assert_equal 'Bearings',
+                   landing('<%= render.call("mast") %>', partials: { '_mast.html.erb' => '<%= site.name %>' })
+    end
+
+    it 'gives a partial the values it is rendered with' do
+      assert_equal 'Home',
+                   landing(
+                     '<%= render.call("head", title: "Home") %>',
+                     partials: { '_head.html.erb' => '<%= title %>' }
+                   )
+    end
+
+    it "puts a value a partial is rendered with in place of the template's" do
+      assert_equal 'next',
+                   landing(
+                     '<%= render.call("mast", version: "next") %>',
+                     partials: { '_mast.html.erb' => '<%= version %>' }
+                   )
+    end
+
+    it 'lets a partial render another partial' do
+      assert_equal(
+        '1.2.3',
+        landing(
+          '<%= render.call("mast") %>',
+          partials: { '_mast.html.erb' => '<%= render.call("ver") %>', '_ver.html.erb' => '<%= version %>' }
+        )
+      )
+    end
+
     it 'writes no 404 page without a 404 template' do
       refute_includes files.map(&:path), '404.html'
     end
@@ -195,6 +241,11 @@ describe Bearings::HtmlPages do
         'Bearings|A themeless docs engine|https://bearings.example|https://github.com/bottrall/bearings',
         not_found('<%= [site.name, site.summary, site.url, site.repo].join("|") %>')
       )
+    end
+
+    it "renders a partial for the 404 page with the 404 page's values" do
+      assert_equal 'Bearings',
+                   not_found('<%= render.call("mast") %>', partials: { '_mast.html.erb' => '<%= site.name %>' })
     end
 
     it 'gives each page the groups' do
@@ -289,6 +340,11 @@ describe Bearings::HtmlPages do
 
     it 'gives each page the URL of the search index' do
       assert_equal Bearings::SearchIndex::URL, guide('start', '<%= search_index_url %>')
+    end
+
+    it "renders a partial for a page with the page's values" do
+      assert_equal 'start',
+                   guide('start', '<%= render.call("crumb") %>', partials: { '_crumb.html.erb' => '<%= page.slug %>' })
     end
 
     it "renders riffer-rig's layout unchanged" do

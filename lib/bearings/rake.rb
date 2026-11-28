@@ -15,6 +15,7 @@ module Bearings::Rake
   LAYOUT = 'layout.html.erb' #: String
   LANDING = 'index.html.erb' #: String
   NOT_FOUND = '404.html.erb' #: String
+  PARTIALS = '_*.html.erb' #: String
   HOST = '127.0.0.1' #: String
   PORT = 8000 #: Integer
   URL = "http://localhost:#{PORT}".freeze #: String
@@ -187,6 +188,7 @@ module Bearings::Rake
     layout, landing, not_found = [*required, not_found_file].map do |template|
       File.read(template) if File.file?(template)
     end
+    partials = partials(dir)
     readme = read_readme
     input = Bearings::Pipeline::Input.new(
       manifest:,
@@ -201,7 +203,8 @@ module Bearings::Rake
       layout_file:,
       landing_file:,
       not_found_file:,
-      assets: assets(dir, [File.basename(path), LAYOUT, LANDING, NOT_FOUND]),
+      partials:,
+      assets: assets(dir, [File.basename(path), LAYOUT, LANDING, NOT_FOUND, *partials.keys]),
       declared: declared(manifest.site.namespaces),
       readme:,
       readme_paths: readme_paths(readme)
@@ -247,6 +250,12 @@ module Bearings::Rake
   # @rbs return: Array[String]
   def watched(folders)
     Dir.glob(folders.map { |folder| File.join(folder, '**', '*') }).select { |path| File.file?(path) }
+  end
+
+  # @rbs dir: String
+  # @rbs return: Hash[String, String]
+  def partials(dir)
+    Dir.glob(PARTIALS, base: dir).to_h { |partial| [partial, File.read(File.join(dir, partial))] }
   end
 
   # @rbs dir: String

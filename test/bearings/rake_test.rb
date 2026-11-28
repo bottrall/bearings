@@ -75,6 +75,13 @@ describe Bearings::Rake do
     end
   end
 
+  def partials
+    lambda do |input|
+      content = input.partials.map { |pair| pair.join('=') }.join(',')
+      [[Bearings::OutputFile.new(path: 'partials', content:)], []]
+    end
+  end
+
   def timed_out = Bearings::Checks::ExternalLinks::Failure.new(reason: 'timed out after 10s', timed_out: true)
 
   describe 'requiring bearings/rake' do
@@ -138,6 +145,20 @@ describe Bearings::Rake do
       delete('docs-site/404.html.erb')
 
       assert_empty output('docs')
+    end
+
+    it 'gives the outputs each partial beside the manifest' do
+      write_site
+      write('docs-site/_mast.html.erb', '<header></header>')
+
+      assert_equal '_mast.html.erb=<header></header>', built('docs', outputs: [partials])['partials']
+    end
+
+    it 'leaves the partials out of the assets' do
+      write_site
+      write('docs-site/_mast.html.erb', '<header></header>')
+
+      refute_includes built('docs').keys, '_mast.html.erb'
     end
 
     it 'leaves the last build out of the assets when the manifest is at the repo root' do
