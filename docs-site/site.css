@@ -308,11 +308,11 @@ article > :first-child {
 
 article :is(p, ul, ol, pre, table, blockquote),
 .alert,
-.highlighter-rouge {
+.code-block {
   margin: 0 0 1.15em;
 }
 
-article .highlighter-rouge pre,
+article .code-block pre,
 article li > :is(ul, ol) {
   margin: 0;
 }
@@ -385,59 +385,19 @@ article pre {
   tab-size: 2;
 }
 
-.highlighter-rouge {
+.code-block {
   position: relative;
 }
 
-.highlighter-rouge::before,
-article pre:has(> .language-text)::before {
-  color: var(--muted);
-  font-family: var(--font-code);
-  font-size: 0.72rem;
-}
-
-.highlighter-rouge::before {
+.code-block::before {
+  content: attr(data-language);
   position: absolute;
   top: 0.4rem;
   right: 0.8rem;
   z-index: 1;
-}
-
-.language-ruby::before {
-  content: "ruby";
-}
-
-.language-yaml::before {
-  content: "yaml";
-}
-
-.language-erb::before {
-  content: "erb";
-}
-
-.language-sh::before {
-  content: "sh";
-}
-
-.language-json::before {
-  content: "json";
-}
-
-.language-html::before {
-  content: "html";
-}
-
-.language-markdown::before {
-  content: "markdown";
-}
-
-article pre:has(> .language-text)::before {
-  content: "text";
-  display: block;
-  position: sticky;
-  left: 0;
-  margin: -0.6rem -0.3rem 0 0;
-  text-align: right;
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: 0.72rem;
 }
 
 .highlight :is(.c, .c1, .cm) {

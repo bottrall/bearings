@@ -13,6 +13,7 @@ module Bearings::Kramdown
   TITLE = /^# .+\n?/ #: Regexp
   ITEM_TYPES = %i[header a img codeblock codespan].freeze #: Array[Symbol]
   ALERT = /\A\[!(note|tip|important|warning|caution)\][ \t]*\z/i #: Regexp
+  LANGUAGE = /\blanguage-(\S+)/ #: Regexp
 
   # @rbs source: String
   # @rbs return: Bearings::Document?
@@ -58,7 +59,7 @@ module Bearings::Kramdown
   def html(parsed)
     # GitHub renders an alert only at the top level, never nested in another block.
     root = with_children(parsed.root, parsed.root.children.map { |child| alert(child) })
-    ::Kramdown::Converter::Html.convert(mark_diagrams(root), parsed.options).first
+    ::Kramdown::Converter::Html.convert(mark_code(root), parsed.options).first
   end
 
   # @rbs element: ::Kramdown::Element
@@ -93,11 +94,12 @@ module Bearings::Kramdown
   # @rbs element: ::Kramdown::Element
   # @rbs chain: Array[String]
   # @rbs return: ::Kramdown::Element
-  def mark_diagrams(element, chain = [])
+  def mark_code(element, chain = [])
     return mermaid(element.value) if diagram?(element)
+    return code_block(element) if element.type == :codeblock
     return mark_footnote(element, chain) if element.type == :footnote
 
-    with_children(element, element.children.map { |child| mark_diagrams(child, chain) })
+    with_children(element, element.children.map { |child| mark_code(child, chain) })
   end
 
   # @rbs reference: ::Kramdown::Element
@@ -109,7 +111,7 @@ module Bearings::Kramdown
     # footnote already on this chain that is the outer reference, so the definition behind this one is never read.
     return reference if chain.include?(name)
 
-    reference.dup.tap { |copy| copy.value = mark_diagrams(reference.value, [*chain, name]) }
+    reference.dup.tap { |copy| copy.value = mark_code(reference.value, [*chain, name]) }
   end
 
   # @rbs code: String
@@ -119,6 +121,20 @@ module Bearings::Kramdown
       :html_element, 'pre', { 'class' => 'mermaid' }, { category: :block, content_model: :span }
     )
     with_children(pre, [::Kramdown::Element.new(:raw, CGI.escapeHTML(code))])
+  end
+
+  # @rbs block: ::Kramdown::Element
+  # @rbs return: ::Kramdown::Element
+  def code_block(block)
+    # The class is the one kramdown's converter reads the language from, so the two always agree.
+    language = block.attr['class'].to_s[LANGUAGE, 1]
+    div = ::Kramdown::Element.new(
+      :html_element,
+      'div',
+      { 'class' => 'code-block', 'data-language' => language }.compact,
+      { category: :block, content_model: :block }
+    )
+    with_children(div, [block])
   end
 
   # @rbs element: ::Kramdown::Element
