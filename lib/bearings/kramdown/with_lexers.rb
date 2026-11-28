@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
-Bearings::Kramdown::WithLexers = Data.define(:lexers)
-
-# Reopened because rbs-inline reads nothing in a block given to `Data.define` on a compact constant.
 class Bearings::Kramdown::WithLexers
+  # @rbs @lexers: Bearings::Kramdown::lexers
+
+  # @rbs lexers: Bearings::Kramdown::lexers
+  # @rbs return: void
+  def initialize(lexers:)
+    @lexers = lexers
+  end
+
   # @rbs source: String
   # @rbs return: Bearings::Document?
   def document(source)
-    Bearings::Kramdown.document(source, lexers:)
+    Bearings::Kramdown.document(source, lexers: @lexers)
   end
 end

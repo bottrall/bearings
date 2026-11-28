@@ -1,7 +1,12 @@
 # Generated from lib/bearings/kramdown/with_lexers.rb with RBS::Inline
 
-# Reopened because rbs-inline reads nothing in a block given to `Data.define` on a compact constant.
 class Bearings::Kramdown::WithLexers
+  @lexers: Bearings::Kramdown::lexers
+
+  # @rbs lexers: Bearings::Kramdown::lexers
+  # @rbs return: void
+  def initialize: (lexers: Bearings::Kramdown::lexers) -> void
+
   # @rbs source: String
   # @rbs return: Bearings::Document?
   def document: (String source) -> Bearings::Document?
