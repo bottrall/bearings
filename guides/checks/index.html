@@ -10,50 +10,114 @@
     <link rel="stylesheet" href="/site.css">
   </head>
   <body>
-    <header class="masthead">
-      <a class="name" href="/">bearings</a>
-      <span class="version">v0.1.0</span>
-      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    <header class="mast">
+      <a class="brand" href="/">bearings</a>
+      <span class="ver">0.1.0</span>
+      <nav class="links" aria-label="Site">
+        <a href="/llms.txt">llms.txt</a>
+        <a href="https://github.com/bottrall/bearings">GitHub</a>
+      </nav>
     </header>
 
-    <div class="columns">
-      <nav class="contents" aria-label="Guides">
-        <h2>Start here</h2>
-        <ol>
+    <div class="cols">
+      <nav class="tree" aria-label="Guides">
+        <p class="cap">Guides</p>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
           <li><a href="/guides/getting-started/">Getting started</a></li>
-        </ol>
-        <h2>Building a site</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
           <li><a href="/guides/manifest/">The manifest</a></li>
           <li><a href="/guides/layout/">The layout</a></li>
           <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
-        </ol>
-        <h2>Reference</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
           <li><a href="/guides/outputs/">The outputs</a></li>
           <li><a href="/guides/checks/" aria-current="page">The checks</a></li>
-        </ol>
+        </ul>
+      </li>
+    </ul>
       </nav>
+      <details class="menu">
+        <summary>Guides</summary>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/" aria-current="page">The checks</a></li>
+        </ul>
+      </li>
+    </ul>
+      </details>
 
       <main>
-        <article>
-          <p class="kicker">Reference · 06</p>
+        <header class="head">
+          <p class="file">
+            <span>docs/CHECKS.md</span>
+            <span class="views">
+              <b>Rendered</b>
+              <a href="/guides/checks.md">Markdown</a>
+              <a href="https://github.com/bottrall/bearings/edit/main/docs/CHECKS.md">Edit</a>
+            </span>
+          </p>
           <h1>The checks</h1>
-          <nav class="toc" aria-label="On this page">
-            <ul>
-              <li><a href="#reading-a-report">Reading a report</a></li>
-              <li><a href="#problems-in-every-build">Problems in every build</a></li>
-              <li><a href="#unlisted-and-description">unlisted and description</a></li>
-              <li><a href="#code">code</a></li>
-              <li><a href="#constant">constant</a></li>
-              <li><a href="#diagram">diagram</a></li>
-              <li><a href="#image">image</a></li>
-              <li><a href="#redirect">redirect</a></li>
-              <li><a href="#link-and-anchor">link and anchor</a></li>
-              <li><a href="#the-readmes-links">The README’s links</a></li>
-              <li><a href="#external-links">External links</a></li>
-            </ul>
-          </nav>
+        </header>
+        <nav class="toc" aria-label="On this page">
+          <p class="cap">On this page</p>
+    <ul class="plain-list">
+      <li><a href="#reading-a-report">Reading a report</a></li>
+      <li><a href="#problems-in-every-build">Problems in every build</a></li>
+      <li><a href="#unlisted-and-description">unlisted and description</a></li>
+      <li><a href="#code">code</a></li>
+      <li><a href="#constant">constant</a></li>
+      <li><a href="#diagram">diagram</a></li>
+      <li><a href="#image">image</a></li>
+      <li><a href="#redirect">redirect</a></li>
+      <li><a href="#link-and-anchor">link and anchor</a></li>
+      <li><a href="#the-readmes-links">The README’s links</a></li>
+      <li><a href="#external-links">External links</a></li>
+    </ul>
+        </nav>
+        <details class="toc-menu">
+          <summary>On this page</summary>
+    <ul class="plain-list">
+      <li><a href="#reading-a-report">Reading a report</a></li>
+      <li><a href="#problems-in-every-build">Problems in every build</a></li>
+      <li><a href="#unlisted-and-description">unlisted and description</a></li>
+      <li><a href="#code">code</a></li>
+      <li><a href="#constant">constant</a></li>
+      <li><a href="#diagram">diagram</a></li>
+      <li><a href="#image">image</a></li>
+      <li><a href="#redirect">redirect</a></li>
+      <li><a href="#link-and-anchor">link and anchor</a></li>
+      <li><a href="#the-readmes-links">The README’s links</a></li>
+      <li><a href="#external-links">External links</a></li>
+    </ul>
+        </details>
+        <article>
           
 <p>If <code>rake docs:check</code> passes, the site is correct: every guide is listed, every link and anchor resolves in every output, every example parses, every constant a guide names exists, and every image and diagram is there and described. When it fails, each problem names the markdown source and line to fix.</p>
 
@@ -455,14 +519,8 @@ docs/GUIDE.md:30: [anchor] links to `#instal`, but guides/guide/index.html has n
 <p>A timeout is only a warning, since the site may just be slow. Run it now and then, or on a schedule, rather than on every change: a site that is down for a minute shouldn’t fail a build.</p>
 
         </article>
-
-        <p class="source">
-          <a href="/guides/checks.md">Read this page as markdown</a> ·
-          <a href="https://github.com/bottrall/bearings/edit/main/docs/CHECKS.md">Edit it on GitHub</a>
-        </p>
-
         <nav class="pager" aria-label="Previous and next">
-          <a rel="prev" href="/guides/outputs/">← The outputs</a>
+          <a rel="prev" href="/guides/outputs/">Previous: The outputs</a>
         </nav>
       </main>
     </div>

@@ -10,47 +10,108 @@
     <link rel="stylesheet" href="/site.css">
   </head>
   <body>
-    <header class="masthead">
-      <a class="name" href="/">bearings</a>
-      <span class="version">v0.1.0</span>
-      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    <header class="mast">
+      <a class="brand" href="/">bearings</a>
+      <span class="ver">0.1.0</span>
+      <nav class="links" aria-label="Site">
+        <a href="/llms.txt">llms.txt</a>
+        <a href="https://github.com/bottrall/bearings">GitHub</a>
+      </nav>
     </header>
 
-    <div class="columns">
-      <nav class="contents" aria-label="Guides">
-        <h2>Start here</h2>
-        <ol>
+    <div class="cols">
+      <nav class="tree" aria-label="Guides">
+        <p class="cap">Guides</p>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
           <li><a href="/guides/getting-started/">Getting started</a></li>
-        </ol>
-        <h2>Building a site</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
           <li><a href="/guides/manifest/" aria-current="page">The manifest</a></li>
           <li><a href="/guides/layout/">The layout</a></li>
           <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
-        </ol>
-        <h2>Reference</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
           <li><a href="/guides/outputs/">The outputs</a></li>
           <li><a href="/guides/checks/">The checks</a></li>
-        </ol>
+        </ul>
+      </li>
+    </ul>
       </nav>
+      <details class="menu">
+        <summary>Guides</summary>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
+          <li><a href="/guides/manifest/" aria-current="page">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ul>
+      </li>
+    </ul>
+      </details>
 
       <main>
-        <article>
-          <p class="kicker">Building a site · 02</p>
+        <header class="head">
+          <p class="file">
+            <span>docs/MANIFEST.md</span>
+            <span class="views">
+              <b>Rendered</b>
+              <a href="/guides/manifest.md">Markdown</a>
+              <a href="https://github.com/bottrall/bearings/edit/main/docs/MANIFEST.md">Edit</a>
+            </span>
+          </p>
           <h1>The manifest</h1>
-          <nav class="toc" aria-label="On this page">
-            <ul>
-              <li><a href="#a-full-manifest">A full manifest</a></li>
-              <li><a href="#site">site</a></li>
-              <li><a href="#groups">groups</a></li>
-              <li><a href="#watch">watch</a></li>
-              <li><a href="#redirects">redirects</a></li>
-              <li><a href="#outputs">outputs</a></li>
-              <li><a href="#checks">checks</a></li>
-              <li><a href="#when-the-manifest-is-wrong">When the manifest is wrong</a></li>
-            </ul>
-          </nav>
+        </header>
+        <nav class="toc" aria-label="On this page">
+          <p class="cap">On this page</p>
+    <ul class="plain-list">
+      <li><a href="#a-full-manifest">A full manifest</a></li>
+      <li><a href="#site">site</a></li>
+      <li><a href="#groups">groups</a></li>
+      <li><a href="#watch">watch</a></li>
+      <li><a href="#redirects">redirects</a></li>
+      <li><a href="#outputs">outputs</a></li>
+      <li><a href="#checks">checks</a></li>
+      <li><a href="#when-the-manifest-is-wrong">When the manifest is wrong</a></li>
+    </ul>
+        </nav>
+        <details class="toc-menu">
+          <summary>On this page</summary>
+    <ul class="plain-list">
+      <li><a href="#a-full-manifest">A full manifest</a></li>
+      <li><a href="#site">site</a></li>
+      <li><a href="#groups">groups</a></li>
+      <li><a href="#watch">watch</a></li>
+      <li><a href="#redirects">redirects</a></li>
+      <li><a href="#outputs">outputs</a></li>
+      <li><a href="#checks">checks</a></li>
+      <li><a href="#when-the-manifest-is-wrong">When the manifest is wrong</a></li>
+    </ul>
+        </details>
+        <article>
           
 <p>The manifest is the only list of what the site holds. A guide is on the site because a page in the manifest names it, never because of the folder it is in, and guides carry no front matter: everything bearings knows about a page that is not in the guide itself is here.</p>
 
@@ -346,15 +407,9 @@
 </table>
 
         </article>
-
-        <p class="source">
-          <a href="/guides/manifest.md">Read this page as markdown</a> ·
-          <a href="https://github.com/bottrall/bearings/edit/main/docs/MANIFEST.md">Edit it on GitHub</a>
-        </p>
-
         <nav class="pager" aria-label="Previous and next">
-          <a rel="prev" href="/guides/getting-started/">← Getting started</a>
-          <a rel="next" href="/guides/layout/">The layout →</a>
+          <a rel="prev" href="/guides/getting-started/">Previous: Getting started</a>
+          <a rel="next" href="/guides/layout/">Next: The layout</a>
         </nav>
       </main>
     </div>

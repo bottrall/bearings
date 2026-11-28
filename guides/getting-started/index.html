@@ -10,48 +10,128 @@
     <link rel="stylesheet" href="/site.css">
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
-      mermaid.initialize({ startOnLoad: true });
+
+      const style = getComputedStyle(document.documentElement);
+      const [paper, ink, fontFamily] = ["--paper", "--ink", "--font-body"].map((name) => style.getPropertyValue(name).trim());
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: "base",
+        themeCSS: ".node rect { rx: 0; ry: 0 }",
+        flowchart: { curve: "linear", padding: 14 },
+        themeVariables: {
+          darkMode: matchMedia("(prefers-color-scheme: dark)").matches,
+          fontFamily,
+          fontSize: "15px",
+          background: paper,
+          primaryColor: paper,
+          edgeLabelBackground: paper,
+          primaryTextColor: ink,
+          primaryBorderColor: ink,
+          lineColor: ink,
+        },
+      });
+      await document.fonts.ready;
+      await mermaid.run();
     </script>
   </head>
   <body>
-    <header class="masthead">
-      <a class="name" href="/">bearings</a>
-      <span class="version">v0.1.0</span>
-      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    <header class="mast">
+      <a class="brand" href="/">bearings</a>
+      <span class="ver">0.1.0</span>
+      <nav class="links" aria-label="Site">
+        <a href="/llms.txt">llms.txt</a>
+        <a href="https://github.com/bottrall/bearings">GitHub</a>
+      </nav>
     </header>
 
-    <div class="columns">
-      <nav class="contents" aria-label="Guides">
-        <h2>Start here</h2>
-        <ol>
+    <div class="cols">
+      <nav class="tree" aria-label="Guides">
+        <p class="cap">Guides</p>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
           <li><a href="/guides/getting-started/" aria-current="page">Getting started</a></li>
-        </ol>
-        <h2>Building a site</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
           <li><a href="/guides/manifest/">The manifest</a></li>
           <li><a href="/guides/layout/">The layout</a></li>
           <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
-        </ol>
-        <h2>Reference</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
           <li><a href="/guides/outputs/">The outputs</a></li>
           <li><a href="/guides/checks/">The checks</a></li>
-        </ol>
+        </ul>
+      </li>
+    </ul>
       </nav>
+      <details class="menu">
+        <summary>Guides</summary>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
+          <li><a href="/guides/getting-started/" aria-current="page">Getting started</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ul>
+      </li>
+    </ul>
+      </details>
 
       <main>
-        <article>
-          <p class="kicker">Start here · 01</p>
+        <header class="head">
+          <p class="file">
+            <span>docs/GETTING_STARTED.md</span>
+            <span class="views">
+              <b>Rendered</b>
+              <a href="/guides/getting-started.md">Markdown</a>
+              <a href="https://github.com/bottrall/bearings/edit/main/docs/GETTING_STARTED.md">Edit</a>
+            </span>
+          </p>
           <h1>Getting started</h1>
-          <nav class="toc" aria-label="On this page">
-            <ul>
-              <li><a href="#install">Install</a></li>
-              <li><a href="#the-two-rakefile-lines">The two Rakefile lines</a></li>
-              <li><a href="#a-first-site">A first site</a></li>
-              <li><a href="#how-a-build-runs">How a build runs</a></li>
-              <li><a href="#where-to-next">Where to next</a></li>
-            </ul>
-          </nav>
+        </header>
+        <nav class="toc" aria-label="On this page">
+          <p class="cap">On this page</p>
+    <ul class="plain-list">
+      <li><a href="#install">Install</a></li>
+      <li><a href="#the-two-rakefile-lines">The two Rakefile lines</a></li>
+      <li><a href="#a-first-site">A first site</a></li>
+      <li><a href="#how-a-build-runs">How a build runs</a></li>
+      <li><a href="#where-to-next">Where to next</a></li>
+    </ul>
+        </nav>
+        <details class="toc-menu">
+          <summary>On this page</summary>
+    <ul class="plain-list">
+      <li><a href="#install">Install</a></li>
+      <li><a href="#the-two-rakefile-lines">The two Rakefile lines</a></li>
+      <li><a href="#a-first-site">A first site</a></li>
+      <li><a href="#how-a-build-runs">How a build runs</a></li>
+      <li><a href="#where-to-next">Where to next</a></li>
+    </ul>
+        </details>
+        <article>
           
 <p>bearings turns a folder of plain markdown guides into a static site. You write the guides, list them in a manifest, and write a layout that gives the site its look. bearings builds the pages, a markdown copy of every guide, <code>llms.txt</code>, a search index and a sitemap, and checks that the links, anchors, code examples, constant names, images and diagrams in them are all sound.</p>
 
@@ -217,14 +297,8 @@ Install the gem, then run it.
 </ul>
 
         </article>
-
-        <p class="source">
-          <a href="/guides/getting-started.md">Read this page as markdown</a> ·
-          <a href="https://github.com/bottrall/bearings/edit/main/docs/GETTING_STARTED.md">Edit it on GitHub</a>
-        </p>
-
         <nav class="pager" aria-label="Previous and next">
-          <a rel="next" href="/guides/manifest/">The manifest →</a>
+          <a rel="next" href="/guides/manifest/">Next: The manifest</a>
         </nav>
       </main>
     </div>

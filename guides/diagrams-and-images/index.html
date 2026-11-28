@@ -10,41 +10,96 @@
     <link rel="stylesheet" href="/site.css">
   </head>
   <body>
-    <header class="masthead">
-      <a class="name" href="/">bearings</a>
-      <span class="version">v0.1.0</span>
-      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    <header class="mast">
+      <a class="brand" href="/">bearings</a>
+      <span class="ver">0.1.0</span>
+      <nav class="links" aria-label="Site">
+        <a href="/llms.txt">llms.txt</a>
+        <a href="https://github.com/bottrall/bearings">GitHub</a>
+      </nav>
     </header>
 
-    <div class="columns">
-      <nav class="contents" aria-label="Guides">
-        <h2>Start here</h2>
-        <ol>
+    <div class="cols">
+      <nav class="tree" aria-label="Guides">
+        <p class="cap">Guides</p>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
           <li><a href="/guides/getting-started/">Getting started</a></li>
-        </ol>
-        <h2>Building a site</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
           <li><a href="/guides/manifest/">The manifest</a></li>
           <li><a href="/guides/layout/">The layout</a></li>
           <li><a href="/guides/diagrams-and-images/" aria-current="page">Diagrams and images</a></li>
-        </ol>
-        <h2>Reference</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
           <li><a href="/guides/outputs/">The outputs</a></li>
           <li><a href="/guides/checks/">The checks</a></li>
-        </ol>
+        </ul>
+      </li>
+    </ul>
       </nav>
+      <details class="menu">
+        <summary>Guides</summary>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/" aria-current="page">Diagrams and images</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
+          <li><a href="/guides/outputs/">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ul>
+      </li>
+    </ul>
+      </details>
 
       <main>
-        <article>
-          <p class="kicker">Building a site · 04</p>
+        <header class="head">
+          <p class="file">
+            <span>docs/DIAGRAMS_AND_IMAGES.md</span>
+            <span class="views">
+              <b>Rendered</b>
+              <a href="/guides/diagrams-and-images.md">Markdown</a>
+              <a href="https://github.com/bottrall/bearings/edit/main/docs/DIAGRAMS_AND_IMAGES.md">Edit</a>
+            </span>
+          </p>
           <h1>Diagrams and images</h1>
-          <nav class="toc" aria-label="On this page">
-            <ul>
-              <li><a href="#mermaid-diagrams">Mermaid diagrams</a></li>
-              <li><a href="#images">Images</a></li>
-            </ul>
-          </nav>
+        </header>
+        <nav class="toc" aria-label="On this page">
+          <p class="cap">On this page</p>
+    <ul class="plain-list">
+      <li><a href="#mermaid-diagrams">Mermaid diagrams</a></li>
+      <li><a href="#images">Images</a></li>
+    </ul>
+        </nav>
+        <details class="toc-menu">
+          <summary>On this page</summary>
+    <ul class="plain-list">
+      <li><a href="#mermaid-diagrams">Mermaid diagrams</a></li>
+      <li><a href="#images">Images</a></li>
+    </ul>
+        </details>
+        <article>
           
 <p>A guide shows a diagram or an image the way GitHub expects: a Mermaid fence, or an image with a path relative to the guide. bearings keeps both working on the site, and checks them.</p>
 
@@ -121,15 +176,9 @@
 <p>An image loaded from another site is a warning: it breaks when you read the guides offline, and it can change or vanish without a diff. <a href="/guides/checks/#image">The checks</a> lists every image problem.</p>
 
         </article>
-
-        <p class="source">
-          <a href="/guides/diagrams-and-images.md">Read this page as markdown</a> ·
-          <a href="https://github.com/bottrall/bearings/edit/main/docs/DIAGRAMS_AND_IMAGES.md">Edit it on GitHub</a>
-        </p>
-
         <nav class="pager" aria-label="Previous and next">
-          <a rel="prev" href="/guides/layout/">← The layout</a>
-          <a rel="next" href="/guides/outputs/">The outputs →</a>
+          <a rel="prev" href="/guides/layout/">Previous: The layout</a>
+          <a rel="next" href="/guides/outputs/">Next: The outputs</a>
         </nav>
       </main>
     </div>

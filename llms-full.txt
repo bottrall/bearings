@@ -367,7 +367,7 @@ A `404.html` is worth adding: `rake docs:serve` answers a path the site doesn't 
 
 ## bearings' own layout
 
-bearings builds its own site from these guides, with a plain layout written as a working example: [layout.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb), [index.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb) and [site.css](https://github.com/bottrall/bearings/blob/main/docs-site/site.css). It is not a theme, and the gem does not ship it: copy what is useful.
+bearings builds its own site from these guides, with a layout written only against what this guide describes: [layout.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb), [index.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb), [site.css](https://github.com/bottrall/bearings/blob/main/docs-site/site.css) and [404.html](https://github.com/bottrall/bearings/blob/main/docs-site/404.html). It is not a theme, and the gem does not ship it: copy what is useful.
 
 # Diagrams and images
 

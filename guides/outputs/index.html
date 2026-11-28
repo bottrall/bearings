@@ -10,46 +10,106 @@
     <link rel="stylesheet" href="/site.css">
   </head>
   <body>
-    <header class="masthead">
-      <a class="name" href="/">bearings</a>
-      <span class="version">v0.1.0</span>
-      <a href="https://github.com/bottrall/bearings">GitHub</a>
+    <header class="mast">
+      <a class="brand" href="/">bearings</a>
+      <span class="ver">0.1.0</span>
+      <nav class="links" aria-label="Site">
+        <a href="/llms.txt">llms.txt</a>
+        <a href="https://github.com/bottrall/bearings">GitHub</a>
+      </nav>
     </header>
 
-    <div class="columns">
-      <nav class="contents" aria-label="Guides">
-        <h2>Start here</h2>
-        <ol>
+    <div class="cols">
+      <nav class="tree" aria-label="Guides">
+        <p class="cap">Guides</p>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
           <li><a href="/guides/getting-started/">Getting started</a></li>
-        </ol>
-        <h2>Building a site</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
           <li><a href="/guides/manifest/">The manifest</a></li>
           <li><a href="/guides/layout/">The layout</a></li>
           <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
-        </ol>
-        <h2>Reference</h2>
-        <ol>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
           <li><a href="/guides/outputs/" aria-current="page">The outputs</a></li>
           <li><a href="/guides/checks/">The checks</a></li>
-        </ol>
+        </ul>
+      </li>
+    </ul>
       </nav>
+      <details class="menu">
+        <summary>Guides</summary>
+    <ul class="plain-list">
+      <li>
+        <span class="group">Start here</span>
+        <ul class="plain-list">
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Building a site</span>
+        <ul class="plain-list">
+          <li><a href="/guides/manifest/">The manifest</a></li>
+          <li><a href="/guides/layout/">The layout</a></li>
+          <li><a href="/guides/diagrams-and-images/">Diagrams and images</a></li>
+        </ul>
+      </li>
+      <li>
+        <span class="group">Reference</span>
+        <ul class="plain-list">
+          <li><a href="/guides/outputs/" aria-current="page">The outputs</a></li>
+          <li><a href="/guides/checks/">The checks</a></li>
+        </ul>
+      </li>
+    </ul>
+      </details>
 
       <main>
-        <article>
-          <p class="kicker">Reference · 05</p>
+        <header class="head">
+          <p class="file">
+            <span>docs/OUTPUTS.md</span>
+            <span class="views">
+              <b>Rendered</b>
+              <a href="/guides/outputs.md">Markdown</a>
+              <a href="https://github.com/bottrall/bearings/edit/main/docs/OUTPUTS.md">Edit</a>
+            </span>
+          </p>
           <h1>The outputs</h1>
-          <nav class="toc" aria-label="On this page">
-            <ul>
-              <li><a href="#html-pages">HTML pages</a></li>
-              <li><a href="#markdown-copies">Markdown copies</a></li>
-              <li><a href="#llmstxt">llms.txt</a></li>
-              <li><a href="#searchjson">search.json</a></li>
-              <li><a href="#sitemapxml-and-robotstxt">sitemap.xml and robots.txt</a></li>
-              <li><a href="#redirect-stubs">Redirect stubs</a></li>
-              <li><a href="#images">Images</a></li>
-            </ul>
-          </nav>
+        </header>
+        <nav class="toc" aria-label="On this page">
+          <p class="cap">On this page</p>
+    <ul class="plain-list">
+      <li><a href="#html-pages">HTML pages</a></li>
+      <li><a href="#markdown-copies">Markdown copies</a></li>
+      <li><a href="#llmstxt">llms.txt</a></li>
+      <li><a href="#searchjson">search.json</a></li>
+      <li><a href="#sitemapxml-and-robotstxt">sitemap.xml and robots.txt</a></li>
+      <li><a href="#redirect-stubs">Redirect stubs</a></li>
+      <li><a href="#images">Images</a></li>
+    </ul>
+        </nav>
+        <details class="toc-menu">
+          <summary>On this page</summary>
+    <ul class="plain-list">
+      <li><a href="#html-pages">HTML pages</a></li>
+      <li><a href="#markdown-copies">Markdown copies</a></li>
+      <li><a href="#llmstxt">llms.txt</a></li>
+      <li><a href="#searchjson">search.json</a></li>
+      <li><a href="#sitemapxml-and-robotstxt">sitemap.xml and robots.txt</a></li>
+      <li><a href="#redirect-stubs">Redirect stubs</a></li>
+      <li><a href="#images">Images</a></li>
+    </ul>
+        </details>
+        <article>
           
 <p>Every build writes the whole site into <code>_site/</code> at the repo root. Each output is made from the manifest, the guides and the images they show, the templates and the files beside them, and nothing else, so the same sources always build the same site.</p>
 
@@ -217,15 +277,9 @@ Sitemap: https://bearings.bottrall.dev/sitemap.xml
 <p>Each image a guide shows is copied to <code>/assets/&lt;path&gt;</code>, where <code>&lt;path&gt;</code> is its path from the repo root. <a href="/guides/diagrams-and-images/#images">Diagrams and images</a> covers what else is done to an image on its way into a page.</p>
 
         </article>
-
-        <p class="source">
-          <a href="/guides/outputs.md">Read this page as markdown</a> ·
-          <a href="https://github.com/bottrall/bearings/edit/main/docs/OUTPUTS.md">Edit it on GitHub</a>
-        </p>
-
         <nav class="pager" aria-label="Previous and next">
-          <a rel="prev" href="/guides/diagrams-and-images/">← Diagrams and images</a>
-          <a rel="next" href="/guides/checks/">The checks →</a>
+          <a rel="prev" href="/guides/diagrams-and-images/">Previous: Diagrams and images</a>
+          <a rel="next" href="/guides/checks/">Next: The checks</a>
         </nav>
       </main>
     </div>
