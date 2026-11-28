@@ -301,6 +301,13 @@ describe Bearings::Kramdown do
     it 'wraps a code block nested in another block' do
       assert_includes body("- Item\n\n  ```sh\n  ls\n  ```\n"), '<div class="code-block" data-language="sh">'
     end
+
+    it 'highlights the code blocks with the lexers it is given' do
+      lexer = Class.new(Rouge::RegexLexer) { state(:root) { rule(/.+/m, Rouge::Token::Tokens::Name::Class) } }
+
+      assert_includes Bearings::Kramdown.document("# Title\n\n```ruby\nx\n```\n", lexers: { 'ruby' => lexer }).body,
+                      %(<span class="nc">x\n</span>)
+    end
   end
 
   describe '.whole' do

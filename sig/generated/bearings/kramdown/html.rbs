@@ -1,0 +1,21 @@
+# Generated from lib/bearings/kramdown/html.rb with RBS::Inline
+
+# A highlighter registered under another name would put that name in place of highlighter-rouge in a block's class.
+# rubocop:disable-next Bottrall/NoInheritance -- kramdown picks a block's lexer only in its converter's highlight_code
+class Bearings::Kramdown::Html < Kramdown::Converter::Html
+  ROUGE: singleton(::Kramdown::Converter::SyntaxHighlighter::Rouge)
+
+  # @rbs text: String
+  # @rbs lang: String?
+  # @rbs type: Symbol
+  # @rbs opts: Hash[Symbol, untyped]
+  # @rbs return: String?
+  def highlight_code: (String text, String? lang, Symbol type, ?Hash[Symbol, untyped] opts) -> String?
+
+  private
+
+  # @rbs lang: String
+  # @rbs text: String
+  # @rbs return: ::Rouge::Lexer?
+  def lexer: (String lang, String text) -> ::Rouge::Lexer?
+end

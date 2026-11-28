@@ -84,12 +84,28 @@ describe Bearings::Rake do
 
   def timed_out = Bearings::Checks::ExternalLinks::Failure.new(reason: 'timed out after 10s', timed_out: true)
 
+  def lexers
+    { 'ruby' => Class.new(Rouge::RegexLexer) { state(:root) { rule(/.+/m, Rouge::Token::Tokens::Name::Class) } } }
+  end
+
+  def highlighted = %(<span class="nc">gem 'bearings'\n</span>)
+
   describe 'requiring bearings/rake' do
     it 'loads the gem and rake on its own' do
       lib = File.expand_path('../../lib', __dir__)
       script = 'require "bearings/rake"; print Bearings::Rake.method(:install).owner'
 
       assert_equal 'Bearings::Rake', IO.popen([RbConfig.ruby, '-I', lib, '-e', script], &:read)
+    end
+  end
+
+  describe 'install' do
+    it 'raises for a lexer that is not a class' do
+      assert_raises(ArgumentError) { Bearings::Rake.install(lexers: { 'ruby' => 'MyLexer' }) }
+    end
+
+    it 'raises for a lexer that is a class but not a Rouge::Lexer' do
+      assert_raises(ArgumentError) { Bearings::Rake.install(lexers: { 'ruby' => String }) }
     end
   end
 
@@ -221,6 +237,12 @@ describe Bearings::Rake do
       assert_equal({ 'a.txt' => 'A' }, built('docs', outputs: [a]))
     end
 
+    it 'highlights the guides with the lexers it is given' do
+      write_site
+
+      assert_includes built('docs', lexers:)['guides/start/index.html'], highlighted
+    end
+
     it 'runs none of the checks' do
       write_site
 
@@ -276,6 +298,12 @@ describe Bearings::Rake do
       write_site
 
       assert_equal tree(fixture('expected')), built('docs:check')
+    end
+
+    it 'highlights the guides with the lexers it is given' do
+      write_site
+
+      assert_includes built('docs:check', lexers:)['guides/start/index.html'], highlighted
     end
 
     it 'passes the fixture site' do
@@ -483,6 +511,13 @@ describe Bearings::Rake do
       serve
 
       assert_equal tree(fixture('expected')), tree(File.join(@tmp, '_site'))
+    end
+
+    it 'highlights the guides with the lexers it is given' do
+      write_site
+      serve(lexers:)
+
+      assert_includes File.read(File.join(@tmp, '_site/guides/start/index.html')), highlighted
     end
 
     it 'writes a build whose problems are all warnings' do
