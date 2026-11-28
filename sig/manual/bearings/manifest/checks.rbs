@@ -2,12 +2,10 @@
 class Bearings::Manifest::Checks < Data
   attr_reader image_limit_kb: Integer
 
-  attr_reader external_links: bool
+  def self.new: (Integer image_limit_kb) -> instance
+              | (image_limit_kb: Integer) -> instance
 
-  def self.new: (Integer image_limit_kb, bool external_links) -> instance
-              | (image_limit_kb: Integer, external_links: bool) -> instance
+  def self.members: () -> [ :image_limit_kb ]
 
-  def self.members: () -> [ :image_limit_kb, :external_links ]
-
-  def members: () -> [ :image_limit_kb, :external_links ]
+  def members: () -> [ :image_limit_kb ]
 end
