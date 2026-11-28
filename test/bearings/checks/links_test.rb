@@ -49,6 +49,7 @@ describe Bearings::Checks::Links do
       markdown:,
       layout_file: 'docs-site/layout.html.erb',
       landing_file: 'docs-site/index.html.erb',
+      not_found_file: 'docs-site/404.html.erb',
       manifest_file: 'docs-site/manifest.yml'
     )
   end
@@ -165,6 +166,10 @@ describe Bearings::Checks::Links do
 
     it 'reports a broken link on the landing page at the landing template' do
       assert_equal [['docs-site/index.html.erb', 1]], located({ 'index.html' => '<a href="/guides/missing/">x</a>' })
+    end
+
+    it 'reports a broken link on the 404 page at the 404 template' do
+      assert_equal [['docs-site/404.html.erb', 1]], located({ '404.html' => '<a href="/guides/missing/">x</a>' })
     end
 
     it 'reports a broken link in llms.txt at the manifest' do

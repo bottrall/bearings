@@ -17,8 +17,10 @@ module Bearings::Pipeline
     :watched, #: Array[String]
     :layout, #: String?
     :landing, #: String?
+    :not_found, #: String?
     :layout_file, #: String
     :landing_file, #: String
+    :not_found_file, #: String
     :assets, #: Hash[String, Pathname]
     :declared, #: Set[String]
     :readme, #: String?
@@ -31,7 +33,9 @@ module Bearings::Pipeline
       landing = input.landing
       return files_only([]) unless layout && landing
 
-      Bearings::HtmlPages.call(input.site, layout:, landing:, assets: input.assets, images: input.images)
+      Bearings::HtmlPages.call(
+        input.site, layout:, landing:, not_found: input.not_found, assets: input.assets, images: input.images
+      )
     end,
     ->(input) { files_only(Bearings::Images.call(input.images)) },
     ->(input) { files_only(Bearings::MarkdownCopies.call(input.site, input.sources)) },
@@ -68,6 +72,7 @@ module Bearings::Pipeline
         markdown: Bearings::Kramdown,
         layout_file: input.layout_file,
         landing_file: input.landing_file,
+        not_found_file: input.not_found_file,
         manifest_file: input.manifest_file
       )
     end,

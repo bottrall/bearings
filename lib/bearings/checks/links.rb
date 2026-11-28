@@ -23,9 +23,10 @@ module Bearings::Checks::Links
   # @rbs markdown: Bearings::_Markdown
   # @rbs layout_file: String
   # @rbs landing_file: String
+  # @rbs not_found_file: String
   # @rbs manifest_file: String
   # @rbs return: Array[Bearings::Problem]
-  def call(site, files, sources:, markdown:, layout_file:, landing_file:, manifest_file:)
+  def call(site, files, sources:, markdown:, layout_file:, landing_file:, not_found_file:, manifest_file:)
     contents = files.to_h { |file| [file.path, file.content] }
     texts = contents.select { |_, content| content.is_a?(String) } #: Hash[String, String]
     guides = site.pages.to_h { |page| [page.source_path, page] }
@@ -33,6 +34,7 @@ module Bearings::Checks::Links
       *site.pages.flat_map { |page| in_page(page, texts, guides, sources.fetch(page.source_path, ''), layout_file) },
       *site.pages.flat_map { |page| in_copy(page, texts, markdown) },
       *in_html('index.html', texts).map { |href| ['index.html', href, landing_file, 1] },
+      *in_html('404.html', texts).map { |href| ['404.html', href, not_found_file, 1] },
       *in_markdown('llms.txt', texts, markdown).map { |href, _| ['llms.txt', href, manifest_file, 1] }
     ] #: Array[reference]
     base = site.details.url&.delete_suffix('/')

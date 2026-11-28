@@ -3,14 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Page not found · bearings</title>
+    <title>Page not found · <%= site.name %></title>
     <link rel="stylesheet" href="/site.css">
   </head>
   <body>
     <header class="mast">
-      <a class="brand" href="/">bearings</a>
+      <a class="brand" href="/"><%= site.name %></a>
+      <span class="ver"><%= version %></span>
       <nav class="links" aria-label="Site">
-        <a href="https://github.com/bottrall/bearings">GitHub</a>
+        <a href="<%= site.repo %>">GitHub</a>
       </nav>
     </header>
 
@@ -19,10 +20,24 @@
       <figure class="report">
         <pre><span class="report-line">this address: <b>[link]</b> is not a page on this site</span><i class="report-hint">it may have moved, or the link may be out of date</i></pre>
       </figure>
+      <%- featured = pages.find(&:featured) -%>
       <ul class="plain-list">
         <li><a href="/">Back to the start</a></li>
-        <li><a href="/guides/getting-started/">Getting started</a></li>
+        <li><a href="<%= featured.url %>"><%= ERB::Util.h(featured.title) %></a></li>
       </ul>
+
+      <h2>The guides</h2>
+      <ol class="guides">
+        <%- pages.each do |page| -%>
+        <li>
+          <a href="<%= page.url %>">
+            <b><%= ERB::Util.h(page.title) %></b>
+            <small><%= page.group_label %></small>
+            <span><%= ERB::Util.h(page.description) %></span>
+          </a>
+        </li>
+        <%- end -%>
+      </ol>
     </main>
   </body>
 </html>

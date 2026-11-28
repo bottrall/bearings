@@ -133,6 +133,13 @@ describe Bearings::Rake do
       assert_includes output('docs'), 'docs-site/index.html.erb:1: [layout] was not found'
     end
 
+    it 'accepts a site with no 404 template' do
+      write_site
+      delete('docs-site/404.html.erb')
+
+      assert_empty output('docs')
+    end
+
     it 'leaves the last build out of the assets when the manifest is at the repo root' do
       write_site
       FileUtils.cp_r("#{@tmp}/docs-site/.", @tmp)

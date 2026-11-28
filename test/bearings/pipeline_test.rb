@@ -42,8 +42,10 @@ describe Bearings::Pipeline do
       watched:,
       layout:,
       landing: '',
+      not_found: '',
       layout_file: 'docs-site/layout.html.erb',
       landing_file: 'docs-site/index.html.erb',
+      not_found_file: 'docs-site/404.html.erb',
       assets: {},
       declared:,
       readme:,
@@ -68,8 +70,8 @@ describe Bearings::Pipeline do
   describe '::OUTPUTS' do
     it 'writes the HTML pages, images, markdown copies, llms.txt, sitemap, redirect stubs and search index' do
       assert_equal(
-        %w[index.html guides/start/index.html assets/docs/flow.gif guides/start.md llms.txt sitemap.xml robots.txt
-           guides/begin/index.html search.json],
+        %w[index.html 404.html guides/start/index.html assets/docs/flow.gif guides/start.md llms.txt sitemap.xml
+           robots.txt guides/begin/index.html search.json],
         run_defaults.first.map(&:path)
       )
     end
