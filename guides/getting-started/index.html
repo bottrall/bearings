@@ -39,7 +39,7 @@
   <body>
     <header class="mast">
   <a class="brand" href="/">bearings</a>
-  <span class="ver">0.2.0</span>
+  <span class="ver">0.3.0</span>
   <nav class="links" aria-label="Site">
     <a href="/llms.txt">llms.txt</a>
     <a href="https://github.com/bottrall/bearings">GitHub</a>
@@ -199,6 +199,15 @@
   <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bearings</span><span class="o">::</span><span class="no">Rake</span><span class="p">.</span><span class="nf">install</span><span class="p">(</span><span class="ss">manifest: </span><span class="s1">'site/manifest.yml'</span><span class="p">)</span>
 </code></pre></div>  </div>
 </div>
+
+<p>Code blocks are highlighted with Rouge, and a Rouge lexer your Rakefile loads before the build highlights the blocks in its language. To highlight a language with your own lexer for this build only, pass <code>lexers:</code>, which maps a fence language to a <code>Rouge::Lexer</code> subclass:</p>
+
+<div class="code-block" data-language="ruby">
+  <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bearings</span><span class="o">::</span><span class="no">Rake</span><span class="p">.</span><span class="nf">install</span><span class="p">(</span><span class="ss">lexers: </span><span class="p">{</span> <span class="s1">'ruby'</span> <span class="o">=&gt;</span> <span class="no">MyRubyLexer</span><span class="p">,</span> <span class="s1">'rbs'</span> <span class="o">=&gt;</span> <span class="no">MyRbsLexer</span> <span class="p">})</span>
+</code></pre></div>  </div>
+</div>
+
+<p>A block uses the mapped lexer when Rouge reads its language as the mapped one, so <code>'ruby'</code> covers <code>rb</code> fences too, and a language Rouge doesn’t know at all is highlighted when the mapping names it. Rouge’s own lexers stay registered as they were, so nothing else in the process changes, and the markdown copies and <code>llms.txt</code> keep the guides’ source. <code>install</code> raises an <code>ArgumentError</code> for a value that isn’t a <code>Rouge::Lexer</code> subclass. Define your lexer without a <code>tag</code> that Rouge already uses, since <code>tag</code> registers it with Rouge for every caller.</p>
 
 <p>Every task runs from the repo root, and the ones that build write to <code>_site/</code> there, so add <code>_site/</code> to your <code>.gitignore</code>.</p>
 

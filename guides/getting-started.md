@@ -43,6 +43,14 @@ The manifest is `docs-site/manifest.yml` unless you pass another path. The layou
 Bearings::Rake.install(manifest: 'site/manifest.yml')
 ```
 
+Code blocks are highlighted with Rouge, and a Rouge lexer your Rakefile loads before the build highlights the blocks in its language. To highlight a language with your own lexer for this build only, pass `lexers:`, which maps a fence language to a `Rouge::Lexer` subclass:
+
+```ruby
+Bearings::Rake.install(lexers: { 'ruby' => MyRubyLexer, 'rbs' => MyRbsLexer })
+```
+
+A block uses the mapped lexer when Rouge reads its language as the mapped one, so `'ruby'` covers `rb` fences too, and a language Rouge doesn't know at all is highlighted when the mapping names it. Rouge's own lexers stay registered as they were, so nothing else in the process changes, and the markdown copies and `llms.txt` keep the guides' source. `install` raises an `ArgumentError` for a value that isn't a `Rouge::Lexer` subclass. Define your lexer without a `tag` that Rouge already uses, since `tag` registers it with Rouge for every caller.
+
 Every task runs from the repo root, and the ones that build write to `_site/` there, so add `_site/` to your `.gitignore`.
 
 ## A first site

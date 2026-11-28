@@ -13,7 +13,7 @@
   <body>
     <header class="mast">
   <a class="brand" href="/">bearings</a>
-  <span class="ver">0.2.0</span>
+  <span class="ver">0.3.0</span>
   <nav class="links" aria-label="Site">
     <a href="/llms.txt">llms.txt</a>
     <a href="https://github.com/bottrall/bearings">GitHub</a>
@@ -305,7 +305,7 @@
 <ul>
   <li>A link to another guide, such as <code>[the checks](CHECKS.md#redirect)</code>, points at that guide’s page, <code>/guides/checks/#redirect</code>. A link to a markdown file that is not a page is reported as a <a href="/guides/checks/#problems-in-every-build"><code>link</code> problem</a>.</li>
   <li>Every heading has an <code>id</code>, made the way GitHub makes them, so a link to a heading works in both places.</li>
-  <li>Every code block is a <code>div class="code-block"</code>, with a <code>data-language</code> attribute naming its language when it has one, so a stylesheet labels any block with <code>content: attr(data-language)</code>. Inside it, a block in a language Rouge highlights is a <code>div</code> with the classes <code>language-&lt;name&gt; highlighter-rouge</code>, holding a <code>div class="highlight"</code> and then a <code>pre class="highlight"</code>; a block with no language, a <code>text</code> or <code>plaintext</code> one, or one Rouge doesn’t know is a <code>pre</code> holding a <code>code</code> (with the class <code>language-&lt;name&gt;</code> when it names a language). The tokens are <code>span</code>s with Rouge’s short class names. The layout’s stylesheet colours them; <code>rougify style github</code> prints one such stylesheet.</li>
+  <li>Every code block is a <code>div class="code-block"</code>, with a <code>data-language</code> attribute naming its language when it has one, so a stylesheet labels any block with <code>content: attr(data-language)</code>. The site’s lexers decide which blocks are highlighted: the ones it passes to <a href="/guides/getting-started/#the-two-rakefile-lines"><code>Bearings::Rake.install(lexers:)</code></a>, and any Rouge lexer it loads. Inside the wrapper, a highlighted block is a <code>div</code> with the classes <code>language-&lt;name&gt; highlighter-rouge</code>, holding a <code>div class="highlight"</code> and then a <code>pre class="highlight"</code>; a block with no language, a <code>text</code> or <code>plaintext</code> one, or one no lexer knows is a <code>pre</code> holding a <code>code</code> (with the class <code>language-&lt;name&gt;</code> when it names a language). The tokens are <code>span</code>s with Rouge’s short class names. The layout’s stylesheet colours them; <code>rougify style github</code> prints one such stylesheet.</li>
   <li>An alert block, a quote that starts with <code>[!NOTE]</code>, <code>[!TIP]</code>, <code>[!IMPORTANT]</code>, <code>[!WARNING]</code> or <code>[!CAUTION]</code>, becomes a <code>div</code> with the classes <code>alert alert-note</code> (or <code>-tip</code>, and so on), holding a <code>p class="alert-title"</code> with the kind’s name and then the quote’s text.</li>
   <li>A Mermaid diagram becomes a <code>pre class="mermaid"</code> holding its source, and an image points at its copy under <code>/assets/</code>; <a href="/guides/diagrams-and-images/">Diagrams and images</a> covers both.</li>
 </ul>
