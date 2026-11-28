@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/bottrall/bearings/compare/v0.1.0...v0.2.0) (2026-11-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* a manifest that sets checks.external_links now gets a manifest problem for an unknown key. Delete the key; run rake docs:check:external to check external links.
+
+### Features
+
+* let templates share markup through partials ([#69](https://github.com/bottrall/bearings/issues/69)) ([9155b51](https://github.com/bottrall/bearings/commit/9155b515706df7a614e09bbfe72f2b36627b5862)), closes [#60](https://github.com/bottrall/bearings/issues/60)
+* remove checks.external_links from the manifest ([#66](https://github.com/bottrall/bearings/issues/66)) ([f56d2c9](https://github.com/bottrall/bearings/commit/f56d2c9378768b6c45905d465688f886b352041c)), closes [#63](https://github.com/bottrall/bearings/issues/63)
+* render 404.html.erb as the 404 page, with the landing page's values ([#68](https://github.com/bottrall/bearings/issues/68)) ([f7cdbe9](https://github.com/bottrall/bearings/commit/f7cdbe97754319e72ec5074f2555ecc45b2fb284)), closes [#59](https://github.com/bottrall/bearings/issues/59)
+* wrap every code block and name its language in an attribute ([#67](https://github.com/bottrall/bearings/issues/67)) ([6f2c85a](https://github.com/bottrall/bearings/commit/6f2c85a26208fb49db283c5365abe7286abc6474)), closes [#61](https://github.com/bottrall/bearings/issues/61)
+
 ## 0.1.0 (2026-11-24)
 
 
