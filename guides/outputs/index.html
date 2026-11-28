@@ -2,22 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The outputs · bearings</title>
-    <meta name="description" content="Every file a build writes into _site/">
-    <link rel="canonical" href="https://bearings.bottrall.dev/guides/outputs/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The outputs · bearings</title>
+<meta name="description" content="Every file a build writes into _site/">
+<link rel="canonical" href="https://bearings.bottrall.dev/guides/outputs/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
     <link rel="alternate" type="text/markdown" href="/guides/outputs.md">
-    <link rel="stylesheet" href="/site.css">
   </head>
   <body>
     <header class="mast">
-      <a class="brand" href="/">bearings</a>
-      <span class="ver">0.1.0</span>
-      <nav class="links" aria-label="Site">
-        <a href="/llms.txt">llms.txt</a>
-        <a href="https://github.com/bottrall/bearings">GitHub</a>
-      </nav>
-    </header>
+  <a class="brand" href="/">bearings</a>
+  <span class="ver">0.2.0</span>
+  <nav class="links" aria-label="Site">
+    <a href="/llms.txt">llms.txt</a>
+    <a href="https://github.com/bottrall/bearings">GitHub</a>
+  </nav>
+</header>
 
     <div class="cols">
       <nav class="tree" aria-label="Guides">
@@ -125,12 +126,17 @@
     <tr>
       <td><code>index.html</code></td>
       <td>The landing page, from <code>index.html.erb</code></td>
-      <td>both templates are there</td>
+      <td>both required templates are there</td>
+    </tr>
+    <tr>
+      <td><code>404.html</code></td>
+      <td>The 404 page, from <code>404.html.erb</code></td>
+      <td>it and both required templates are there</td>
     </tr>
     <tr>
       <td><code>guides/&lt;slug&gt;/index.html</code></td>
       <td>Each guide, through <code>layout.html.erb</code></td>
-      <td>both templates are there</td>
+      <td>both required templates are there</td>
     </tr>
     <tr>
       <td><code>guides/&lt;slug&gt;.md</code></td>
@@ -144,8 +150,8 @@
     </tr>
     <tr>
       <td>any other path</td>
-      <td>Each other file beside the manifest, except hidden ones, at the same path</td>
-      <td>both templates are there</td>
+      <td>Each other file beside the manifest, except partials and hidden ones, at the same path</td>
+      <td>both required templates are there</td>
     </tr>
     <tr>
       <td><code>llms.txt</code></td>
@@ -179,7 +185,7 @@
 
 <h2 id="html-pages">HTML pages</h2>
 
-<p>Each guide is rendered through the layout at <code>/guides/&lt;slug&gt;/</code>, and the landing page at <code>/</code>. <a href="/guides/layout/">The layout</a> is the contract for both: what each template is given and what the body holds.</p>
+<p>Each guide is rendered through the layout at <code>/guides/&lt;slug&gt;/</code>, the landing page at <code>/</code>, and the 404 page, when the site has a template for it, at <code>/404.html</code>. <a href="/guides/layout/">The layout</a> is the contract for all three: what each template is given and what the body holds.</p>
 
 <h2 id="markdown-copies">Markdown copies</h2>
 
@@ -196,7 +202,8 @@
 
 <p><code>/llms.txt</code> tells an agent what documentation exists and where to read it as markdown. It is generated from the manifest, so it can’t drift from the guides:</p>
 
-<pre><code class="language-text"># bearings
+<div class="code-block" data-language="text">
+  <pre><code class="language-text"># bearings
 
 &gt; A themeless docs engine: plain markdown guides in, a checked static site and llms.txt out.
 
@@ -204,6 +211,7 @@
 
 - [Getting started](https://bearings.bottrall.dev/guides/getting-started.md): Install bearings, add the two Rakefile lines and build a first site
 </code></pre>
+</div>
 
 <p>It has <code>site.name</code> as its title, <code>site.summary</code> quoted beneath, and a section for each group, listing each page’s title, the full URL of its markdown copy and its description. Without a <code>site.url</code> it can’t give full URLs, so it is not written, and the build reports an <code>llms</code> warning.</p>
 
@@ -215,7 +223,8 @@
 
 <p>It is a JSON array with an entry for each section of each page, in reading order. Here is one entry, with its text cut short:</p>
 
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
+<div class="code-block" data-language="json">
+  <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
     </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The outputs"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"heading"</span><span class="p">:</span><span class="w"> </span><span class="s2">"search.json"</span><span class="p">,</span><span class="w">
@@ -223,7 +232,8 @@
     </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/guides/outputs/#searchjson"</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
-</span></code></pre></div></div>
+</span></code></pre></div>  </div>
+</div>
 
 <table>
   <thead>
@@ -258,11 +268,13 @@
 
 <p><code>/sitemap.xml</code> lists the site’s root URL and each page’s canonical URL, in reading order. <code>/robots.txt</code> allows everything and points at the sitemap:</p>
 
-<pre><code class="language-text">User-agent: *
+<div class="code-block" data-language="text">
+  <pre><code class="language-text">User-agent: *
 Allow: /
 
 Sitemap: https://bearings.bottrall.dev/sitemap.xml
 </code></pre>
+</div>
 
 <p>Both need full URLs, so without a <code>site.url</code> neither is written, and the build reports a <code>sitemap</code> warning.</p>
 

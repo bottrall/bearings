@@ -2,22 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The manifest · bearings</title>
-    <meta name="description" content="Every manifest key, its default, and the problems a wrong one reports">
-    <link rel="canonical" href="https://bearings.bottrall.dev/guides/manifest/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The manifest · bearings</title>
+<meta name="description" content="Every manifest key, its default, and the problems a wrong one reports">
+<link rel="canonical" href="https://bearings.bottrall.dev/guides/manifest/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
     <link rel="alternate" type="text/markdown" href="/guides/manifest.md">
-    <link rel="stylesheet" href="/site.css">
   </head>
   <body>
     <header class="mast">
-      <a class="brand" href="/">bearings</a>
-      <span class="ver">0.1.0</span>
-      <nav class="links" aria-label="Site">
-        <a href="/llms.txt">llms.txt</a>
-        <a href="https://github.com/bottrall/bearings">GitHub</a>
-      </nav>
-    </header>
+  <a class="brand" href="/">bearings</a>
+  <span class="ver">0.2.0</span>
+  <nav class="links" aria-label="Site">
+    <a href="/llms.txt">llms.txt</a>
+    <a href="https://github.com/bottrall/bearings">GitHub</a>
+  </nav>
+</header>
 
     <div class="cols">
       <nav class="tree" aria-label="Guides">
@@ -121,7 +122,8 @@
 
 <p>This one uses every key:</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">site</span><span class="pi">:</span>
+<div class="code-block" data-language="yaml">
+  <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">site</span><span class="pi">:</span>
   <span class="na">name</span><span class="pi">:</span> <span class="s">My gem</span>
   <span class="na">summary</span><span class="pi">:</span> <span class="s">What my gem does, in one line.</span>
   <span class="na">url</span><span class="pi">:</span> <span class="s">https://docs.example.com</span>
@@ -141,7 +143,6 @@
 
 <span class="na">checks</span><span class="pi">:</span>
   <span class="na">image_limit_kb</span><span class="pi">:</span> <span class="m">200</span>
-  <span class="na">external_links</span><span class="pi">:</span> <span class="kc">false</span>
 
 <span class="na">groups</span><span class="pi">:</span>
   <span class="pi">-</span> <span class="na">label</span><span class="pi">:</span> <span class="s">Start here</span>
@@ -154,7 +155,8 @@
       <span class="pi">-</span> <span class="na">source</span><span class="pi">:</span> <span class="s">docs/reference/CONFIGURATION.md</span>
         <span class="na">slug</span><span class="pi">:</span> <span class="s">reference/configuration</span>
         <span class="na">description</span><span class="pi">:</span> <span class="s">Every setting and its default</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>Only <code>site.name</code> and <code>groups</code> are required. bearings’ own manifest is <a href="https://github.com/bottrall/bearings/blob/main/docs-site/manifest.yml">docs-site/manifest.yml</a> in its repo.</p>
 
@@ -292,10 +294,12 @@
 
 <p>A mapping of old path to new path, for a URL the site no longer has:</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">redirects</span><span class="pi">:</span>
+<div class="code-block" data-language="yaml">
+  <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">redirects</span><span class="pi">:</span>
   <span class="na">/guides/setup/</span><span class="pi">:</span> <span class="s">/guides/getting-started/</span>
   <span class="na">/guides/old-name/</span><span class="pi">:</span> <span class="s">/guides/new-name/#a-heading</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>Each one writes a page at the old path that sends the browser to the new one. The new path must be a page or a file the site writes, and the old one must not be; <a href="/guides/checks/#redirect">The checks</a> lists what is reported when they are wrong.</p>
 
@@ -337,12 +341,6 @@
       <td>a whole number</td>
       <td>300</td>
       <td>The largest an image a guide shows may be, in KB.</td>
-    </tr>
-    <tr>
-      <td><code>external_links</code></td>
-      <td>true or false</td>
-      <td>false</td>
-      <td>Accepted, but bearings 0.1 does not read it: external links are checked only when you run <code>rake docs:check:external</code>.</td>
     </tr>
   </tbody>
 </table>

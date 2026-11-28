@@ -29,7 +29,6 @@ outputs:
 
 checks:
   image_limit_kb: 200
-  external_links: false
 
 groups:
   - label: Start here
@@ -109,10 +108,9 @@ Each one writes a page at the old path that sends the browser to the new one. Th
 
 ## checks
 
-| Key              | Value          | Default | What it does                                                                                       |
-| ---------------- | -------------- | ------- | -------------------------------------------------------------------------------------------------- |
-| `image_limit_kb` | a whole number | 300     | The largest an image a guide shows may be, in KB.                                                  |
-| `external_links` | true or false  | false   | Accepted, but bearings 0.1 does not read it: external links are checked only when you run `rake docs:check:external`. |
+| Key              | Value          | Default | What it does                                      |
+| ---------------- | -------------- | ------- | ------------------------------------------------- |
+| `image_limit_kb` | a whole number | 300     | The largest an image a guide shows may be, in KB. |
 
 ## When the manifest is wrong
 

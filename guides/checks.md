@@ -131,6 +131,7 @@ Every internal link in every output must lead to a file the site writes, and eve
 - each guide's HTML page, including the links the layout adds;
 - each guide's markdown copy;
 - the landing page;
+- the 404 page, when it is built from `404.html.erb`;
 - `llms.txt`.
 
 A link with a scheme, such as `https:` or `mailto:`, or one starting with `//`, is external and not checked here. A full URL under `site.url` is internal and checked like any other. A link shown as code is text, not a link.
@@ -141,7 +142,7 @@ A link with a scheme, such as `https:` or `mailto:`, or one starting with `//`, 
 | `link`   | error | its copy guides/start.md links to `/gone.md`, which is not a file in the site |
 | `anchor` | error | links to `/guides/start/#instal`, but guides/start/index.html has no id `instal` |
 
-Each problem points at the line it was written on: the guide's line for a link in a guide, line 1 of `layout.html.erb` for a link the layout adds, of `index.html.erb` for one on the landing page, and of the manifest for one in `llms.txt`.
+Each problem points at the line it was written on: the guide's line for a link in a guide, line 1 of `layout.html.erb` for a link the layout adds, of `index.html.erb` for one on the landing page, of `404.html.erb` for one on the 404 page, and of the manifest for one in `llms.txt`. A link in a partial counts as one the template rendering it adds.
 
 ## The README's links
 

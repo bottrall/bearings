@@ -2,12 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Getting started · bearings</title>
-    <meta name="description" content="Install bearings, add the two Rakefile lines and build a first site">
-    <link rel="canonical" href="https://bearings.bottrall.dev/guides/getting-started/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting started · bearings</title>
+<meta name="description" content="Install bearings, add the two Rakefile lines and build a first site">
+<link rel="canonical" href="https://bearings.bottrall.dev/guides/getting-started/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
     <link rel="alternate" type="text/markdown" href="/guides/getting-started.md">
-    <link rel="stylesheet" href="/site.css">
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
 
@@ -37,13 +38,13 @@
   </head>
   <body>
     <header class="mast">
-      <a class="brand" href="/">bearings</a>
-      <span class="ver">0.1.0</span>
-      <nav class="links" aria-label="Site">
-        <a href="/llms.txt">llms.txt</a>
-        <a href="https://github.com/bottrall/bearings">GitHub</a>
-      </nav>
-    </header>
+  <a class="brand" href="/">bearings</a>
+  <span class="ver">0.2.0</span>
+  <nav class="links" aria-label="Site">
+    <a href="/llms.txt">llms.txt</a>
+    <a href="https://github.com/bottrall/bearings">GitHub</a>
+  </nav>
+</header>
 
     <div class="cols">
       <nav class="tree" aria-label="Guides">
@@ -141,21 +142,25 @@
 
 <p>bearings needs Ruby 3.3 or later. Add it to your <code>Gemfile</code>, with <code>rake</code>, which runs its tasks:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">group</span> <span class="ss">:development</span> <span class="k">do</span>
+<div class="code-block" data-language="ruby">
+  <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">group</span> <span class="ss">:development</span> <span class="k">do</span>
   <span class="n">gem</span> <span class="s1">'bearings'</span>
   <span class="n">gem</span> <span class="s1">'rake'</span>
   <span class="c1"># Only for the constant check, which compares the guides with your RBS signatures.</span>
   <span class="n">gem</span> <span class="s1">'rbs'</span>
 <span class="k">end</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>bearings’ own dependencies are kramdown, kramdown-parser-gfm, rouge and zeitwerk. It never needs Node or another program.</p>
 
 <h2 id="the-two-rakefile-lines">The two Rakefile lines</h2>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'bearings/rake'</span>
+<div class="code-block" data-language="ruby">
+  <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'bearings/rake'</span>
 <span class="no">Bearings</span><span class="o">::</span><span class="no">Rake</span><span class="p">.</span><span class="nf">install</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>That adds four tasks:</p>
 
@@ -190,8 +195,10 @@
 
 <p>The manifest is <code>docs-site/manifest.yml</code> unless you pass another path. The layout, the landing page and the site’s other files are read from the manifest’s folder, whatever it is called:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bearings</span><span class="o">::</span><span class="no">Rake</span><span class="p">.</span><span class="nf">install</span><span class="p">(</span><span class="ss">manifest: </span><span class="s1">'site/manifest.yml'</span><span class="p">)</span>
-</code></pre></div></div>
+<div class="code-block" data-language="ruby">
+  <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bearings</span><span class="o">::</span><span class="no">Rake</span><span class="p">.</span><span class="nf">install</span><span class="p">(</span><span class="ss">manifest: </span><span class="s1">'site/manifest.yml'</span><span class="p">)</span>
+</code></pre></div>  </div>
+</div>
 
 <p>Every task runs from the repo root, and the ones that build write to <code>_site/</code> there, so add <code>_site/</code> to your <code>.gitignore</code>.</p>
 
@@ -199,22 +206,27 @@
 
 <p>A site needs a guide, a manifest that lists it, a layout and a landing page:</p>
 
-<pre><code class="language-text">docs/GETTING_STARTED.md
+<div class="code-block" data-language="text">
+  <pre><code class="language-text">docs/GETTING_STARTED.md
 docs-site/manifest.yml
 docs-site/layout.html.erb
 docs-site/index.html.erb
 </code></pre>
+</div>
 
 <p>The guide is plain markdown. Its first <code># </code> line is the page title:</p>
 
-<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh"># Getting started</span>
+<div class="code-block" data-language="markdown">
+  <div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh"># Getting started</span>
 
 Install the gem, then run it.
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>The manifest names the site and lists every page, each with the guide it comes from, the slug its URL is built from, and a one-line description:</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">site</span><span class="pi">:</span>
+<div class="code-block" data-language="yaml">
+  <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">site</span><span class="pi">:</span>
   <span class="na">name</span><span class="pi">:</span> <span class="s">My gem</span>
   <span class="na">url</span><span class="pi">:</span> <span class="s">https://docs.example.com</span>
 
@@ -227,11 +239,13 @@ Install the gem, then run it.
       <span class="pi">-</span> <span class="na">source</span><span class="pi">:</span> <span class="s">docs/GETTING_STARTED.md</span>
         <span class="na">slug</span><span class="pi">:</span> <span class="s">getting-started</span>
         <span class="na">description</span><span class="pi">:</span> <span class="s">Install the gem and run it</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>The layout renders each guide. This one is about as small as a layout can be:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
+<div class="code-block" data-language="erb">
+  <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
 <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
   <span class="nt">&lt;head&gt;</span>
     <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
@@ -241,11 +255,13 @@ Install the gem, then run it.
     <span class="nt">&lt;main&gt;</span><span class="cp">&lt;%=</span> <span class="n">body</span> <span class="cp">%&gt;</span><span class="nt">&lt;/main&gt;</span>
   <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>The landing page becomes <code>/index.html</code>. It gets the site and its pages, but no single page:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
+<div class="code-block" data-language="erb">
+  <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
 <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
   <span class="nt">&lt;head&gt;</span>
     <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
@@ -257,12 +273,15 @@ Install the gem, then run it.
     <span class="cp">&lt;%-</span> <span class="k">end</span> <span class="cp">-%&gt;</span>
   <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>Then build and check it:</p>
 
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle <span class="nb">exec </span>rake docs:check
-</code></pre></div></div>
+<div class="code-block" data-language="sh">
+  <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle <span class="nb">exec </span>rake docs:check
+</code></pre></div>  </div>
+</div>
 
 <p>The guide is now at <code>_site/guides/getting-started/index.html</code>, with its markdown copy at <code>_site/guides/getting-started.md</code>. Run <code>bundle exec rake docs:serve</code> and open <code>http://localhost:8000</code> to read it.</p>
 

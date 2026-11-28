@@ -2,22 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Diagrams and images · bearings</title>
-    <meta name="description" content="Mermaid diagrams and images in a guide, on GitHub and on the site">
-    <link rel="canonical" href="https://bearings.bottrall.dev/guides/diagrams-and-images/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagrams and images · bearings</title>
+<meta name="description" content="Mermaid diagrams and images in a guide, on GitHub and on the site">
+<link rel="canonical" href="https://bearings.bottrall.dev/guides/diagrams-and-images/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
     <link rel="alternate" type="text/markdown" href="/guides/diagrams-and-images.md">
-    <link rel="stylesheet" href="/site.css">
   </head>
   <body>
     <header class="mast">
-      <a class="brand" href="/">bearings</a>
-      <span class="ver">0.1.0</span>
-      <nav class="links" aria-label="Site">
-        <a href="/llms.txt">llms.txt</a>
-        <a href="https://github.com/bottrall/bearings">GitHub</a>
-      </nav>
-    </header>
+  <a class="brand" href="/">bearings</a>
+  <span class="ver">0.2.0</span>
+  <nav class="links" aria-label="Site">
+    <a href="/llms.txt">llms.txt</a>
+    <a href="https://github.com/bottrall/bearings">GitHub</a>
+  </nav>
+</header>
 
     <div class="cols">
       <nav class="tree" aria-label="Guides">
@@ -107,20 +108,24 @@
 
 <p>Write a diagram as a fenced code block with the language <code>mermaid</code>. Mermaid is text, so an agent can write it and read it back, a change to it is an ordinary diff, and GitHub draws it in place:</p>
 
-<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">```</span><span class="nl">mermaid
+<div class="code-block" data-language="markdown">
+  <div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">```</span><span class="nl">mermaid
 </span><span class="sb">flowchart LR
   accTitle: From guide to site
   guide["a guide"] --&gt; site["the site"]</span>
 <span class="p">```</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>On the site, the fence becomes a <code>pre</code> with the class <code>mermaid</code>, holding the diagram’s source, escaped as HTML:</p>
 
-<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">"mermaid"</span><span class="nt">&gt;</span>flowchart LR
+<div class="code-block" data-language="html">
+  <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">"mermaid"</span><span class="nt">&gt;</span>flowchart LR
   accTitle: From guide to site
   guide[<span class="ni">&amp;quot;</span>a guide<span class="ni">&amp;quot;</span>] --<span class="ni">&amp;gt;</span> site[<span class="ni">&amp;quot;</span>the site<span class="ni">&amp;quot;</span>]
 <span class="nt">&lt;/pre&gt;</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>The markdown copy keeps the fence as written, so an agent reads the source.</p>
 
@@ -128,13 +133,15 @@
 
 <p>Turning the source into a picture is the layout’s job, which keeps bearings free of Node and of any one Mermaid version. A layout loads Mermaid on the pages that need it, which <code>page.diagrams?</code> tells it:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%-</span> <span class="k">if</span> <span class="n">page</span><span class="p">.</span><span class="nf">diagrams?</span> <span class="cp">-%&gt;</span>
+<div class="code-block" data-language="erb">
+  <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%-</span> <span class="k">if</span> <span class="n">page</span><span class="p">.</span><span class="nf">diagrams?</span> <span class="cp">-%&gt;</span>
 <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"module"</span><span class="nt">&gt;</span>
   <span class="k">import</span> <span class="nx">mermaid</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs</span><span class="dl">"</span><span class="p">;</span>
   <span class="nx">mermaid</span><span class="p">.</span><span class="nf">initialize</span><span class="p">({</span> <span class="na">startOnLoad</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
 <span class="nt">&lt;/script&gt;</span>
 <span class="cp">&lt;%-</span> <span class="k">end</span> <span class="cp">-%&gt;</span>
-</code></pre></div></div>
+</code></pre></div>  </div>
+</div>
 
 <p>Mermaid finds every <code>pre class="mermaid"</code> on the page and draws it. <a href="/guides/getting-started/#how-a-build-runs">Getting started</a> has a diagram drawn this way.</p>
 
@@ -148,8 +155,10 @@
 
 <p>Show an image with markdown, or with an HTML <code>img</code>, or a <code>picture</code> whose <code>source</code>s give other versions. Its path is relative to the guide, as GitHub reads it:</p>
 
-<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">![</span><span class="nv">The bearings mark: a compass needle inside a ring</span><span class="p">](</span><span class="sx">images/bearings.svg</span><span class="p">)</span>
-</code></pre></div></div>
+<div class="code-block" data-language="markdown">
+  <div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">![</span><span class="nv">The bearings mark: a compass needle inside a ring</span><span class="p">](</span><span class="sx">images/bearings.svg</span><span class="p">)</span>
+</code></pre></div>  </div>
+</div>
 
 <p>That line, in this guide, shows this:</p>
 

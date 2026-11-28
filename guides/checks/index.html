@@ -2,22 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The checks · bearings</title>
-    <meta name="description" content="Every problem a build or a check reports, and how to fix it">
-    <link rel="canonical" href="https://bearings.bottrall.dev/guides/checks/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The checks · bearings</title>
+<meta name="description" content="Every problem a build or a check reports, and how to fix it">
+<link rel="canonical" href="https://bearings.bottrall.dev/guides/checks/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
     <link rel="alternate" type="text/markdown" href="/guides/checks.md">
-    <link rel="stylesheet" href="/site.css">
   </head>
   <body>
     <header class="mast">
-      <a class="brand" href="/">bearings</a>
-      <span class="ver">0.1.0</span>
-      <nav class="links" aria-label="Site">
-        <a href="/llms.txt">llms.txt</a>
-        <a href="https://github.com/bottrall/bearings">GitHub</a>
-      </nav>
-    </header>
+  <a class="brand" href="/">bearings</a>
+  <span class="ver">0.2.0</span>
+  <nav class="links" aria-label="Site">
+    <a href="/llms.txt">llms.txt</a>
+    <a href="https://github.com/bottrall/bearings">GitHub</a>
+  </nav>
+</header>
 
     <div class="cols">
       <nav class="tree" aria-label="Guides">
@@ -132,15 +133,18 @@
 
 <p>Each problem is printed with its file, its line, the check that found it, what is wrong, and a hint on the line below. They are sorted by file, then line:</p>
 
-<pre><code class="language-text">docs/GUIDE.md:12: [image] shows an image with no alt text
+<div class="code-block" data-language="text">
+  <pre><code class="language-text">docs/GUIDE.md:12: [image] shows an image with no alt text
   describe the image in its alt text; it is all an agent or a screen reader gets
 docs/GUIDE.md:30: [anchor] links to `#instal`, but guides/guide/index.html has no id `instal`
   point the fragment at an id on that page, such as a heading's
 </code></pre>
+</div>
 
 <p>With <code>FORMAT=json</code>, the same problems are printed as one JSON array, <code>[]</code> when there are none:</p>
 
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
+<div class="code-block" data-language="json">
+  <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
     </span><span class="nl">"check"</span><span class="p">:</span><span class="w"> </span><span class="s2">"image"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error"</span><span class="p">,</span><span class="w">
@@ -150,7 +154,8 @@ docs/GUIDE.md:30: [anchor] links to `#instal`, but guides/guide/index.html has n
     </span><span class="nl">"hint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"describe the image in its alt text; it is all an agent or a screen reader gets"</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
-</span></code></pre></div></div>
+</span></code></pre></div>  </div>
+</div>
 
 <p><code>level</code> is <code>error</code> or <code>warning</code>, and <code>hint</code> may be <code>null</code>.</p>
 
@@ -420,6 +425,7 @@ docs/GUIDE.md:30: [anchor] links to `#instal`, but guides/guide/index.html has n
   <li>each guide’s HTML page, including the links the layout adds;</li>
   <li>each guide’s markdown copy;</li>
   <li>the landing page;</li>
+  <li>the 404 page, when it is built from <code>404.html.erb</code>;</li>
   <li><code>llms.txt</code>.</li>
 </ul>
 
@@ -452,7 +458,7 @@ docs/GUIDE.md:30: [anchor] links to `#instal`, but guides/guide/index.html has n
   </tbody>
 </table>
 
-<p>Each problem points at the line it was written on: the guide’s line for a link in a guide, line 1 of <code>layout.html.erb</code> for a link the layout adds, of <code>index.html.erb</code> for one on the landing page, and of the manifest for one in <code>llms.txt</code>.</p>
+<p>Each problem points at the line it was written on: the guide’s line for a link in a guide, line 1 of <code>layout.html.erb</code> for a link the layout adds, of <code>index.html.erb</code> for one on the landing page, of <code>404.html.erb</code> for one on the 404 page, and of the manifest for one in <code>llms.txt</code>. A link in a partial counts as one the template rendering it adds.</p>
 
 <h2 id="the-readmes-links">The README’s links</h2>
 

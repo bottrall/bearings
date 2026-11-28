@@ -2,22 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The layout · bearings</title>
-    <meta name="description" content="The layout contract, what each template is given, and the files beside it">
-    <link rel="canonical" href="https://bearings.bottrall.dev/guides/layout/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The layout · bearings</title>
+<meta name="description" content="The layout contract, what each template is given, and the files beside it">
+<link rel="canonical" href="https://bearings.bottrall.dev/guides/layout/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
     <link rel="alternate" type="text/markdown" href="/guides/layout.md">
-    <link rel="stylesheet" href="/site.css">
   </head>
   <body>
     <header class="mast">
-      <a class="brand" href="/">bearings</a>
-      <span class="ver">0.1.0</span>
-      <nav class="links" aria-label="Site">
-        <a href="/llms.txt">llms.txt</a>
-        <a href="https://github.com/bottrall/bearings">GitHub</a>
-      </nav>
-    </header>
+  <a class="brand" href="/">bearings</a>
+  <span class="ver">0.2.0</span>
+  <nav class="links" aria-label="Site">
+    <a href="/llms.txt">llms.txt</a>
+    <a href="https://github.com/bottrall/bearings">GitHub</a>
+  </nav>
+</header>
 
     <div class="cols">
       <nav class="tree" aria-label="Guides">
@@ -89,11 +90,13 @@
           <p class="cap">On this page</p>
     <ul class="plain-list">
       <li><a href="#how-the-templates-run">How the templates run</a></li>
-      <li><a href="#what-both-templates-get">What both templates get</a></li>
+      <li><a href="#what-every-template-gets">What every template gets</a></li>
       <li><a href="#what-the-layout-gets-as-well">What the layout gets as well</a></li>
       <li><a href="#a-page">A page</a></li>
       <li><a href="#what-the-body-holds">What the body holds</a></li>
       <li><a href="#the-landing-page">The landing page</a></li>
+      <li><a href="#the-404-page">The 404 page</a></li>
+      <li><a href="#partials">Partials</a></li>
       <li><a href="#the-files-beside-them">The files beside them</a></li>
       <li><a href="#bearings-own-layout">bearings’ own layout</a></li>
     </ul>
@@ -102,11 +105,13 @@
           <summary>On this page</summary>
     <ul class="plain-list">
       <li><a href="#how-the-templates-run">How the templates run</a></li>
-      <li><a href="#what-both-templates-get">What both templates get</a></li>
+      <li><a href="#what-every-template-gets">What every template gets</a></li>
       <li><a href="#what-the-layout-gets-as-well">What the layout gets as well</a></li>
       <li><a href="#a-page">A page</a></li>
       <li><a href="#what-the-body-holds">What the body holds</a></li>
       <li><a href="#the-landing-page">The landing page</a></li>
+      <li><a href="#the-404-page">The 404 page</a></li>
+      <li><a href="#partials">Partials</a></li>
       <li><a href="#the-files-beside-them">The files beside them</a></li>
       <li><a href="#bearings-own-layout">bearings’ own layout</a></li>
     </ul>
@@ -132,23 +137,31 @@
       <td>The template for the landing page, <code>/index.html</code>. Required.</td>
     </tr>
     <tr>
+      <td><code>404.html.erb</code></td>
+      <td>The template for the 404 page, <code>/404.html</code>, shown for an address the site doesn’t have. Optional.</td>
+    </tr>
+    <tr>
+      <td><code>_&lt;name&gt;.html.erb</code></td>
+      <td>A <a href="#partials">partial</a>: markup the templates share. Never copied into the site.</td>
+    </tr>
+    <tr>
       <td>anything else</td>
-      <td>Copied into the site as it is, at the same path, hidden files (names starting with <code>.</code>) excepted: stylesheets, scripts, fonts, icons, a <code>404.html</code>, a <code>CNAME</code>.</td>
+      <td>Copied into the site as it is, at the same path, hidden files (names starting with <code>.</code>) excepted: stylesheets, scripts, fonts, icons, a <code>CNAME</code>.</td>
     </tr>
   </tbody>
 </table>
 
-<p>If either template is missing, the build reports a <code>layout</code> problem, <code>was not found</code>, and writes no HTML pages and none of the files beside the templates; the other outputs are still written.</p>
+<p>If either required template is missing, the build reports a <code>layout</code> problem, <code>was not found</code>, and writes no HTML pages and none of the files beside the templates; the other outputs are still written.</p>
 
 <h2 id="how-the-templates-run">How the templates run</h2>
 
-<p>Both are ERB, with <code>-</code> trimming: a line that starts with <code>&lt;%-</code> and ends with <code>-%&gt;</code> leaves nothing behind, so a loop leaves no blank lines.</p>
+<p>Each is ERB, with <code>-</code> trimming: a line that starts with <code>&lt;%-</code> and ends with <code>-%&gt;</code> leaves nothing behind, so a loop leaves no blank lines.</p>
 
 <p>Nothing is escaped for you. <code>&lt;%= %&gt;</code> writes a value exactly as it is, which is what <code>body</code> needs, since it is HTML. Titles and descriptions come from your own guides and manifest; if one may hold a <code>&lt;</code> or an <code>&amp;</code>, escape it with <code>ERB::Util.h</code>.</p>
 
 <p>A template is Ruby, so a mistake in one raises when it runs. <code>rake docs:serve</code> prints the error and keeps serving the last good site.</p>
 
-<h2 id="what-both-templates-get">What both templates get</h2>
+<h2 id="what-every-template-gets">What every template gets</h2>
 
 <table>
   <thead>
@@ -173,6 +186,10 @@
     <tr>
       <td><code>pages</code></td>
       <td>Every page, in reading order.</td>
+    </tr>
+    <tr>
+      <td><code>render</code></td>
+      <td>Renders a <a href="#partials">partial</a>: <code>render.call('masthead')</code> is the HTML of <code>_masthead.html.erb</code>.</td>
     </tr>
   </tbody>
 </table>
@@ -288,26 +305,53 @@
 <ul>
   <li>A link to another guide, such as <code>[the checks](CHECKS.md#redirect)</code>, points at that guide’s page, <code>/guides/checks/#redirect</code>. A link to a markdown file that is not a page is reported as a <a href="/guides/checks/#problems-in-every-build"><code>link</code> problem</a>.</li>
   <li>Every heading has an <code>id</code>, made the way GitHub makes them, so a link to a heading works in both places.</li>
-  <li>Code blocks in a language Rouge highlights are a <code>div</code> with the classes <code>language-&lt;name&gt; highlighter-rouge</code>, holding a <code>div class="highlight"</code> and then a <code>pre class="highlight"</code>; a block with no language, a <code>text</code> or <code>plaintext</code> one, or one Rouge doesn’t know is a bare <code>pre</code> holding a <code>code</code> (with the class <code>language-&lt;name&gt;</code> when it names a language), so a layout styles both shapes. The tokens are <code>span</code>s with Rouge’s short class names. The layout’s stylesheet colours them; <code>rougify style github</code> prints one such stylesheet.</li>
+  <li>Every code block is a <code>div class="code-block"</code>, with a <code>data-language</code> attribute naming its language when it has one, so a stylesheet labels any block with <code>content: attr(data-language)</code>. Inside it, a block in a language Rouge highlights is a <code>div</code> with the classes <code>language-&lt;name&gt; highlighter-rouge</code>, holding a <code>div class="highlight"</code> and then a <code>pre class="highlight"</code>; a block with no language, a <code>text</code> or <code>plaintext</code> one, or one Rouge doesn’t know is a <code>pre</code> holding a <code>code</code> (with the class <code>language-&lt;name&gt;</code> when it names a language). The tokens are <code>span</code>s with Rouge’s short class names. The layout’s stylesheet colours them; <code>rougify style github</code> prints one such stylesheet.</li>
   <li>An alert block, a quote that starts with <code>[!NOTE]</code>, <code>[!TIP]</code>, <code>[!IMPORTANT]</code>, <code>[!WARNING]</code> or <code>[!CAUTION]</code>, becomes a <code>div</code> with the classes <code>alert alert-note</code> (or <code>-tip</code>, and so on), holding a <code>p class="alert-title"</code> with the kind’s name and then the quote’s text.</li>
   <li>A Mermaid diagram becomes a <code>pre class="mermaid"</code> holding its source, and an image points at its copy under <code>/assets/</code>; <a href="/guides/diagrams-and-images/">Diagrams and images</a> covers both.</li>
 </ul>
 
-<p>The body holds only structure and class names. How an alert or a code block looks is the stylesheet’s job.</p>
+<p>The body holds only structure, class names and a code block’s <code>data-language</code>. How an alert or a code block looks is the stylesheet’s job.</p>
 
 <h2 id="the-landing-page">The landing page</h2>
 
-<p><code>index.html.erb</code> becomes <code>/index.html</code>. It gets <code>site</code>, <code>version</code>, <code>groups</code> and <code>pages</code>, but no <code>page</code> or <code>body</code>: it is not a guide. A landing page usually says what the project is and lists the guides with their descriptions.</p>
+<p><code>index.html.erb</code> becomes <code>/index.html</code>. It gets <code>site</code>, <code>version</code>, <code>groups</code>, <code>pages</code> and <code>render</code>, but no <code>page</code> or <code>body</code>: it is not a guide. A landing page usually says what the project is and lists the guides with their descriptions.</p>
+
+<h2 id="the-404-page">The 404 page</h2>
+
+<p><code>404.html.erb</code> becomes <code>/404.html</code>: <code>rake docs:serve</code> answers a path the site doesn’t have with it, and GitHub Pages does the same. Like the landing page, it gets <code>site</code>, <code>version</code>, <code>groups</code>, <code>pages</code> and <code>render</code>, so it can show the version and list the guides. It is shown at whatever address was asked for, so start its links with <code>/</code>.</p>
+
+<p>The template is optional. A 404 page that needs none of those values can be a plain <code>404.html</code>, copied like the other files beside the templates. A site with both would write <code>/404.html</code> twice, so the build reports an <a href="/guides/checks/#problems-in-every-build"><code>output</code> problem</a>.</p>
+
+<h2 id="partials">Partials</h2>
+
+<p>A partial is markup that more than one template shows, such as a site header, written once. It is a file named <code>_&lt;name&gt;.html.erb</code> in the manifest’s folder, and <code>render.call('&lt;name&gt;')</code> gives its HTML to the template that asks:</p>
+
+<div class="code-block" data-language="erb">
+  <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;body&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">render</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="s1">'masthead'</span><span class="p">)</span> <span class="cp">%&gt;</span>
+</code></pre></div>  </div>
+</div>
+
+<p><code>_masthead.html.erb</code> is ERB like the templates, and gets every value the template rendering it has: <code>page</code> and <code>body</code> from the layout, but not from the landing page or the 404 page. It gets <code>render</code> too, so a partial can render another.</p>
+
+<p>Values given after the name go to the partial as well, in place of any the template has under the same name:</p>
+
+<div class="code-block" data-language="erb">
+  <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">render</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="s1">'head'</span><span class="p">,</span> <span class="ss">title: </span><span class="n">page</span><span class="p">.</span><span class="nf">title</span><span class="p">)</span> <span class="cp">%&gt;</span>
+</code></pre></div>  </div>
+</div>
+
+<p>Here <code>_head.html.erb</code> can use <code>title</code>, so each template gives the one partial its own.</p>
+
+<p>Only a file in the manifest’s folder itself is a partial; one in a subfolder is copied like any other file. Rendering a partial that has no file raises a <code>KeyError</code> naming the file.</p>
 
 <h2 id="the-files-beside-them">The files beside them</h2>
 
-<p>Every other file in the manifest’s folder, in any subfolder, except hidden files (names starting with <code>.</code>), is copied into the site at the same path: <code>docs-site/site.css</code> is served at <code>/site.css</code>, <code>docs-site/fonts/body.woff2</code> at <code>/fonts/body.woff2</code>. Point at them from the templates by those paths.</p>
-
-<p>A <code>404.html</code> is worth adding: <code>rake docs:serve</code> answers a path the site doesn’t have with it, and GitHub Pages does the same.</p>
+<p>Every other file in the manifest’s folder, in any subfolder, except partials and hidden files (names starting with <code>.</code>), is copied into the site at the same path: <code>docs-site/site.css</code> is served at <code>/site.css</code>, <code>docs-site/fonts/body.woff2</code> at <code>/fonts/body.woff2</code>. Point at them from the templates by those paths.</p>
 
 <h2 id="bearings-own-layout">bearings’ own layout</h2>
 
-<p>bearings builds its own site from these guides, with a layout written only against what this guide describes: <a href="https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb">layout.html.erb</a>, <a href="https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb">index.html.erb</a>, <a href="https://github.com/bottrall/bearings/blob/main/docs-site/site.css">site.css</a> and <a href="https://github.com/bottrall/bearings/blob/main/docs-site/404.html">404.html</a>. It is not a theme, and the gem does not ship it: copy what is useful.</p>
+<p>bearings builds its own site from these guides, with a layout written only against what this guide describes: <a href="https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb">layout.html.erb</a>, <a href="https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb">index.html.erb</a>, the partials they share, <a href="https://github.com/bottrall/bearings/blob/main/docs-site/_head.html.erb">_head.html.erb</a> and <a href="https://github.com/bottrall/bearings/blob/main/docs-site/_masthead.html.erb">_masthead.html.erb</a>, <a href="https://github.com/bottrall/bearings/blob/main/docs-site/site.css">site.css</a> and <a href="https://github.com/bottrall/bearings/blob/main/docs-site/404.html.erb">404.html.erb</a>. It is not a theme, and the gem does not ship it: copy what is useful.</p>
 
         </article>
         <nav class="pager" aria-label="Previous and next">
