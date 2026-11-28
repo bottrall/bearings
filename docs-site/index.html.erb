@@ -4,41 +4,122 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= site.name %></title>
-    <meta name="description" content="<%= site.summary %>">
+    <meta name="description" content="<%= ERB::Util.h(site.summary) %>">
     <link rel="canonical" href="<%= site.url %>/">
     <link rel="stylesheet" href="/site.css">
   </head>
   <body>
-    <header class="masthead">
-      <a class="name" href="/"><%= site.name %></a>
-      <span class="version">v<%= version %></span>
-      <a href="<%= site.repo %>">GitHub</a>
+    <header class="mast">
+      <a class="brand" href="/"><%= site.name %></a>
+      <span class="ver"><%= version %></span>
+      <nav class="links" aria-label="Site">
+        <a href="/llms.txt">llms.txt</a>
+        <a href="<%= site.repo %>">GitHub</a>
+      </nav>
     </header>
 
-    <main class="landing">
-      <h1><%= site.name %></h1>
-      <p class="summary"><%= site.summary %></p>
+    <main class="land">
+      <section class="hero">
+        <div>
+          <h1><span>Plain markdown in.</span> <span>A checked site out.</span></h1>
+          <p class="summary">bearings turns the guides in your gem’s repo into a static site, a markdown copy of every page and llms.txt, then checks every link, anchor and example in them.</p>
+          <%- featured = pages.find(&:featured) -%>
+          <p class="actions"><a class="start" href="<%= featured.url %>">Start with <%= ERB::Util.h(featured.title) %></a></p>
+        </div>
+        <div class="pane">
+          <figure>
+            <figcaption>Two files to touch, one command to run</figcaption>
+            <pre><i># Gemfile</i>
+gem 'bearings'
+gem 'rake'
 
-      <ul class="promises">
-        <li>Guides are plain markdown that reads the same on GitHub.</li>
-        <li>The manifest is the only list of what exists.</li>
-        <li>If the check passes, the site is correct.</li>
-      </ul>
+<i># Rakefile</i>
+require 'bearings/rake'
+Bearings::Rake.install
 
-      <p>bearings has no theme. Your repo writes the layout; bearings builds the pages, a markdown copy of each, <a href="/llms.txt">llms.txt</a> and a search index, and checks every link, anchor, example, constant, image and diagram in them. This site is built by bearings from its own repo.</p>
+<i># then build the site and check it</i>
+$ bundle exec rake docs:check</pre>
+          </figure>
+        </div>
+      </section>
 
-      <%- featured = pages.find(&:featured) || pages.first -%>
-      <p><a class="start" href="<%= featured.url %>"><%= featured.title %> →</a></p>
+      <section class="io" aria-label="What goes in and what comes out">
+        <div class="pane">
+          <p>You write</p>
+          <figure>
+            <figcaption>docs/GETTING_STARTED.md</figcaption>
+            <pre><b># Getting started</b>
 
-      <%- groups.each do |group| -%>
-      <h2><%= group.label %></h2>
-      <dl>
-        <%- group.pages.each do |page| -%>
-        <dt><a href="<%= page.url %>"><%= page.title %></a></dt>
-        <dd><%= page.description %></dd>
+Install the gem, then run it.</pre>
+          </figure>
+          <figure>
+            <figcaption>docs-site/manifest.yml</figcaption>
+            <pre>site:
+  name: My gem
+  url: https://docs.example.com
+
+groups:
+  - label: Start here
+    pages:
+      - source: docs/GETTING_STARTED.md
+        slug: getting-started
+        description: Install the gem and run it</pre>
+          </figure>
+        </div>
+        <p class="run">
+          <code>$ bundle exec rake docs</code>
+          <svg viewBox="0 0 56 32" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M2 16h50M40 5l12 11-12 11"/></svg>
+        </p>
+        <div class="pane">
+          <p>bearings writes</p>
+          <figure>
+            <figcaption>_site/</figcaption>
+            <pre class="site-tree">├── index.html
+├── guides/
+│   ├── <mark>getting-started/index.html</mark>  <i>the page</i>
+│   └── <mark>getting-started.md</mark>  <i>its markdown copy</i>
+├── <mark>llms.txt</mark>  <i>the index for agents</i>
+├── search.json
+├── sitemap.xml
+└── robots.txt</pre>
+          </figure>
+          <figure>
+            <figcaption>_site/llms.txt</figcaption>
+            <pre><b># My gem</b>
+
+<b>## Start here</b>
+
+- [Getting started](…/getting-started.md): Install
+  the gem and run it</pre>
+          </figure>
+        </div>
+      </section>
+
+      <h2>Then it checks what it built</h2>
+      <p class="lead">Every link, anchor, code example, constant name, image and diagram in the guides. If the check passes, the site is correct.</p>
+      <figure class="report">
+        <pre><span class="cmd report-line">$ bundle exec rake docs:check</span><span class="report-line">docs/GUIDE.md:12: <b>[image]</b> shows an image with no alt text</span><i class="report-hint">describe the image in its alt text; it is all an agent or a screen reader gets</i><span class="report-line">docs/GUIDE.md:30: <b>[anchor]</b> links to `#instal`, but guides/guide/index.html has no id `instal`</span><i class="report-hint">point the fragment at an id on that page, such as a heading's</i></pre>
+        <figcaption>Each problem names the file and the line to fix. A check that passes prints nothing.</figcaption>
+      </figure>
+
+      <h2>The guides</h2>
+      <ol class="guides">
+        <%- pages.each do |page| -%>
+        <li>
+          <a href="<%= page.url %>">
+            <b><%= ERB::Util.h(page.title) %></b>
+            <small><%= page.group_label %></small>
+            <span><%= ERB::Util.h(page.description) %></span>
+          </a>
+        </li>
         <%- end -%>
-      </dl>
-      <%- end -%>
+      </ol>
+
+      <footer class="foot">
+        <span>Built by bearings from its own repo. The look is a template in docs-site/.</span>
+        <a href="/llms.txt">llms.txt</a>
+        <a href="<%= site.repo %>">GitHub</a>
+      </footer>
     </main>
   </body>
 </html>

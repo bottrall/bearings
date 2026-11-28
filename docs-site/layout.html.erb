@@ -3,64 +3,112 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= page.title %> · <%= site.name %></title>
-    <meta name="description" content="<%= page.description %>">
+    <title><%= ERB::Util.h(page.title) %> · <%= site.name %></title>
+    <meta name="description" content="<%= ERB::Util.h(page.description) %>">
     <link rel="canonical" href="<%= page.canonical_url %>">
     <link rel="alternate" type="text/markdown" href="<%= page.markdown_url %>">
     <link rel="stylesheet" href="/site.css">
     <%- if page.diagrams? -%>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
-      mermaid.initialize({ startOnLoad: true });
+
+      const style = getComputedStyle(document.documentElement);
+      const [paper, ink, fontFamily] = ["--paper", "--ink", "--font-body"].map((name) => style.getPropertyValue(name).trim());
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: "base",
+        themeCSS: ".node rect { rx: 0; ry: 0 }",
+        flowchart: { curve: "linear", padding: 14 },
+        themeVariables: {
+          darkMode: matchMedia("(prefers-color-scheme: dark)").matches,
+          fontFamily,
+          fontSize: "15px",
+          background: paper,
+          primaryColor: paper,
+          edgeLabelBackground: paper,
+          primaryTextColor: ink,
+          primaryBorderColor: ink,
+          lineColor: ink,
+        },
+      });
+      await document.fonts.ready;
+      await mermaid.run();
     </script>
     <%- end -%>
   </head>
   <body>
-    <header class="masthead">
-      <a class="name" href="/"><%= site.name %></a>
-      <span class="version">v<%= version %></span>
-      <a href="<%= site.repo %>">GitHub</a>
+    <%- guide_list = lambda do -%>
+    <ul class="plain-list">
+      <%- groups.each do |group| -%>
+      <li>
+        <span class="group"><%= group.label %></span>
+        <ul class="plain-list">
+          <%- group.pages.each do |p| -%>
+          <li><a href="<%= p.url %>"<%= ' aria-current="page"' if p == page %>><%= ERB::Util.h(p.title) %></a></li>
+          <%- end -%>
+        </ul>
+      </li>
+      <%- end -%>
+    </ul>
+    <%- end -%>
+    <%- toc_list = lambda do -%>
+    <ul class="plain-list">
+      <%- toc.each do |entry| -%>
+      <li><a href="#<%= entry[:id] %>"><%= entry[:title] %></a></li>
+      <%- end -%>
+    </ul>
+    <%- end -%>
+    <header class="mast">
+      <a class="brand" href="/"><%= site.name %></a>
+      <span class="ver"><%= version %></span>
+      <nav class="links" aria-label="Site">
+        <a href="/llms.txt">llms.txt</a>
+        <a href="<%= site.repo %>">GitHub</a>
+      </nav>
     </header>
 
-    <div class="columns">
-      <nav class="contents" aria-label="Guides">
-        <%- groups.each do |group| -%>
-        <h2><%= group.label %></h2>
-        <ol>
-          <%- group.pages.each do |p| -%>
-          <li><a href="<%= p.url %>"<%= ' aria-current="page"' if p == page %>><%= p.title %></a></li>
-          <%- end -%>
-        </ol>
-        <%- end -%>
+    <div class="cols">
+      <nav class="tree" aria-label="Guides">
+        <p class="cap">Guides</p>
+        <%- guide_list.call -%>
       </nav>
+      <details class="menu">
+        <summary>Guides</summary>
+        <%- guide_list.call -%>
+      </details>
 
       <main>
+        <header class="head">
+          <p class="file">
+            <span><%= page.source_path %></span>
+            <span class="views">
+              <b>Rendered</b>
+              <a href="<%= page.markdown_url %>">Markdown</a>
+              <a href="<%= page.edit_url %>">Edit</a>
+            </span>
+          </p>
+          <h1><%= ERB::Util.h(page.title) %></h1>
+        </header>
+        <%- if toc.size >= 2 -%>
+        <nav class="toc" aria-label="On this page">
+          <p class="cap">On this page</p>
+          <%- toc_list.call -%>
+        </nav>
+        <details class="toc-menu">
+          <summary>On this page</summary>
+          <%- toc_list.call -%>
+        </details>
+        <%- end -%>
         <article>
-          <p class="kicker"><%= page.group_label %> · <%= page.num %></p>
-          <h1><%= page.title %></h1>
-          <%- if toc.size >= 2 -%>
-          <nav class="toc" aria-label="On this page">
-            <ul>
-              <%- toc.each do |entry| -%>
-              <li><a href="#<%= entry[:id] %>"><%= entry[:title] %></a></li>
-              <%- end -%>
-            </ul>
-          </nav>
-          <%- end -%>
           <%= body %>
         </article>
-
-        <p class="source">
-          <a href="<%= page.markdown_url %>">Read this page as markdown</a> ·
-          <a href="<%= page.edit_url %>">Edit it on GitHub</a>
-        </p>
-
         <nav class="pager" aria-label="Previous and next">
           <%- if prev_page -%>
-          <a rel="prev" href="<%= prev_page.url %>">← <%= prev_page.title %></a>
+          <a rel="prev" href="<%= prev_page.url %>">Previous: <%= ERB::Util.h(prev_page.title) %></a>
           <%- end -%>
           <%- if next_page -%>
-          <a rel="next" href="<%= next_page.url %>"><%= next_page.title %> →</a>
+          <a rel="next" href="<%= next_page.url %>">Next: <%= ERB::Util.h(next_page.title) %></a>
           <%- end -%>
         </nav>
       </main>
