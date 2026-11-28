@@ -18,11 +18,12 @@ module Bearings::HtmlPages
   # @rbs site: Bearings::Site
   # @rbs layout: String
   # @rbs landing: String
+  # @rbs not_found: String?
   # @rbs assets: Hash[String, Pathname]
   # @rbs images: Hash[String, String]
   # @rbs diagram_renderer: Bearings::_DiagramRenderer?
   # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
-  def call: (Bearings::Site site, layout: String, landing: String, assets: Hash[String, Pathname], images: Hash[String, String], ?diagram_renderer: Bearings::_DiagramRenderer?) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
+  def call: (Bearings::Site site, layout: String, landing: String, not_found: String?, assets: Hash[String, Pathname], images: Hash[String, String], ?diagram_renderer: Bearings::_DiagramRenderer?) -> [ Array[Bearings::OutputFile], Array[Bearings::Problem] ]
 
   # @rbs page: Bearings::Site::Page
   # @rbs return: String
@@ -40,9 +41,10 @@ module Bearings::HtmlPages
   def shared: (Bearings::Site site) -> Hash[Symbol, untyped]
 
   # @rbs site: Bearings::Site
-  # @rbs landing: String
+  # @rbs template: String
+  # @rbs path: String
   # @rbs return: Bearings::OutputFile
-  def landing_file: (Bearings::Site site, String landing) -> Bearings::OutputFile
+  def site_file: (Bearings::Site site, String template, String path) -> Bearings::OutputFile
 
   # @rbs page: Bearings::Site::Page
   # @rbs site: Bearings::Site

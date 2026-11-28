@@ -24,9 +24,13 @@ module Bearings::Pipeline
 
     attr_reader landing(): String?
 
+    attr_reader not_found(): String?
+
     attr_reader layout_file(): String
 
     attr_reader landing_file(): String
+
+    attr_reader not_found_file(): String
 
     attr_reader assets(): Hash[String, Pathname]
 
@@ -36,12 +40,12 @@ module Bearings::Pipeline
 
     attr_reader readme_paths(): Array[String]
 
-    def self.new: (Bearings::Manifest manifest, String manifest_file, Bearings::Site site, Hash[String, String] sources, Hash[String, String] images, Array[String] watched, String? layout, String? landing, String layout_file, String landing_file, Hash[String, Pathname] assets, Set[String] declared, String? readme, Array[String] readme_paths) -> instance
-                | (manifest: Bearings::Manifest, manifest_file: String, site: Bearings::Site, sources: Hash[String, String], images: Hash[String, String], watched: Array[String], layout: String?, landing: String?, layout_file: String, landing_file: String, assets: Hash[String, Pathname], declared: Set[String], readme: String?, readme_paths: Array[String]) -> instance
+    def self.new: (Bearings::Manifest manifest, String manifest_file, Bearings::Site site, Hash[String, String] sources, Hash[String, String] images, Array[String] watched, String? layout, String? landing, String? not_found, String layout_file, String landing_file, String not_found_file, Hash[String, Pathname] assets, Set[String] declared, String? readme, Array[String] readme_paths) -> instance
+                | (manifest: Bearings::Manifest, manifest_file: String, site: Bearings::Site, sources: Hash[String, String], images: Hash[String, String], watched: Array[String], layout: String?, landing: String?, not_found: String?, layout_file: String, landing_file: String, not_found_file: String, assets: Hash[String, Pathname], declared: Set[String], readme: String?, readme_paths: Array[String]) -> instance
 
-    def self.members: () -> [ :manifest, :manifest_file, :site, :sources, :images, :watched, :layout, :landing, :layout_file, :landing_file, :assets, :declared, :readme, :readme_paths ]
+    def self.members: () -> [ :manifest, :manifest_file, :site, :sources, :images, :watched, :layout, :landing, :not_found, :layout_file, :landing_file, :not_found_file, :assets, :declared, :readme, :readme_paths ]
 
-    def members: () -> [ :manifest, :manifest_file, :site, :sources, :images, :watched, :layout, :landing, :layout_file, :landing_file, :assets, :declared, :readme, :readme_paths ]
+    def members: () -> [ :manifest, :manifest_file, :site, :sources, :images, :watched, :layout, :landing, :not_found, :layout_file, :landing_file, :not_found_file, :assets, :declared, :readme, :readme_paths ]
   end
 
   OUTPUTS: Array[output]

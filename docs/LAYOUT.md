@@ -6,19 +6,20 @@ bearings has no theme and never will. The look of a site belongs to the repo tha
 | ------------------ | --------------------------------------------------------------------------------------------------------------- |
 | `layout.html.erb`  | The template every guide is rendered through. Required.                                                         |
 | `index.html.erb`   | The template for the landing page, `/index.html`. Required.                                                     |
-| anything else      | Copied into the site as it is, at the same path, hidden files (names starting with `.`) excepted: stylesheets, scripts, fonts, icons, a `404.html`, a `CNAME`.  |
+| `404.html.erb`     | The template for the 404 page, `/404.html`, shown for an address the site doesn't have. Optional.               |
+| anything else      | Copied into the site as it is, at the same path, hidden files (names starting with `.`) excepted: stylesheets, scripts, fonts, icons, a `CNAME`.  |
 
-If either template is missing, the build reports a `layout` problem, `was not found`, and writes no HTML pages and none of the files beside the templates; the other outputs are still written.
+If either required template is missing, the build reports a `layout` problem, `was not found`, and writes no HTML pages and none of the files beside the templates; the other outputs are still written.
 
 ## How the templates run
 
-Both are ERB, with `-` trimming: a line that starts with `<%-` and ends with `-%>` leaves nothing behind, so a loop leaves no blank lines.
+Each is ERB, with `-` trimming: a line that starts with `<%-` and ends with `-%>` leaves nothing behind, so a loop leaves no blank lines.
 
 Nothing is escaped for you. `<%= %>` writes a value exactly as it is, which is what `body` needs, since it is HTML. Titles and descriptions come from your own guides and manifest; if one may hold a `<` or an `&`, escape it with `ERB::Util.h`.
 
 A template is Ruby, so a mistake in one raises when it runs. `rake docs:serve` prints the error and keeps serving the last good site.
 
-## What both templates get
+## What every template gets
 
 | Name      | What it is                                                                                                        |
 | --------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -74,12 +75,16 @@ The body holds only structure and class names. How an alert or a code block look
 
 `index.html.erb` becomes `/index.html`. It gets `site`, `version`, `groups` and `pages`, but no `page` or `body`: it is not a guide. A landing page usually says what the project is and lists the guides with their descriptions.
 
+## The 404 page
+
+`404.html.erb` becomes `/404.html`: `rake docs:serve` answers a path the site doesn't have with it, and GitHub Pages does the same. Like the landing page, it gets `site`, `version`, `groups` and `pages`, so it can show the version and list the guides. It is shown at whatever address was asked for, so start its links with `/`.
+
+The template is optional. A 404 page that needs none of those values can be a plain `404.html`, copied like the other files beside the templates. A site with both would write `/404.html` twice, so the build reports an [`output` problem](CHECKS.md#problems-in-every-build).
+
 ## The files beside them
 
 Every other file in the manifest's folder, in any subfolder, except hidden files (names starting with `.`), is copied into the site at the same path: `docs-site/site.css` is served at `/site.css`, `docs-site/fonts/body.woff2` at `/fonts/body.woff2`. Point at them from the templates by those paths.
 
-A `404.html` is worth adding: `rake docs:serve` answers a path the site doesn't have with it, and GitHub Pages does the same.
-
 ## bearings' own layout
 
-bearings builds its own site from these guides, with a layout written only against what this guide describes: [layout.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb), [index.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb), [site.css](https://github.com/bottrall/bearings/blob/main/docs-site/site.css) and [404.html](https://github.com/bottrall/bearings/blob/main/docs-site/404.html). It is not a theme, and the gem does not ship it: copy what is useful.
+bearings builds its own site from these guides, with a layout written only against what this guide describes: [layout.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/layout.html.erb), [index.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/index.html.erb), [site.css](https://github.com/bottrall/bearings/blob/main/docs-site/site.css) and [404.html.erb](https://github.com/bottrall/bearings/blob/main/docs-site/404.html.erb). It is not a theme, and the gem does not ship it: copy what is useful.

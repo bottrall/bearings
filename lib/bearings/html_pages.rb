@@ -20,17 +20,19 @@ module Bearings::HtmlPages
   # @rbs site: Bearings::Site
   # @rbs layout: String
   # @rbs landing: String
+  # @rbs not_found: String?
   # @rbs assets: Hash[String, Pathname]
   # @rbs images: Hash[String, String]
   # @rbs diagram_renderer: Bearings::_DiagramRenderer?
   # @rbs return: [Array[Bearings::OutputFile], Array[Bearings::Problem]]
-  def call(site, layout:, landing:, assets:, images:, diagram_renderer: nil)
+  def call(site, layout:, landing:, not_found:, assets:, images:, diagram_renderer: nil)
     by_source = site.pages.to_h { |page| [page.source_path, page] }
     by_slug = site.pages.to_h { |page| [page.slug, page] }
     template = ERB.new(layout, trim_mode: '-')
     drawn = draw(site.pages, diagram_renderer)
     files = [
-      landing_file(site, landing),
+      site_file(site, landing, 'index.html'),
+      *[not_found].compact.map { |source| site_file(site, source, '404.html') },
       *site.pages.map { |page| page_file(page, site, template, by_source, by_slug, images, drawn) },
       *assets.map { |path, source| Bearings::OutputFile.new(path:, content: source) }
     ]
@@ -61,11 +63,12 @@ module Bearings::HtmlPages
   end
 
   # @rbs site: Bearings::Site
-  # @rbs landing: String
+  # @rbs template: String
+  # @rbs path: String
   # @rbs return: Bearings::OutputFile
-  def landing_file(site, landing)
-    html = ERB.new(landing, trim_mode: '-').result_with_hash(shared(site))
-    Bearings::OutputFile.new(path: 'index.html', content: html)
+  def site_file(site, template, path)
+    html = ERB.new(template, trim_mode: '-').result_with_hash(shared(site))
+    Bearings::OutputFile.new(path:, content: html)
   end
 
   # @rbs page: Bearings::Site::Page

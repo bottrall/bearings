@@ -11,6 +11,8 @@ module Bearings::Rake
 
   LANDING: String
 
+  NOT_FOUND: String
+
   HOST: String
 
   PORT: Integer

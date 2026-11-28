@@ -14,6 +14,7 @@ module Bearings::Rake
   SIG = 'sig' #: String
   LAYOUT = 'layout.html.erb' #: String
   LANDING = 'index.html.erb' #: String
+  NOT_FOUND = '404.html.erb' #: String
   HOST = '127.0.0.1' #: String
   PORT = 8000 #: Integer
   URL = "http://localhost:#{PORT}".freeze #: String
@@ -112,8 +113,8 @@ module Bearings::Rake
     problems = files && !Bearings::Report.failed?(found) ? [*found, *Bearings::Writer.call(files, SITE)] : found
     puts Bearings::Report.text(problems) if problems.any?
     puts Bearings::Report.failed?(problems) ? FAILED : "Built #{SITE}/"
-  # The layout and landing page are the repo's ERB, run as Ruby: a typo saved in one raises, as a SyntaxError (a
-  # ScriptError) for some, and the server has to outlive it.
+  # The templates are the repo's ERB, run as Ruby: a typo saved in one raises, as a SyntaxError (a ScriptError) for
+  # some, and the server has to outlive it.
   rescue StandardError, ScriptError => e
     puts "#{e.class}: #{e.message}", FAILED
   end
@@ -181,8 +182,11 @@ module Bearings::Rake
     dir = File.dirname(path)
     layout_file = File.join(dir, LAYOUT)
     landing_file = File.join(dir, LANDING)
-    templates = [layout_file, landing_file]
-    layout, landing = templates.map { |template| File.read(template) if File.file?(template) }
+    not_found_file = File.join(dir, NOT_FOUND)
+    required = [layout_file, landing_file]
+    layout, landing, not_found = [*required, not_found_file].map do |template|
+      File.read(template) if File.file?(template)
+    end
     readme = read_readme
     input = Bearings::Pipeline::Input.new(
       manifest:,
@@ -193,14 +197,16 @@ module Bearings::Rake
       watched: watched(manifest.watch),
       layout:,
       landing:,
+      not_found:,
       layout_file:,
       landing_file:,
-      assets: assets(dir, [File.basename(path), LAYOUT, LANDING]),
+      not_found_file:,
+      assets: assets(dir, [File.basename(path), LAYOUT, LANDING, NOT_FOUND]),
       declared: declared(manifest.site.namespaces),
       readme:,
       readme_paths: readme_paths(readme)
     )
-    [input, [*built, *templates.reject { |template| File.file?(template) }.map { |template| no_template(template) }]]
+    [input, [*built, *required.reject { |template| File.file?(template) }.map { |template| no_template(template) }]]
   end
 
   # @rbs path: String

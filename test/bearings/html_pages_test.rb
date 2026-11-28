@@ -117,8 +117,10 @@ describe Bearings::HtmlPages do
     )
   end
 
-  def build(layout: '', landing: '', assets: {}, images: {}, pages: guide_pages, diagram_renderer: nil)
-    Bearings::HtmlPages.call(site(pages), layout:, landing:, assets:, images:, diagram_renderer:)
+  def build(
+    layout: '', landing: '', not_found: nil, assets: {}, images: {}, pages: guide_pages, diagram_renderer: nil
+  )
+    Bearings::HtmlPages.call(site(pages), layout:, landing:, not_found:, assets:, images:, diagram_renderer:)
   end
 
   def files(...) = build(...).first
@@ -126,6 +128,8 @@ describe Bearings::HtmlPages do
   def problems(...) = build(...).last
 
   def landing(template) = files(landing: template).first.content
+
+  def not_found(template) = files(not_found: template).find { |file| file.path == '404.html' }.content
 
   def guides(layout) = files(layout:).select { |file| file.path.start_with?('guides/') }.map(&:content)
 
@@ -143,10 +147,11 @@ describe Bearings::HtmlPages do
       assert_equal [flow], drawer.requested
     end
 
-    it 'writes the landing page, a page at each guide URL, then the assets' do
+    it 'writes the landing page, the 404 page, a page at each guide URL, then the assets' do
       assert_equal(
-        %w[index.html guides/start/index.html guides/install/index.html guides/reference/manifest/index.html 404.html],
-        files(assets: { '404.html' => Pathname('docs-site/404.html') }).map(&:path)
+        %w[index.html 404.html guides/start/index.html guides/install/index.html
+           guides/reference/manifest/index.html site.css],
+        files(not_found: '', assets: { 'site.css' => Pathname('docs-site/site.css') }).map(&:path)
       )
     end
 
@@ -166,6 +171,29 @@ describe Bearings::HtmlPages do
       assert_equal(
         'Bearings|A themeless docs engine|https://bearings.example|https://github.com/bottrall/bearings',
         landing('<%= [site.name, site.summary, site.url, site.repo].join("|") %>')
+      )
+    end
+
+    it 'writes no 404 page without a 404 template' do
+      refute_includes files.map(&:path), '404.html'
+    end
+
+    it 'gives the 404 page the groups' do
+      assert_equal 'Start here,Reference', not_found('<%= groups.map(&:label).join(",") %>')
+    end
+
+    it 'gives the 404 page the pages' do
+      assert_equal 'start,install,reference/manifest', not_found('<%= pages.map(&:slug).join(",") %>')
+    end
+
+    it 'gives the 404 page the version' do
+      assert_equal '1.2.3', not_found('<%= version %>')
+    end
+
+    it 'gives the 404 page the site name, summary, URL and repo' do
+      assert_equal(
+        'Bearings|A themeless docs engine|https://bearings.example|https://github.com/bottrall/bearings',
+        not_found('<%= [site.name, site.summary, site.url, site.repo].join("|") %>')
       )
     end
 

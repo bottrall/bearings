@@ -4,11 +4,12 @@ Every build writes the whole site into `_site/` at the repo root. Each output is
 
 | Path                         | What it is                                                     | Written when                                    |
 | ---------------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
-| `index.html`                 | The landing page, from `index.html.erb`                        | both templates are there                        |
-| `guides/<slug>/index.html`   | Each guide, through `layout.html.erb`                          | both templates are there                        |
+| `index.html`                 | The landing page, from `index.html.erb`                        | both required templates are there               |
+| `404.html`                   | The 404 page, from `404.html.erb`                              | it and both required templates are there        |
+| `guides/<slug>/index.html`   | Each guide, through `layout.html.erb`                          | both required templates are there               |
 | `guides/<slug>.md`           | Each guide's markdown copy                                     | always                                          |
 | `assets/<path>`              | Each image a guide shows, at its path from the repo root       | always                                          |
-| any other path               | Each other file beside the manifest, except hidden ones, at the same path          | both templates are there                        |
+| any other path               | Each other file beside the manifest, except hidden ones, at the same path          | both required templates are there               |
 | `llms.txt`                   | The index of the guides for agents                             | `site.url` is set                               |
 | `llms-full.txt`              | Every guide's markdown copy in one file                        | `outputs.llms_full` is true                     |
 | `sitemap.xml` and `robots.txt` | The page list for search engines                             | `site.url` is set                               |
@@ -19,7 +20,7 @@ A build deletes any file in `_site/` it did not write this time, and any folder 
 
 ## HTML pages
 
-Each guide is rendered through the layout at `/guides/<slug>/`, and the landing page at `/`. [The layout](LAYOUT.md) is the contract for both: what each template is given and what the body holds.
+Each guide is rendered through the layout at `/guides/<slug>/`, the landing page at `/`, and the 404 page, when the site has a template for it, at `/404.html`. [The layout](LAYOUT.md) is the contract for all three: what each template is given and what the body holds.
 
 ## Markdown copies
 
